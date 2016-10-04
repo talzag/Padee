@@ -1,0 +1,5 @@
+framework module CHTTPParser {
+    umbrella "/Users/dstrokis/Developer/Padee/Packages/CHTTPParser-0.3.0/Sources/CHTTPParser/include"
+    link framework "CHTTPParser"
+    export *
+}
