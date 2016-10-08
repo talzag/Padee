@@ -188,6 +188,10 @@ final class ViewController: UIViewController {
     }
     
     private func transformForCurrentDeviceOrientation() -> CGAffineTransform {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return CGAffineTransform.identity
+        }
+        
         let angle: CGFloat
         
         switch UIDevice.current.orientation {
@@ -206,7 +210,7 @@ final class ViewController: UIViewController {
         let transform:CGAffineTransform
         
         if angle > 0.0 {
-            transform = CGAffineTransform.identity.rotated(by: angle * 3.14 / 180)
+            transform = CGAffineTransform.identity.rotated(by: angle * .pi / 180)
         } else {
             transform = CGAffineTransform.identity
         }
@@ -240,6 +244,32 @@ final class ViewController: UIViewController {
                 button.alpha = 1.0
             }
         }, completion: nil)
+    }
+    
+    private func generateThumbnail(byDrawing paths: [Path]) -> UIImage? {
+        let thumbnailSize = CGSize(width: 120, height: 120)
+        let screenSize = UIScreen.main.bounds
+        
+        let scale = thumbnailSize.height / screenSize.height
+        let translation = scale * screenSize.height / 2.0
+        
+        UIGraphicsBeginImageContextWithOptions(thumbnailSize, false, 0.0)
+        let context = UIGraphicsGetCurrentContext()
+        context?.saveGState()
+        
+        context?.translateBy(x: translation, y: 0.0)
+        context?.scaleBy(x: scale, y: scale)
+        
+        paths.forEach {
+            $0.draw(in: context)
+        }
+        
+        context?.restoreGState()
+        
+        let thumbnail = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return thumbnail
     }
     
     private func generateThumbnailForImage(image: UIImage) -> UIImage? {

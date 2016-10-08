@@ -17,15 +17,16 @@ final class CanvasView: UIView {
             guard let image = canvasBackingImage else {
                 return nil
             }
-            
-            UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
-            let context = UIGraphicsGetCurrentContext()
-            context?.draw(image, in: self.bounds)
-            context?.rotate(by: .pi)
-            let uiImage = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-            
-            return uiImage
+
+            return UIImage(cgImage: image)
+//            UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
+//            let context = UIGraphicsGetCurrentContext()
+//            context?.draw(image, in: self.bounds)
+//            context?.rotate(by: .pi)
+//            let uiImage = UIGraphicsGetImageFromCurrentImageContext()
+//            UIGraphicsEndImageContext()
+//            
+//            return uiImage
         }
         
         set {
