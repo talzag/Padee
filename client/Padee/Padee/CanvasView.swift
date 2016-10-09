@@ -19,6 +19,7 @@ final class CanvasView: UIView {
             }
 
             return UIImage(cgImage: image)
+            
 //            UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0.0)
 //            let context = UIGraphicsGetCurrentContext()
 //            context?.draw(image, in: self.bounds)
@@ -162,7 +163,6 @@ final class CanvasView: UIView {
     
     func restoreImage(using paths: [Path]) {
         clear()
-        
         completedPaths = paths
     }
     

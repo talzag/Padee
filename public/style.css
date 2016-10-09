@@ -1,7 +1,6 @@
 :root {
-	--primary-color: rgba(34, 246, 195, 1.0);
-	--secondary-color: #000000;
-	
+	--gradient-top: rgba(37, 226, 101, 1);
+	--gradient-bottom: rgba(27, 169, 192, 1);
 	--text-padding: 2%;
 }
 
@@ -13,8 +12,8 @@ body {
 }
 
 h1 {
-	background-color: var(--primary-color);
-	color: var(--secondary-color);
+/* 	background-color: var(--primary-color); */
+/* 	color: var(--secondary-color); */
 	margin: 0px;
 	padding-left: 6%;
 }
@@ -30,12 +29,12 @@ h3 {
 
 p {
 	padding: 0 var(--text-padding) 0 var(--text-padding);
-	text-align: center;
+	text-align: left;
 }
 
 footer {
-	background-color: var(--primary-color);
-	color: var(--secondary-color);
+/* 	background-color: var(--primary-color); */
+/* 	color: var(--secondary-color); */
 	margin-top: 3%;
 	text-align: center;
 }

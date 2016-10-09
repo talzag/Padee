@@ -21,4 +21,3 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         (window?.rootViewController as? ViewController)?.saveCurrentImage()
     }
 }
-
