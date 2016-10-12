@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11185.3" systemVersion="16A270f" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16B2338c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11151.4"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -52,7 +52,7 @@
                                     <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Trash" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vL2-bX-5ud" userLabel="Trash">
                                         <accessibility key="accessibilityConfiguration" hint="Delete the current sketch. This will clear the canvas." identifier="ClearCanvasButton" label="Delete"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <state key="normal" image="Trash"/>
+                                        <state key="normal" image="NewSketch"/>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Export" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QsG-6e-FFl" userLabel="Export">
                                         <accessibility key="accessibilityConfiguration" hint="Export your image in a number of ways" identifier="ExportButton" label="Export"/>
@@ -77,12 +77,12 @@
     </scenes>
     <resources>
         <image name="Eraser" width="25" height="25"/>
+        <image name="NewSketch" width="25" height="25"/>
         <image name="Pen" width="25" height="25"/>
         <image name="Pencil" width="25" height="25"/>
         <image name="SelectedEraser" width="25" height="25"/>
         <image name="SelectedPen" width="25" height="25"/>
         <image name="SelectedPencil" width="25" height="25"/>
         <image name="Share" width="25" height="25"/>
-        <image name="Trash" width="25" height="25"/>
     </resources>
 </document>
