@@ -16,7 +16,7 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="8bC-Xf-vdC" customClass="CanvasView" customModule="Padee" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="fCM-2u-GYC">
@@ -100,6 +100,15 @@
                             <constraint firstItem="Xgp-YB-By4" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="fiA-5a-g8g"/>
                             <constraint firstItem="kNf-e9-qDf" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="iH1-Vv-beQ"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="kNf-e9-qDf"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="iH1-Vv-beQ"/>
+                                <exclude reference="a5q-0K-oZg"/>
+                            </mask>
+                        </variation>
                     </view>
                     <connections>
                         <outletCollection property="toolButtons" destination="jrc-rA-NPB" collectionClass="NSMutableArray" id="cRx-rE-o88"/>
@@ -119,7 +128,7 @@
             <objects>
                 <collectionViewController id="NyN-od-CYr" customClass="ImageGalleryCollectionViewController" customModule="Padee" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" dataMode="prototypes" id="nFk-CV-d2e">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="se6-Mx-YpU">
@@ -199,7 +208,7 @@
                         <viewControllerLayoutGuide type="bottom" id="ix0-ar-nto"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Qzf-Mn-Z4V">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cn3-D2-wUk" customClass="PaletteView" customModule="Padee" customModuleProvider="target">
