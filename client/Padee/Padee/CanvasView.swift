@@ -18,7 +18,14 @@ final class CanvasView: UIView {
                 return nil
             }
 
-            return UIImage(cgImage: image)
+            UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size, false, 0.0)
+            let context = UIGraphicsGetCurrentContext()
+            context?.draw(image, in: UIScreen.main.bounds)
+            context?.rotate(by: .pi)
+            let generatedImage = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            return generatedImage
         }
         
         set {
