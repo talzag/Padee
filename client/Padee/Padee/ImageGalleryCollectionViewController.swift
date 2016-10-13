@@ -16,7 +16,7 @@ final class ThumbnailImageCollectionViewCell: UICollectionViewCell {
 
 final class ImageGalleryCollectionViewController: UICollectionViewController {
 
-    var thumbnails = [UIImage?]()
+    var thumbnails = [(String, UIImage?)]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,7 +36,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! ThumbnailImageCollectionViewCell
     
         let thumbnail = thumbnails[indexPath.row]
-        cell.imageView.image = thumbnail
+        cell.imageView.image = thumbnail.1
     
         return cell
     }
@@ -46,6 +46,6 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         
-        print("Image selected: \(thumbnails[indexPath.row])")
+        print("Image selected: \(thumbnails[indexPath.row].0)")
     }
 }

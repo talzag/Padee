@@ -15,13 +15,10 @@ final class ViewController: UIViewController {
     
     // Padee file storage layout:
     // Documents/
-    //      com.dstrokis.Padee.current          <= current image data (used for quickly saving/restoring user's sketch
-    //      com.dstrokis.Padee.archives/        <= archived sketches
-    //          sketch-<CREATE TIME>/           <= individual sketch
-    //              sketch-<CREATE TIME>.paths  <= archived
-    //              sketch-<CREATE TIME>.img    <= rendered image
-    //      com.dstrokis.Padee.thumbnails/      <= image thumbnails
-    //              sketch-<CREATE TIME>.thumb  <= name matches archived sketch
+    //      com.dstrokis.Padee.current          <= current image data (used for quickly saving/restoring user's last sketch)
+    //      com.dstrokis.Padee.sketches/        <= archived sketches
+    //          sketch-<CREATE TIME>.paths      <= archived
+    //          sketch-<CREATE TIME>.png        <= rendered image
     
     private lazy var currentImagePathsURL: URL = {
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -29,37 +26,20 @@ final class ViewController: UIViewController {
         return currentImagePathsURL
     }()
     
-    private lazy var archivesDirectoryURL: URL = {
+    private lazy var sketchesDirectoryURL: URL = {
         let fileManager = FileManager.default
         let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let archivesURL = documentsDirectory.appendingPathComponent("archives", isDirectory: true)
+        let sketchesURL = documentsDirectory.appendingPathComponent("com.dstrokis.Padee.sketches", isDirectory: true)
         
-        if !fileManager.fileExists(atPath: archivesURL.path, isDirectory: nil) {
+        if !fileManager.fileExists(atPath: sketchesURL.path, isDirectory: nil) {
             do {
-                try fileManager.createDirectory(at: archivesURL, withIntermediateDirectories: false, attributes: [
-                        FileAttributeKey.posixPermissions.rawValue: "rw-rw-rw"
-                    ])
+                try fileManager.createDirectory(at: sketchesURL, withIntermediateDirectories: false, attributes: nil)
             } catch let error {
-                fatalError("Could not create Archives directory")
+                fatalError("Could not create sketches directory")
             }
         }
         
-        return archivesURL
-    }()
-    
-    private lazy var thumbnailsDirectoryURL: URL = {
-        let fileManager = FileManager.default
-        let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let thumbnailsURL = documentsDirectory.appendingPathComponent("thumbnails", isDirectory: true)
-        
-        if !fileManager.fileExists(atPath: thumbnailsURL.path, isDirectory: nil) {
-            do {
-                try fileManager.createDirectory(at: thumbnailsURL, withIntermediateDirectories: false, attributes: nil)
-            } catch let error {
-                fatalError("Could not create Thumbnails directory")
-            }
-        }
-        return thumbnailsURL
+        return sketchesURL
     }()
     
     override func viewDidLoad() {
@@ -97,8 +77,8 @@ final class ViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         do {
             let fileManager = FileManager.default
-            let urls = try fileManager.contentsOfDirectory(atPath: thumbnailsDirectoryURL.path)
-            let thumbnails = urls.map { UIImage(contentsOfFile: thumbnailsDirectoryURL.appendingPathComponent($0).path) }
+            let urls = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter { $0.hasSuffix("png") }
+            let thumbnails = urls.map { ($0, UIImage(contentsOfFile: sketchesDirectoryURL.appendingPathComponent($0).path)) }
             
             if let navController =  segue.destination as? UINavigationController {
                 (navController.viewControllers.first! as! ImageGalleryCollectionViewController).thumbnails = thumbnails
@@ -124,36 +104,24 @@ final class ViewController: UIViewController {
         let fileManager = FileManager.default
         let creationTime = Int(Date.timeIntervalSinceReferenceDate)
         let basePath = "sketch-\(creationTime)"
-        let fileDir = archivesDirectoryURL.appendingPathComponent(basePath, isDirectory: true)
+        let fileURL = sketchesDirectoryURL.appendingPathComponent(basePath, isDirectory: false)
         
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
         let pathData = NSKeyedArchiver.archivedData(withRootObject: paths)
-        let pathFile = fileDir.appendingPathComponent("\(basePath).pth", isDirectory: false)
-        let pathWriteSuccess = fileManager.createFile(atPath: pathFile.path, contents: pathData, attributes: [
-            FileAttributeKey.posixPermissions.rawValue: "rw-rw-rw"
-        ])
+        let pathFile = fileURL.appendingPathExtension("paths")
+        let pathWriteSuccess = fileManager.createFile(atPath: pathFile.path, contents: pathData, attributes: nil)
         if !pathWriteSuccess {
             print("Could not archive paths for current image.")
         }
         
         guard let image = (view as! CanvasView).canvasImage,
-              let imageData = UIImageJPEGRepresentation(image, 0.0) else {
+              let imageData = UIImagePNGRepresentation(image) else {
             return
         }
-        let imageFile = fileDir.appendingPathComponent("\(basePath).jpeg", isDirectory: false)
+        let imageFile = fileURL.appendingPathExtension("png")
         let imageWriteSuccess = fileManager.createFile(atPath: imageFile.path, contents: imageData, attributes: nil)
         if !imageWriteSuccess {
             print("Could not archive PNG representation of current image.")
-        }
-        
-        guard let thumbnail = generateThumbnailForImage(image: image),
-              let thumbnailData = UIImageJPEGRepresentation(thumbnail, 0.0) else {
-            return
-        }
-        let thumbnailFile = thumbnailsDirectoryURL.appendingPathComponent("\(basePath).jpeg", isDirectory: false)
-        let thumbnailWriteSuccess = fileManager.createFile(atPath: thumbnailFile.path, contents: thumbnailData, attributes: nil)
-        if !thumbnailWriteSuccess {
-            print("Could not generate PNG representation of thumbnail.")
         }
     }
     
@@ -244,48 +212,6 @@ final class ViewController: UIViewController {
                 button.alpha = 1.0
             }
         }, completion: nil)
-    }
-    
-    private func generateThumbnail(byDrawing paths: [Path]) -> UIImage? {
-        let thumbnailSize = CGSize(width: 120, height: 120)
-        let screenSize = UIScreen.main.bounds
-        
-        let scale = thumbnailSize.height / screenSize.height
-        let translation = scale * screenSize.height / 2.0
-        
-        UIGraphicsBeginImageContextWithOptions(thumbnailSize, false, 0.0)
-        let context = UIGraphicsGetCurrentContext()
-        context?.saveGState()
-        
-        context?.translateBy(x: translation, y: 0.0)
-        context?.scaleBy(x: scale, y: scale)
-        
-        paths.forEach {
-            $0.draw(in: context)
-        }
-        
-        context?.restoreGState()
-        
-        let thumbnail = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return thumbnail
-    }
-    
-    private func generateThumbnailForImage(image: UIImage) -> UIImage? {
-        // need to scale image here
-        let scaleFactor: CGFloat = 0.5
-        
-        UIGraphicsBeginImageContextWithOptions(image.size, false, 0.0)
-        
-        image.draw(in: CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
-        let context = UIGraphicsGetCurrentContext()
-        context?.scaleBy(x: scaleFactor, y: scaleFactor)
-        
-        let thumbnail = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return thumbnail
     }
     
     @IBAction func toolSelected(_ sender: UIButton) {
