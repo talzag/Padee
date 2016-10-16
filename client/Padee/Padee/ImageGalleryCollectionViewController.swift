@@ -8,7 +8,7 @@
 
 import UIKit
 
-private let reuseIdentifier = "ImageThumbnailCell"
+fileprivate let reuseIdentifier = "ImageThumbnailCell"
 
 final class ThumbnailImageCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
