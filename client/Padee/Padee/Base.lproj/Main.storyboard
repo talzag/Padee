@@ -158,6 +158,7 @@
                                 </constraints>
                                 <connections>
                                     <outlet property="imageView" destination="rfG-RP-rps" id="8i7-Km-N21"/>
+                                    <segue destination="YWY-Fg-qmG" kind="unwind" identifier="UnwindImageSegue" unwindAction="unwindWithSelectedImageWithSender:" id="UKE-gc-WZ8"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
@@ -167,14 +168,16 @@
                         </connections>
                     </collectionView>
                     <navigationItem key="navigationItem" title="Image Gallery" id="IEm-oc-qw6">
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="PCi-kh-wB8">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="Bq0-xC-VfE">
                             <connections>
-                                <action selector="didFinishViewingImageGallery:" destination="NyN-od-CYr" id="3qE-ct-YfQ"/>
+                                <action selector="didFinishViewingImageGallery:" destination="NyN-od-CYr" id="O6K-2R-9yG"/>
                             </connections>
                         </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="PCi-kh-wB8"/>
                     </navigationItem>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hpo-T4-Zqh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="YWY-Fg-qmG" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="2100" y="173.59999999999999"/>
         </scene>

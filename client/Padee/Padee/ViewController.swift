@@ -266,4 +266,26 @@ final class ViewController: UIViewController {
         popover?.sourceView = sender
         popover?.sourceRect = CGRect(x: 0, y: 5, width: 32, height: 32)
     }
+    
+    // MARK: Unwind segue
+    
+    @IBAction func unwindWithSelectedImage(sender: UIStoryboardSegue) {
+        let source = sender.source as? ImageGalleryCollectionViewController
+        guard let sketch = source?.selectedSketchName else {
+            return
+        }
+        
+        if sketch.hasSuffix("png") {
+            let range = sketch.range(of: ".png")!
+            let base = sketch.substring(to: range.lowerBound)
+            let filePath = sketchesDirectoryURL.appendingPathComponent(base).appendingPathExtension("paths").path
+            guard let pathData = FileManager.default.contents(atPath: filePath) else {
+                return
+            }
+            
+            if let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] {
+                (view as! CanvasView).restoreImage(using: paths)
+            }
+        }
+    }
 }

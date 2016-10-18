@@ -17,6 +17,7 @@ final class ThumbnailImageCollectionViewCell: UICollectionViewCell {
 final class ImageGalleryCollectionViewController: UICollectionViewController {
 
     var thumbnails = [(String, UIImage?)]()
+    var selectedSketchName: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +47,13 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         
-        print("Image selected: \(thumbnails[indexPath.row].0)")
+        selectedSketchName = thumbnails[indexPath.row].0
+    }
+    
+    // MARK: Unwind segue
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let indexPath = collectionView?.indexPath(for: sender as! ThumbnailImageCollectionViewCell)!
+        selectedSketchName = thumbnails[indexPath!.row].0
     }
 }
