@@ -13,6 +13,8 @@ final class ViewController: UIViewController {
 
     @IBOutlet var toolButtons: [UIButton]!
     
+    private var fileNameForRestoringSketch: String?
+    
     // Padee file storage layout:
     // Documents/
     //      com.dstrokis.Padee.current          <= current image data (used for quickly saving/restoring user's last sketch)
@@ -135,6 +137,19 @@ final class ViewController: UIViewController {
         }, completion: nil)
     }
     
+    func prepareToRestoreSketch(name: String, savingCurrentSketch save: Bool) {
+        fileNameForRestoringSketch = name
+        
+        if save {
+            archiveCurrentImage()
+        }
+        
+        (self.view as! CanvasView).clear()
+        self.deleteLastImageData()
+    }
+    
+    // MARK: Private 
+    
     private func restoreLastImage() {
         guard let pathData = try? Data(contentsOf: currentImagePathsURL),
               let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {
@@ -214,6 +229,8 @@ final class ViewController: UIViewController {
         }, completion: nil)
     }
     
+    // MARK: IBAction
+    
     @IBAction func toolSelected(_ sender: UIButton) {
         guard let id = sender.restorationIdentifier else {
             fatalError("Tool button missing restoration identifier: \(sender)")
@@ -230,7 +247,7 @@ final class ViewController: UIViewController {
         }
     }
     
-    @IBAction func clearCanvas(_ sender: UIButton) {
+    @IBAction func clearCanvas(_ sender: UIButton?) {
         let alert = UIAlertController(title: "Create new sketch", message: "Save current sketch?", preferredStyle: .actionSheet)
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -269,23 +286,21 @@ final class ViewController: UIViewController {
     
     // MARK: Unwind segue
     
-    @IBAction func unwindWithSelectedImage(sender: UIStoryboardSegue) {
-        let source = sender.source as? ImageGalleryCollectionViewController
-        guard let sketch = source?.selectedSketchName else {
+    @IBAction func unwindSegue(sender: UIStoryboardSegue) {
+        guard sender.source is ImageGalleryCollectionViewController,
+              let sketch = fileNameForRestoringSketch else {
             return
         }
         
-        if sketch.hasSuffix("png") {
-            let range = sketch.range(of: ".png")!
-            let base = sketch.substring(to: range.lowerBound)
-            let filePath = sketchesDirectoryURL.appendingPathComponent(base).appendingPathExtension("paths").path
-            guard let pathData = FileManager.default.contents(atPath: filePath) else {
-                return
-            }
-            
-            if let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] {
-                (view as! CanvasView).restoreImage(using: paths)
-            }
+        let range = sketch.range(of: ".png")!
+        let base = sketch.substring(to: range.lowerBound)
+        let filePath = sketchesDirectoryURL.appendingPathComponent(base).appendingPathExtension("paths").path
+       
+        guard let pathData = FileManager.default.contents(atPath: filePath),
+              let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {
+            return
         }
+        
+        (view as! CanvasView).restoreImage(using: paths)
     }
 }

@@ -17,7 +17,6 @@ final class ThumbnailImageCollectionViewCell: UICollectionViewCell {
 final class ImageGalleryCollectionViewController: UICollectionViewController {
 
     var thumbnails = [(String, UIImage?)]()
-    var selectedSketchName: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,13 +46,36 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         
-        selectedSketchName = thumbnails[indexPath.row].0
+        let sketch = thumbnails[indexPath.row]
+        
+        let alert = UIAlertController(title: "Editing this sketch will erase your current drawing.", message: "Would you like to save your current sketch?", preferredStyle: .actionSheet)
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        let saveSketch = UIAlertAction(title: "Save sketch", style: .default) { (action) in
+            self.performSegue(withIdentifier: "RestoreImageUnwind", sender: (sketch.0, true))
+        }
+        
+        let clearCanvas = UIAlertAction(title: "Clear canvas", style: .destructive) { (action) in
+            self.performSegue(withIdentifier: "RestoreImageUnwind", sender: (sketch.0, false))
+        }
+        
+        alert.addAction(saveSketch)
+        alert.addAction(clearCanvas)
+        alert.addAction(cancel)
+        present(alert, animated: true, completion: nil)
+        
+        let popover = alert.popoverPresentationController
+        popover?.sourceView = collectionView.cellForItem(at: indexPath)
+        popover?.sourceRect = CGRect(x: 0, y: 5, width: 32, height: 32)
     }
     
-    // MARK: Unwind segue
-
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let indexPath = collectionView?.indexPath(for: sender as! ThumbnailImageCollectionViewCell)!
-        selectedSketchName = thumbnails[indexPath!.row].0
+        guard let sketchData = sender as? (String, Bool),
+              let destination = segue.destination as? ViewController else {
+            fatalError()
+        }
+        
+        destination.prepareToRestoreSketch(name: sketchData.0, savingCurrentSketch: sketchData.1)
     }
 }
