@@ -79,7 +79,12 @@ final class ViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         do {
             let fileManager = FileManager.default
-            let urls = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter { $0.hasSuffix("png") }
+            var urls = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter { $0.hasSuffix("png") }
+            
+            if let name = currentSketchName {
+                urls = urls.filter { !$0.contains(name) }
+            }
+            
             let thumbnails = urls.map { ($0, UIImage(contentsOfFile: sketchesDirectoryURL.appendingPathComponent($0).path)) }
             
             if let navController =  segue.destination as? UINavigationController {
@@ -114,48 +119,47 @@ final class ViewController: UIViewController {
         }
         
         var fileURL = sketchesDirectoryURL.appendingPathComponent(basePath, isDirectory: false)
-        if fileURL.pathExtension == "png" {
+        
+        if fileURL.pathExtension.contains("png") {
+            if fileManager.fileExists(atPath: fileURL.path) {
+                do {
+                    try fileManager.removeItem(at: fileURL)
+                } catch CocoaError.fileWriteNoPermission {
+                    print("Could not remove sketch path data: \(CocoaError.fileWriteNoPermission)")
+                } catch let error {
+                    print(error.localizedDescription)
+                }
+            }
+            
             fileURL.deletePathExtension()
+        }
+        
+        guard let image = (view as! CanvasView).canvasImage,
+            let imageData = UIImagePNGRepresentation(image) else {
+                return
+        }
+        let imageFile = fileURL.appendingPathExtension("png")
+        let imageWriteSuccess = fileManager.createFile(atPath: imageFile.path, contents: imageData, attributes: nil)
+        if !imageWriteSuccess {
+            print("Could not archive PNG representation of current image.")
         }
         
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
         let pathData = NSKeyedArchiver.archivedData(withRootObject: paths)
         let pathFile = fileURL.appendingPathExtension("paths")
         
-        if fileManager.fileExists(atPath: fileURL.path) {
+        if fileManager.fileExists(atPath: pathFile.path) {
             do {
-                try fileManager.removeItem(at: fileURL)
-            } catch CocoaError.fileWriteNoPermission {
-                print("Could not remove sketch path data: \(CocoaError.fileWriteNoPermission)")
-            } catch let error {
-                print(error.localizedDescription)
-            }
-        }
-        
-        let pathWriteSuccess = fileManager.createFile(atPath: pathFile.path, contents: pathData, attributes: nil)
-        if !pathWriteSuccess {
-            print("Could not archive paths for current image.")
-        }
-        
-        guard let image = (view as! CanvasView).canvasImage,
-              let imageData = UIImagePNGRepresentation(image) else {
-            return
-        }
-        let imageFile = fileURL.appendingPathExtension("png")
-        
-        if fileManager.fileExists(atPath: imageFile.path) {
-            do {
-                try fileManager.removeItem(at: imageFile)
+                try fileManager.removeItem(at: pathFile)
             } catch CocoaError.fileWriteNoPermission {
                 print("Could not remove rendered image: \(CocoaError.fileWriteNoPermission)")
             } catch let error {
                 print(error.localizedDescription)
             }
         }
-        let imageWriteSuccess = fileManager.createFile(atPath: imageFile.path, contents: imageData, attributes: nil)
-        
-        if !imageWriteSuccess {
-            print("Could not archive PNG representation of current image.")
+        let pathWriteSuccess = fileManager.createFile(atPath: pathFile.path, contents: pathData, attributes: nil)
+        if !pathWriteSuccess {
+            print("Could not archive paths for current image.")
         }
     }
     

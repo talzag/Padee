@@ -21,7 +21,9 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.rightBarButtonItem = editButtonItem
+        if thumbnails.count > 0 {
+            navigationItem.rightBarButtonItem = editButtonItem
+        }
     }
     
     @IBAction func didFinishViewingImageGallery(_ sender: AnyObject) {
@@ -50,6 +52,23 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         
         let sketch = thumbnails[indexPath.row]
         performSegue(withIdentifier: "RestoreImageUnwind", sender: sketch.0)
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
+        let allowedActions = [
+            #selector(UIResponderStandardEditActions.cut(_:)),
+            #selector(UIResponderStandardEditActions.copy(_:)),
+            #selector(UIResponderStandardEditActions.delete(_:))
+        ]
+        return allowedActions.contains(action)
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
+        
     }
     
     // MARK: Navigation 
