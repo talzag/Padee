@@ -105,12 +105,33 @@ final class ViewController: UIViewController {
     func archiveCurrentImage() {
         let fileManager = FileManager.default
         let creationTime = Int(Date.timeIntervalSinceReferenceDate)
-        let basePath = "sketch-\(creationTime)"
-        let fileURL = sketchesDirectoryURL.appendingPathComponent(basePath, isDirectory: false)
+        
+        let basePath: String
+        if let fileName = currentSketchName {
+            basePath = fileName
+        } else {
+            basePath = "sketch-\(creationTime)"
+        }
+        
+        var fileURL = sketchesDirectoryURL.appendingPathComponent(basePath, isDirectory: false)
+        if fileURL.pathExtension == "png" {
+            fileURL.deletePathExtension()
+        }
         
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
         let pathData = NSKeyedArchiver.archivedData(withRootObject: paths)
         let pathFile = fileURL.appendingPathExtension("paths")
+        
+        if fileManager.fileExists(atPath: fileURL.path) {
+            do {
+                try fileManager.removeItem(at: fileURL)
+            } catch CocoaError.fileWriteNoPermission {
+                print("Could not remove sketch path data: \(CocoaError.fileWriteNoPermission)")
+            } catch let error {
+                print(error.localizedDescription)
+            }
+        }
+        
         let pathWriteSuccess = fileManager.createFile(atPath: pathFile.path, contents: pathData, attributes: nil)
         if !pathWriteSuccess {
             print("Could not archive paths for current image.")
@@ -121,62 +142,76 @@ final class ViewController: UIViewController {
             return
         }
         let imageFile = fileURL.appendingPathExtension("png")
+        
+        if fileManager.fileExists(atPath: imageFile.path) {
+            do {
+                try fileManager.removeItem(at: imageFile)
+            } catch CocoaError.fileWriteNoPermission {
+                print("Could not remove rendered image: \(CocoaError.fileWriteNoPermission)")
+            } catch let error {
+                print(error.localizedDescription)
+            }
+        }
         let imageWriteSuccess = fileManager.createFile(atPath: imageFile.path, contents: imageData, attributes: nil)
+        
         if !imageWriteSuccess {
             print("Could not archive PNG representation of current image.")
         }
     }
     
+    func restoreSketch(named: String, savingCurrentSketch save: Bool) {
+        let paths = (view as! CanvasView).pathsForRestoringCurrentImage
+        if save && paths.count > 0 {
+            archiveCurrentImage()
+        }
+        
+        (view as! CanvasView).clear()
+        deleteLastImageData()
+        
+        currentSketchName = named
+    }
+    
+    func restoreLastImage() {
+        guard let pathData = try? Data(contentsOf: currentImagePathsURL),
+            let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {
+                return
+        }
+        
+        (view as! CanvasView).restoreImage(using: paths)
+    }
+    
+    func clearCanvas() {
+        (view as! CanvasView).clear()
+        deleteLastImageData()
+    }
+    
     func rotateToolButtons() {
         let transform =  transformForCurrentDeviceOrientation()
         
-        UIView.animate(withDuration: 0.35, delay: 0.0, options: .curveEaseOut, animations: { 
+        UIView.animate(withDuration: 0.35, delay: 0.0, options: .curveEaseOut, animations: {
             for button in self.toolButtons {
                 button.transform = transform
             }
         }, completion: nil)
     }
     
-    func restoreSketch(named: String, savingCurrentSketch save: Bool) {
-        currentSketchName = named
-        
-        if save {
-            archiveCurrentImage()
-        }
-        
-        (self.view as! CanvasView).clear()
-        self.deleteLastImageData()
-    }
-    
-    func clearCanvas() {
-        (view as! CanvasView).clear()
-        deleteLastImageData()
-        currentSketchName = nil
-    }
-    
-    // MARK: Private 
-    
-    func restoreLastImage() {
-        guard let pathData = try? Data(contentsOf: currentImagePathsURL),
-              let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {
-            return
-        }
-        
-        (view as! CanvasView).restoreImage(using: paths)
-    }
-    
     private func deleteLastImageData() {
+        currentSketchName = nil
         let fileManager = FileManager.default
         if fileManager.fileExists(atPath: self.currentImagePathsURL.path) {
             do {
                 try fileManager.removeItem(at: self.currentImagePathsURL)
-            } catch let error {
+            } catch CocoaError.fileNoSuchFile {
+                print("No data to remove.")
+            }
+            catch let error {
                 print(error)
             }
         }
     }
     
     private func transformForCurrentDeviceOrientation() -> CGAffineTransform {
+        // Overriding shouldAutorotate on iPad has no effect.
         if UIDevice.current.userInterfaceIdiom == .pad {
             return CGAffineTransform.identity
         }
@@ -212,7 +247,7 @@ final class ViewController: UIViewController {
         let transform = toolButton.transform
             .scaledBy(x: 0.5, y: 0.5)
             .translatedBy(
-                x: toolButton.frame.size.width / -2.0 ,
+                x: toolButton.frame.size.width / -2.0,
                 y: toolButton.frame.size.height / -2.0
             )
         
@@ -234,8 +269,6 @@ final class ViewController: UIViewController {
             }
         }, completion: nil)
     }
-    
-    // MARK: IBAction
     
     @IBAction func toolSelected(_ sender: UIButton) {
         guard let id = sender.restorationIdentifier else {
@@ -287,8 +320,6 @@ final class ViewController: UIViewController {
         popover?.sourceView = sender
         popover?.sourceRect = CGRect(x: 0, y: 5, width: 32, height: 32)
     }
-    
-    // MARK: Unwind segue
     
     @IBAction func unwindSegue(sender: UIStoryboardSegue) {
         guard sender.source is ImageGalleryCollectionViewController,

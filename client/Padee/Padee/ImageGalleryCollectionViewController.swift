@@ -20,6 +20,8 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.rightBarButtonItem = editButtonItem
     }
     
     @IBAction func didFinishViewingImageGallery(_ sender: AnyObject) {
@@ -47,37 +49,17 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         collectionView.deselectItem(at: indexPath, animated: true)
         
         let sketch = thumbnails[indexPath.row]
-        
-        let alert = UIAlertController(title: "Editing this sketch will erase your current drawing.", message: "Would you like to save your current sketch?", preferredStyle: .actionSheet)
-        
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        let saveSketch = UIAlertAction(title: "Save sketch", style: .default) { (action) in
-            self.performSegue(withIdentifier: "RestoreImageUnwind", sender: [sketch.0: true])
-        }
-        
-        let clearCanvas = UIAlertAction(title: "Clear canvas", style: .destructive) { (action) in
-            self.performSegue(withIdentifier: "RestoreImageUnwind", sender: [sketch.0: false])
-        }
-        
-        alert.addAction(saveSketch)
-        alert.addAction(clearCanvas)
-        alert.addAction(cancel)
-        present(alert, animated: true, completion: nil)
-        
-        let popover = alert.popoverPresentationController
-        popover?.sourceView = collectionView.cellForItem(at: indexPath)
-        popover?.sourceRect = CGRect(x: 0, y: 5, width: 32, height: 32)
+        performSegue(withIdentifier: "RestoreImageUnwind", sender: sketch.0)
     }
     
+    // MARK: Navigation 
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let sketchData = sender as? [String: Bool],
+        guard let sketch = sender as? String,
               let destination = segue.destination as? ViewController else {
             fatalError()
         }
         
-        let sketchName = sketchData.keys.first!
-        let save = sketchData[sketchName]!
-        destination.restoreSketch(named: sketchName, savingCurrentSketch: save)
+        destination.restoreSketch(named: sketch, savingCurrentSketch: true)
     }
 }

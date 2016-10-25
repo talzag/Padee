@@ -172,7 +172,6 @@
                                 <action selector="didFinishViewingImageGallery:" destination="NyN-od-CYr" id="O6K-2R-9yG"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="PCi-kh-wB8"/>
                     </navigationItem>
                     <connections>
                         <segue destination="YWY-Fg-qmG" kind="unwind" identifier="RestoreImageUnwind" unwindAction="unwindSegueWithSender:" id="8bC-Tk-WYh"/>
