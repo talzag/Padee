@@ -13,8 +13,6 @@ final class ViewController: UIViewController {
 
     @IBOutlet var toolButtons: [UIButton]!
     
-    var currentSketch: Sketch?
-    
     private var currentSketchName: String?
     
     // Padee file storage layout:
@@ -48,7 +46,7 @@ final class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        restoreLastSketch()
+        restoreLastImage()
         toolButtons.filter({ $0.restorationIdentifier == "Pen"}).first?.isSelected = true
         
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
@@ -158,7 +156,7 @@ final class ViewController: UIViewController {
     
     // MARK: Private 
     
-    func restoreLastSketch() {
+    func restoreLastImage() {
         guard let pathData = try? Data(contentsOf: currentImagePathsURL),
               let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {
             return
