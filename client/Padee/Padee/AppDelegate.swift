@@ -20,4 +20,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         (window?.rootViewController as? ViewController)?.saveCurrentImage()
     }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        (window?.rootViewController as? ViewController)?.saveCurrentImage()
+    }
 }

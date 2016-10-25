@@ -13,7 +13,9 @@ final class ViewController: UIViewController {
 
     @IBOutlet var toolButtons: [UIButton]!
     
-    private var fileNameForRestoringSketch: String?
+    var currentSketch: Sketch?
+    
+    private var currentSketchName: String?
     
     // Padee file storage layout:
     // Documents/
@@ -46,7 +48,7 @@ final class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        restoreLastImage()
+        restoreLastSketch()
         toolButtons.filter({ $0.restorationIdentifier == "Pen"}).first?.isSelected = true
         
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
@@ -137,8 +139,8 @@ final class ViewController: UIViewController {
         }, completion: nil)
     }
     
-    func prepareToRestoreSketch(name: String, savingCurrentSketch save: Bool) {
-        fileNameForRestoringSketch = name
+    func restoreSketch(named: String, savingCurrentSketch save: Bool) {
+        currentSketchName = named
         
         if save {
             archiveCurrentImage()
@@ -148,9 +150,15 @@ final class ViewController: UIViewController {
         self.deleteLastImageData()
     }
     
+    func clearCanvas() {
+        (view as! CanvasView).clear()
+        deleteLastImageData()
+        currentSketchName = nil
+    }
+    
     // MARK: Private 
     
-    private func restoreLastImage() {
+    func restoreLastSketch() {
         guard let pathData = try? Data(contentsOf: currentImagePathsURL),
               let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {
             return
@@ -247,20 +255,18 @@ final class ViewController: UIViewController {
         }
     }
     
-    @IBAction func clearCanvas(_ sender: UIButton?) {
+    @IBAction func createNewSketch(_ sender: UIButton?) {
         let alert = UIAlertController(title: "Create new sketch", message: "Save current sketch?", preferredStyle: .actionSheet)
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         let saveSketch = UIAlertAction(title: "Save sketch", style: .default) { (action) in
             self.archiveCurrentImage()
-            (self.view as! CanvasView).clear()
-            self.deleteLastImageData()
+            self.clearCanvas()
         }
         
         let clearCanvas = UIAlertAction(title: "Clear canvas", style: .destructive) { (action) in
-            (self.view as! CanvasView).clear()
-            self.deleteLastImageData()
+            self.clearCanvas()
         }
         
         alert.addAction(saveSketch)
@@ -288,7 +294,7 @@ final class ViewController: UIViewController {
     
     @IBAction func unwindSegue(sender: UIStoryboardSegue) {
         guard sender.source is ImageGalleryCollectionViewController,
-              let sketch = fileNameForRestoringSketch else {
+              let sketch = currentSketchName else {
             return
         }
         

@@ -53,11 +53,11 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         let saveSketch = UIAlertAction(title: "Save sketch", style: .default) { (action) in
-            self.performSegue(withIdentifier: "RestoreImageUnwind", sender: (sketch.0, true))
+            self.performSegue(withIdentifier: "RestoreImageUnwind", sender: [sketch.0: true])
         }
         
         let clearCanvas = UIAlertAction(title: "Clear canvas", style: .destructive) { (action) in
-            self.performSegue(withIdentifier: "RestoreImageUnwind", sender: (sketch.0, false))
+            self.performSegue(withIdentifier: "RestoreImageUnwind", sender: [sketch.0: false])
         }
         
         alert.addAction(saveSketch)
@@ -71,11 +71,13 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let sketchData = sender as? (String, Bool),
+        guard let sketchData = sender as? [String: Bool],
               let destination = segue.destination as? ViewController else {
             fatalError()
         }
         
-        destination.prepareToRestoreSketch(name: sketchData.0, savingCurrentSketch: sketchData.1)
+        let sketchName = sketchData.keys.first!
+        let save = sketchData[sketchName]!
+        destination.restoreSketch(named: sketchName, savingCurrentSketch: save)
     }
 }

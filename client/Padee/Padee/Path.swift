@@ -8,6 +8,31 @@
 
 import UIKit
 
+final class Sketch: NSObject, NSCoding {
+    private struct SketchPropertyKey {
+        static let nameKey = "name"
+        static let pathsKey = "paths"
+    }
+    
+    let name: String
+    var paths = [Path]()
+    
+    init(withName name: String) {
+        self.name = name
+        super.init()
+    }
+    
+    init?(coder aDecoder: NSCoder) {
+        self.name = aDecoder.decodeObject(forKey: SketchPropertyKey.nameKey) as! String
+        self.paths = aDecoder.decodeObject(forKey: SketchPropertyKey.pathsKey) as! [Path]
+    }
+    
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(name, forKey: SketchPropertyKey.nameKey)
+        aCoder.encode(paths, forKey: SketchPropertyKey.pathsKey)
+    }
+}
+
 final class Path: NSObject, NSCoding {
     
     private struct PathPropertyKey {
