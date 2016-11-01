@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MobileCoreServices
 
 fileprivate let reuseIdentifier = "ImageThumbnailCell"
 
@@ -24,6 +25,8 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         if thumbnails.count > 0 {
             navigationItem.rightBarButtonItem = editButtonItem
         }
+        
+        collectionView?.allowsMultipleSelection = true
     }
     
     @IBAction func didFinishViewingImageGallery(_ sender: AnyObject) {
@@ -48,7 +51,9 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     // MARK: UICollectionViewDelegate
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: true)
+        if isEditing {
+            return
+        }
         
         let sketch = thumbnails[indexPath.row]
         performSegue(withIdentifier: "RestoreImageUnwind", sender: sketch.0)
@@ -60,15 +65,14 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
         let allowedActions = [
-            #selector(UIResponderStandardEditActions.cut(_:)),
-            #selector(UIResponderStandardEditActions.copy(_:)),
-            #selector(UIResponderStandardEditActions.delete(_:))
+            #selector(UIResponderStandardEditActions.copy(_:))
         ]
         return allowedActions.contains(action)
     }
     
     override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-        
+        let sketch = thumbnails[indexPath.row]
+        UIPasteboard.general.setValue(sketch.1!, forPasteboardType: kUTTypeImage as String)
     }
     
     // MARK: Navigation 
