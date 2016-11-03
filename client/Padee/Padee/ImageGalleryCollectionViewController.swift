@@ -33,6 +33,19 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         dismiss(animated: true, completion: nil)
     }
     
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        
+        if editing {
+            let deleteBarButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(deleteSketches(_:)))
+            deleteBarButton.isEnabled = false;
+            navigationItem.setLeftBarButton(deleteBarButton, animated: true)
+        } else {
+            let cancelBarButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didFinishViewingImageGallery(_:)))
+            navigationItem.setLeftBarButton(cancelBarButton, animated: true)
+        }
+    }
+    
     // MARK: UICollectionViewDataSource
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -84,5 +97,9 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         }
         
         destination.restoreSketch(named: sketch, savingCurrentSketch: true)
+    }
+    
+    @objc private func deleteSketches(_ sketchNames: [String]) {
+        
     }
 }
