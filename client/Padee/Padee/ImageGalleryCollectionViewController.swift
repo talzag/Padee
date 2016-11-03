@@ -65,6 +65,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if isEditing {
+            
             return
         }
         
