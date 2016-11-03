@@ -13,6 +13,7 @@ fileprivate let reuseIdentifier = "ImageThumbnailCell"
 
 final class ThumbnailImageCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var selectedImageView: UIImageView!
 }
 
 final class ImageGalleryCollectionViewController: UICollectionViewController {
@@ -65,12 +66,27 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if isEditing {
+            let cell = collectionView.cellForItem(at: indexPath) as? ThumbnailImageCollectionViewCell
+            cell?.selectedImageView.alpha = 1.0
+            
+            updateStateForLeftToolBarItem()
             
             return
         }
         
         let sketch = thumbnails[indexPath.row]
         performSegue(withIdentifier: "RestoreImageUnwind", sender: sketch.0)
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        if !isEditing {
+            return
+        }
+        
+        let cell = collectionView.cellForItem(at: indexPath) as? ThumbnailImageCollectionViewCell
+        cell?.selectedImageView.alpha = 0.0
+        
+        updateStateForLeftToolBarItem()
     }
     
     override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
@@ -100,7 +116,29 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         destination.restoreSketch(named: sketch, savingCurrentSketch: true)
     }
     
-    @objc private func deleteSketches(_ sketchNames: [String]) {
+    // MARK: 
+    
+    @objc func deleteSketches(_ sender: AnyObject) {
+        guard let indexPaths = collectionView?.indexPathsForSelectedItems else {
+            return
+        }
         
+        for index in indexPaths {
+            print(thumbnails[index.row].0)
+        }
+    }
+    
+    private func updateStateForLeftToolBarItem() {
+        if !isEditing {
+            navigationItem.leftBarButtonItem?.isEnabled = true
+            return
+        }
+        
+        guard let indexPaths = collectionView?.indexPathsForSelectedItems else {
+            navigationItem.leftBarButtonItem?.isEnabled = false
+            return
+        }
+        
+        navigationItem.leftBarButtonItem?.isEnabled = indexPaths.count > 0
     }
 }

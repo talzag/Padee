@@ -147,6 +147,10 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="rfG-RP-rps"/>
+                                        <imageView userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Selected" translatesAutoresizingMaskIntoConstraints="NO" id="VrT-oE-2vQ">
+                                            <frame key="frameInset" minX="160" minY="160" width="32" height="32"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        </imageView>
                                     </subviews>
                                 </view>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
@@ -158,6 +162,7 @@
                                 </constraints>
                                 <connections>
                                     <outlet property="imageView" destination="rfG-RP-rps" id="8i7-Km-N21"/>
+                                    <outlet property="selectedImageView" destination="VrT-oE-2vQ" id="Fjp-Lh-9RT"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
@@ -180,7 +185,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hpo-T4-Zqh" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="YWY-Fg-qmG" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="2100" y="173.59999999999999"/>
+            <point key="canvasLocation" x="2100" y="173.16341829085459"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Ww0-es-PZZ">
@@ -419,6 +424,7 @@
         <image name="Palette" width="25" height="25"/>
         <image name="Pen" width="25" height="25"/>
         <image name="Pencil" width="25" height="25"/>
+        <image name="Selected" width="25" height="25"/>
         <image name="SelectedEraser" width="25" height="25"/>
         <image name="SelectedPalette" width="25" height="25"/>
         <image name="SelectedPen" width="25" height="25"/>
