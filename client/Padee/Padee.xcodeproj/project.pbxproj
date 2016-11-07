@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E3402EFA1D24BAF7009F0312 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3402EF91D24BAF7009F0312 /* CanvasView.swift */; };
+		E362D26E1DCE96C400B6C3A1 /* FileManagerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */; };
 		E37AB8BC1D4D1A060068A637 /* PaletteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */; };
 		E37AB8BE1D4D201F0068A637 /* PaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37AB8BD1D4D201F0068A637 /* PaletteView.swift */; };
 		E37AB8C01D4D20470068A637 /* ColorWellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37AB8BF1D4D20470068A637 /* ColorWellView.swift */; };
@@ -43,6 +44,7 @@
 
 /* Begin PBXFileReference section */
 		E3402EF91D24BAF7009F0312 /* CanvasView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
+		E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileManagerController.swift; sourceTree = "<group>"; };
 		E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaletteViewController.swift; sourceTree = "<group>"; };
 		E37AB8BD1D4D201F0068A637 /* PaletteView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaletteView.swift; sourceTree = "<group>"; };
 		E37AB8BF1D4D20470068A637 /* ColorWellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorWellView.swift; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 				E3923D5D1D18CD7E00DA946C /* Tools.swift */,
 				E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */,
 				E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */,
+				E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */,
 				E37AB8BF1D4D20470068A637 /* ColorWellView.swift */,
 				E37AB8BD1D4D201F0068A637 /* PaletteView.swift */,
 				E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */,
@@ -290,6 +293,7 @@
 				E37AB8BC1D4D1A060068A637 /* PaletteViewController.swift in Sources */,
 				E39EDAEF1D10676F00D2CA69 /* AppDelegate.swift in Sources */,
 				E3402EFA1D24BAF7009F0312 /* CanvasView.swift in Sources */,
+				E362D26E1DCE96C400B6C3A1 /* FileManagerController.swift in Sources */,
 				E3B672B11D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift in Sources */,
 				E37EC9781D4E54F400151587 /* Path.swift in Sources */,
 				E37AB8BE1D4D201F0068A637 /* PaletteView.swift in Sources */,
