@@ -8,31 +8,6 @@
 
 import UIKit
 
-final class Sketch: NSObject, NSCoding {
-    private struct SketchPropertyKey {
-        static let nameKey = "name"
-        static let pathsKey = "paths"
-    }
-    
-    let name: String
-    var paths = [Path]()
-    
-    init(withName name: String) {
-        self.name = name
-        super.init()
-    }
-    
-    init?(coder aDecoder: NSCoder) {
-        self.name = aDecoder.decodeObject(forKey: SketchPropertyKey.nameKey) as! String
-        self.paths = aDecoder.decodeObject(forKey: SketchPropertyKey.pathsKey) as! [Path]
-    }
-    
-    func encode(with aCoder: NSCoder) {
-        aCoder.encode(name, forKey: SketchPropertyKey.nameKey)
-        aCoder.encode(paths, forKey: SketchPropertyKey.pathsKey)
-    }
-}
-
 final class Path: NSObject, NSCoding {
     
     private struct PathPropertyKey {
@@ -196,59 +171,5 @@ final class Path: NSObject, NSCoding {
         }
         
         aCoder.encodeColor(lineColor)
-    }
-}
-
-enum PointType: Int {
-    case `default`
-    case coalesced
-    case predicted
-}
-
-final class Point: NSObject, NSCoding {
-    
-    private struct PointPropertyKey {
-        static let type = "type"
-        static let location = "location"
-    }
-    
-    var location: CGPoint
-    let type: PointType
-    var estimationUpdateIndex: NSNumber?
-    var propertiesExpectingUpdates: UITouchProperties?
-    
-    init(withTouch touch: UITouch, andType type: PointType) {
-        let view = touch.view
-        location = touch.preciseLocation(in: view)
-        self.type = type
-        estimationUpdateIndex = touch.estimationUpdateIndex
-        propertiesExpectingUpdates = touch.estimatedPropertiesExpectingUpdates
-    }
-    
-    func updateWithTouch(_ touch: UITouch) {
-        guard let updateIndex = touch.estimationUpdateIndex,
-              estimationUpdateIndex == updateIndex else {
-                return
-        }
-        
-        propertiesExpectingUpdates = touch.estimatedPropertiesExpectingUpdates
-        location = touch.preciseLocation(in: touch.view)
-    }
-    
-    // MARK: NSCoding
-    
-    init?(coder aDecoder: NSCoder) {
-        location = aDecoder.decodeCGPoint(forKey: PointPropertyKey.location)
-        
-        if let pointType = PointType(rawValue: aDecoder.decodeInteger(forKey:  PointPropertyKey.type)) {
-            type = pointType
-        } else {
-            type = .default
-        }
-    }
-    
-    func encode(with aCoder: NSCoder) {
-        aCoder.encode(type.rawValue, forKey:  PointPropertyKey.type)
-        aCoder.encode(location, forKey:  PointPropertyKey.location)
     }
 }

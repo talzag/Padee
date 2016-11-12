@@ -15,35 +15,6 @@ final class ViewController: UIViewController {
     
     private var currentSketchName: String?
     
-    // Padee file storage layout:
-    // Documents/
-    //      com.dstrokis.Padee.current          <= current image data (used for quickly saving/restoring user's last sketch)
-    //      com.dstrokis.Padee.sketches/        <= archived sketches
-    //          sketch-<CREATE TIME>.paths      <= archived
-    //          sketch-<CREATE TIME>.png        <= rendered image
-    
-    private lazy var currentImagePathsURL: URL = {
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let currentImagePathsURL = documentsDirectory.appendingPathComponent("com.dstrokis.Padee.current", isDirectory: false)
-        return currentImagePathsURL
-    }()
-    
-    private lazy var sketchesDirectoryURL: URL = {
-        let fileManager = FileManager.default
-        let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let sketchesURL = documentsDirectory.appendingPathComponent("com.dstrokis.Padee.sketches", isDirectory: true)
-        
-        if !fileManager.fileExists(atPath: sketchesURL.path, isDirectory: nil) {
-            do {
-                try fileManager.createDirectory(at: sketchesURL, withIntermediateDirectories: false, attributes: nil)
-            } catch let error {
-                fatalError("Could not create sketches directory")
-            }
-        }
-        
-        return sketchesURL
-    }()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         restoreLastImage()
@@ -79,13 +50,13 @@ final class ViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         do {
             let fileManager = FileManager.default
-            var urls = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter { $0.hasSuffix("png") }
+            var urls = try fileManager.contentsOfDirectory(atPath: fileManagerController.sketchesDirectoryURL.path).filter { $0.hasSuffix("png") }
             
             if let name = currentSketchName {
                 urls = urls.filter { !$0.contains(name) }
             }
             
-            let thumbnails = urls.map { ($0, UIImage(contentsOfFile: sketchesDirectoryURL.appendingPathComponent($0).path)) }
+            let thumbnails = urls.map { ($0, UIImage(contentsOfFile: fileManagerController.sketchesDirectoryURL.appendingPathComponent($0).path)) }
             
             if let navController =  segue.destination as? UINavigationController {
                 (navController.viewControllers.first! as! ImageGalleryCollectionViewController).thumbnails = thumbnails
@@ -100,7 +71,7 @@ final class ViewController: UIViewController {
         let pathData = NSKeyedArchiver.archivedData(withRootObject: paths)
         
         do {
-            try pathData.write(to: currentImagePathsURL)
+            try pathData.write(to: fileManagerController.currentImagePathURL)
         } catch let error {
             print(error.localizedDescription)
             fatalError("Could not archive image drawing paths! This should not happen!")
@@ -118,7 +89,7 @@ final class ViewController: UIViewController {
             basePath = "sketch-\(creationTime)"
         }
         
-        var fileURL = sketchesDirectoryURL.appendingPathComponent(basePath, isDirectory: false)
+        var fileURL = fileManagerController.sketchesDirectoryURL.appendingPathComponent(basePath, isDirectory: false)
         
         if fileURL.pathExtension.contains("png") {
             if fileManager.fileExists(atPath: fileURL.path) {
@@ -176,7 +147,7 @@ final class ViewController: UIViewController {
     }
     
     func restoreLastImage() {
-        guard let pathData = try? Data(contentsOf: currentImagePathsURL),
+        guard let pathData = try? Data(contentsOf: fileManagerController.currentImagePathURL),
             let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {
                 return
         }
@@ -202,9 +173,9 @@ final class ViewController: UIViewController {
     private func deleteLastImageData() {
         currentSketchName = nil
         let fileManager = FileManager.default
-        if fileManager.fileExists(atPath: self.currentImagePathsURL.path) {
+        if fileManager.fileExists(atPath: self.fileManagerController.currentImagePathURL.path) {
             do {
-                try fileManager.removeItem(at: self.currentImagePathsURL)
+                try fileManager.removeItem(at: self.fileManagerController.currentImagePathURL)
             } catch CocoaError.fileNoSuchFile {
                 print("No data to remove.")
             }
@@ -333,7 +304,7 @@ final class ViewController: UIViewController {
         
         let range = sketch.range(of: ".png")!
         let base = sketch.substring(to: range.lowerBound)
-        let filePath = sketchesDirectoryURL.appendingPathComponent(base).appendingPathExtension("paths").path
+        let filePath = fileManagerController.sketchesDirectoryURL.appendingPathComponent(base).appendingPathExtension("paths").path
        
         guard let pathData = FileManager.default.contents(atPath: filePath),
               let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {

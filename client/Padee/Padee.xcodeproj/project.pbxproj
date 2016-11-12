@@ -22,6 +22,9 @@
 		E39EDB071D10677000D2CA69 /* PadeeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39EDB061D10677000D2CA69 /* PadeeTests.swift */; };
 		E39EDB121D10677000D2CA69 /* PadeeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39EDB111D10677000D2CA69 /* PadeeUITests.swift */; };
 		E3B672B11D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */; };
+		E3F20D831DD79C6B005911A5 /* Sketch.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D821DD79C6B005911A5 /* Sketch.swift */; };
+		E3F20D851DD79C92005911A5 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D841DD79C92005911A5 /* Point.swift */; };
+		E3F20D871DD79CF8005911A5 /* UIViewController+FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */; };
 		E3FDB3E91D7FAA6D0083B0AB /* NSCoder+CGColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +67,9 @@
 		E39EDB111D10677000D2CA69 /* PadeeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadeeUITests.swift; sourceTree = "<group>"; };
 		E39EDB131D10677000D2CA69 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageGalleryCollectionViewController.swift; sourceTree = "<group>"; };
+		E3F20D821DD79C6B005911A5 /* Sketch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sketch.swift; sourceTree = "<group>"; };
+		E3F20D841DD79C92005911A5 /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
+		E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+FileManager.swift"; sourceTree = "<group>"; };
 		E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSCoder+CGColor.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -119,10 +125,13 @@
 				E39EDAF01D10676F00D2CA69 /* ViewController.swift */,
 				E3402EF91D24BAF7009F0312 /* CanvasView.swift */,
 				E37EC9771D4E54F400151587 /* Path.swift */,
+				E3F20D841DD79C92005911A5 /* Point.swift */,
+				E3F20D821DD79C6B005911A5 /* Sketch.swift */,
 				E3923D5D1D18CD7E00DA946C /* Tools.swift */,
 				E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */,
 				E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */,
 				E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */,
+				E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */,
 				E37AB8BF1D4D20470068A637 /* ColorWellView.swift */,
 				E37AB8BD1D4D201F0068A637 /* PaletteView.swift */,
 				E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */,
@@ -291,12 +300,15 @@
 				E39EDAF11D10676F00D2CA69 /* ViewController.swift in Sources */,
 				E3FDB3E91D7FAA6D0083B0AB /* NSCoder+CGColor.swift in Sources */,
 				E37AB8BC1D4D1A060068A637 /* PaletteViewController.swift in Sources */,
+				E3F20D851DD79C92005911A5 /* Point.swift in Sources */,
 				E39EDAEF1D10676F00D2CA69 /* AppDelegate.swift in Sources */,
 				E3402EFA1D24BAF7009F0312 /* CanvasView.swift in Sources */,
 				E362D26E1DCE96C400B6C3A1 /* FileManagerController.swift in Sources */,
 				E3B672B11D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift in Sources */,
 				E37EC9781D4E54F400151587 /* Path.swift in Sources */,
+				E3F20D831DD79C6B005911A5 /* Sketch.swift in Sources */,
 				E37AB8BE1D4D201F0068A637 /* PaletteView.swift in Sources */,
+				E3F20D871DD79CF8005911A5 /* UIViewController+FileManager.swift in Sources */,
 				E3923D5E1D18CD7E00DA946C /* Tools.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

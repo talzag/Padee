@@ -8,7 +8,16 @@
 
 import UIKit
 
+
+// Padee file storage layout:
+// Documents/
+//      com.dstrokis.Padee.current          <= current image data (used for quickly saving/restoring user's last sketch)
+//      com.dstrokis.Padee.sketches/        <= archived sketches
+//          sketch-<CREATE TIME>.paths      <= archived
+//          sketch-<CREATE TIME>.png        <= rendered image
+
 final class FileManagerController: NSObject {
+    
     private let fileManager = FileManager.default
     
     lazy var currentImagePathURL: URL = {
@@ -37,10 +46,28 @@ final class FileManagerController: NSObject {
     }
     
     func deleteSketch(named name: String) {
+        let filePath = pathForSketch(named: name)
         
+        if fileManager.fileExists(atPath: filePath) {
+            try? fileManager.removeItem(atPath: filePath)
+        }
+    }
+    
+    func deleteSketches(_ sketchNames: [String]) {
+        for name in sketchNames {
+            deleteSketch(named: name)
+        }
     }
     
     func drawingPaths(for sketchName: String) {
+        let filePath = pathForSketch(named: sketchName)
         
+        if fileManager.fileExists(atPath: filePath) {
+            
+        }
+    }
+    
+    private func pathForSketch(named name: String) -> String {
+        return sketchesDirectoryURL.appendingPathComponent(name).appendingPathExtension("png").path
     }
 }

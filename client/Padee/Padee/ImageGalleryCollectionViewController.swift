@@ -90,7 +90,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return true
+        return false
     }
     
     override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
@@ -123,9 +123,25 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
             return
         }
         
-        for index in indexPaths {
-            print(thumbnails[index.row].0)
+        let sketchNames = indexPaths.map {
+            self.thumbnails[$0.row].0
         }
+        
+        let alert = UIAlertController(title: "Delete Sketches", message: "This action cannot be undone.", preferredStyle: .actionSheet)
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        let deleteSketches = UIAlertAction(title: "Delete \(indexPaths.count) sketches", style: .destructive) { (action) in
+            self.fileManagerController.deleteSketches(sketchNames)
+        }
+        
+        alert.addAction(deleteSketches)
+        alert.addAction(cancel)
+        present(alert, animated: true, completion: nil)
+        
+//        let popover = alert.popoverPresentationController
+//        popover?.sourceView = sender
+//        popover?.sourceRect = CGRect(x: 0, y: 5, width: 32, height: 32)
     }
     
     private func updateStateForLeftToolBarItem() {
