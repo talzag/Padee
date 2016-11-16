@@ -13,15 +13,18 @@ final class ViewController: UIViewController {
 
     @IBOutlet var toolButtons: [UIButton]!
     
-    private var currentSketchName: String?
+    private var currentSketch: Sketch?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         restoreLastImage()
-        toolButtons.filter({ $0.restorationIdentifier == "Pen"}).first?.isSelected = true
+        toolButtons.filter({ $0.restorationIdentifier == Tool.Pen.rawValue }).first?.isSelected = true
         
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.rotateToolButtons), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(ViewController.rotateToolButtons),
+                                               name: NSNotification.Name.UIDeviceOrientationDidChange,
+                                               object: nil)
     }
     
     override func didReceiveMemoryWarning() {
@@ -49,20 +52,16 @@ final class ViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         do {
-            let fileManager = FileManager.default
-            var urls = try fileManager.contentsOfDirectory(atPath: fileManagerController.sketchesDirectoryURL.path).filter { $0.hasSuffix("png") }
+            let sketches = try fileManagerController.archivedSketches()
+            let images = try fileManagerController.renderedImages()
             
-            if let name = currentSketchName {
-                urls = urls.filter { !$0.contains(name) }
-            }
-            
-            let thumbnails = urls.map { ($0, UIImage(contentsOfFile: fileManagerController.sketchesDirectoryURL.appendingPathComponent($0).path)) }
-            
+            let zipped = zip(sketches, images)
+            let thumbnails = zipped.map { ($0, $1) }
             if let navController =  segue.destination as? UINavigationController {
                 (navController.viewControllers.first! as! ImageGalleryCollectionViewController).thumbnails = thumbnails
             }
         } catch let error {
-            print(error)
+            print(error.localizedDescription)
         }
     }
     
@@ -82,14 +81,14 @@ final class ViewController: UIViewController {
         let fileManager = FileManager.default
         let creationTime = Int(Date.timeIntervalSinceReferenceDate)
         
-        let basePath: String
-        if let fileName = currentSketchName {
-            basePath = fileName
+        let sketchName: String
+        if let sketch = currentSketch {
+            sketchName = sketch.name
         } else {
-            basePath = "sketch-\(creationTime)"
+            sketchName = "sketch-\(creationTime)"
         }
         
-        var fileURL = fileManagerController.sketchesDirectoryURL.appendingPathComponent(basePath, isDirectory: false)
+        var fileURL = fileManagerController.sketchesDirectoryURL.appendingPathComponent(sketchName, isDirectory: false)
         
         if fileURL.pathExtension.contains("png") {
             if fileManager.fileExists(atPath: fileURL.path) {
@@ -134,7 +133,7 @@ final class ViewController: UIViewController {
         }
     }
     
-    func restoreSketch(named: String, savingCurrentSketch save: Bool) {
+    func restore(_ sketch: Sketch, savingCurrentSketch save: Bool) {
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
         if save && paths.count > 0 {
             archiveCurrentImage()
@@ -143,7 +142,8 @@ final class ViewController: UIViewController {
         (view as! CanvasView).clear()
         deleteLastImageData()
         
-        currentSketchName = named
+        currentSketch = sketch
+        (view as! CanvasView).restoreImage(using: sketch.paths)
     }
     
     func restoreLastImage() {
@@ -171,11 +171,12 @@ final class ViewController: UIViewController {
     }
     
     private func deleteLastImageData() {
-        currentSketchName = nil
+        currentSketch = nil
+        
         let fileManager = FileManager.default
-        if fileManager.fileExists(atPath: self.fileManagerController.currentImagePathURL.path) {
+        if fileManager.fileExists(atPath: fileManagerController.currentImagePathURL.path) {
             do {
-                try fileManager.removeItem(at: self.fileManagerController.currentImagePathURL)
+                try fileManager.removeItem(at: fileManagerController.currentImagePathURL)
             } catch CocoaError.fileNoSuchFile {
                 print("No data to remove.")
             }
@@ -297,20 +298,6 @@ final class ViewController: UIViewController {
     }
     
     @IBAction func unwindSegue(sender: UIStoryboardSegue) {
-        guard sender.source is ImageGalleryCollectionViewController,
-              let sketch = currentSketchName else {
-            return
-        }
-        
-        let range = sketch.range(of: ".png")!
-        let base = sketch.substring(to: range.lowerBound)
-        let filePath = fileManagerController.sketchesDirectoryURL.appendingPathComponent(base).appendingPathExtension("paths").path
-       
-        guard let pathData = FileManager.default.contents(atPath: filePath),
-              let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {
-            return
-        }
-        
-        (view as! CanvasView).restoreImage(using: paths)
+        // Empty segue to allow unwinding from ImageGalleryViewController
     }
 }

@@ -18,7 +18,7 @@ final class ThumbnailImageCollectionViewCell: UICollectionViewCell {
 
 final class ImageGalleryCollectionViewController: UICollectionViewController {
 
-    var thumbnails = [(String, UIImage?)]()
+    var thumbnails = [(Sketch, UIImage?)]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,8 +74,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
             return
         }
         
-        let sketch = thumbnails[indexPath.row]
-        performSegue(withIdentifier: "RestoreImageUnwind", sender: sketch.0)
+        performSegue(withIdentifier: "RestoreImageUnwind", sender: collectionView)
     }
     
     override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
@@ -90,6 +89,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
+        // TODO: Fix UIPasteboard-related commands
         return false
     }
     
@@ -108,12 +108,17 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     // MARK: Navigation 
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let sketch = sender as? String,
+        guard let collectionView = sender as? UICollectionView,
               let destination = segue.destination as? ViewController else {
             fatalError()
         }
         
-        destination.restoreSketch(named: sketch, savingCurrentSketch: true)
+        guard let indexPath = collectionView.indexPathsForSelectedItems?.first else {
+            return
+        }
+        
+        let sketch = thumbnails[indexPath.row].0
+        destination.restore(sketch, savingCurrentSketch: true)
     }
     
     // MARK: 
@@ -123,7 +128,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
             return
         }
         
-        let sketchNames = indexPaths.map {
+        let sketches = indexPaths.map {
             self.thumbnails[$0.row].0
         }
         
@@ -132,7 +137,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         let deleteSketches = UIAlertAction(title: "Delete \(indexPaths.count) sketches", style: .destructive) { (action) in
-            self.fileManagerController.deleteSketches(sketchNames)
+            self.fileManagerController.deleteSketches(sketches)
         }
         
         alert.addAction(deleteSketches)
