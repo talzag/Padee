@@ -14,6 +14,7 @@ fileprivate let reuseIdentifier = "ImageThumbnailCell"
 final class ThumbnailImageCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var selectedImageView: UIImageView!
+    @IBOutlet weak var imageNameLabel: UILabel!
 }
 
 final class ImageGalleryCollectionViewController: UICollectionViewController {
@@ -23,11 +24,11 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        collectionView?.allowsMultipleSelection = true
+        
         if thumbnails.count > 0 {
             navigationItem.rightBarButtonItem = editButtonItem
         }
-        
-        collectionView?.allowsMultipleSelection = true
     }
     
     @IBAction func didFinishViewingImageGallery(_ sender: AnyObject) {
@@ -58,6 +59,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     
         let thumbnail = thumbnails[indexPath.row]
         cell.imageView.image = thumbnail.1
+        cell.imageNameLabel.text = thumbnail.0.name
     
         return cell
     }
@@ -128,16 +130,18 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
             return
         }
         
-        let sketches = indexPaths.map {
-            self.thumbnails[$0.row].0
-        }
-        
         let alert = UIAlertController(title: "Delete Sketches", message: "This action cannot be undone.", preferredStyle: .actionSheet)
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         let deleteSketches = UIAlertAction(title: "Delete \(indexPaths.count) sketches", style: .destructive) { (action) in
+            let sketches = indexPaths.map { indexPath -> Sketch in
+                let removed = self.thumbnails.remove(at: indexPath.row)
+                return removed.0
+            }
+            
             self.fileManagerController.deleteSketches(sketches)
+            self.collectionView?.deleteItems(at: indexPaths)
         }
         
         alert.addAction(deleteSketches)
