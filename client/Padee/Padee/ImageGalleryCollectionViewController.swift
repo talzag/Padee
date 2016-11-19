@@ -20,6 +20,7 @@ final class ThumbnailImageCollectionViewCell: UICollectionViewCell {
 final class ImageGalleryCollectionViewController: UICollectionViewController {
 
     var thumbnails = [(Sketch, UIImage?)]()
+    var noSketchesMessageLabel: UILabel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,11 +29,14 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         
         if thumbnails.count > 0 {
             navigationItem.rightBarButtonItem = editButtonItem
+        } else {
+            noSketchesMessageLabel = UILabel(frame: view.frame)
+            noSketchesMessageLabel?.text = "You have created any sketches yet 😣"
+            noSketchesMessageLabel?.textAlignment = .center
+            noSketchesMessageLabel?.textColor = UIColor.gray
+            noSketchesMessageLabel?.minimumScaleFactor = 0.75
+            view.addSubview(noSketchesMessageLabel!)
         }
-    }
-    
-    @IBAction func didFinishViewingImageGallery(_ sender: AnyObject) {
-        dismiss(animated: true, completion: nil)
     }
     
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -46,6 +50,14 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
             let cancelBarButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didFinishViewingImageGallery(_:)))
             navigationItem.setLeftBarButton(cancelBarButton, animated: true)
         }
+    }
+    
+    override var shouldAutorotate: Bool {
+        return true
+    }
+    
+    @IBAction func didFinishViewingImageGallery(_ sender: AnyObject) {
+        dismiss(animated: true, completion: nil)
     }
     
     // MARK: UICollectionViewDataSource
@@ -142,6 +154,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
             
             self.fileManagerController.deleteSketches(sketches)
             self.collectionView?.deleteItems(at: indexPaths)
+            self.isEditing = false
         }
         
         alert.addAction(deleteSketches)
