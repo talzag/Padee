@@ -44,7 +44,8 @@ final class FileManagerController: NSObject {
     func archivedSketches() throws -> [Sketch] {
         var sketches = [Sketch]()
         do {
-            let pathURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter({ $0.hasSuffix("paths") }).sorted(by: <)
+            let pathURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter({ $0.hasSuffix("paths") }).sorted(by: >)
+            
             let mapped = pathURLs.map { (path: String) -> Sketch in
                 let ext = path.range(of: ".paths")!
                 let name = path.substring(to: ext.lowerBound)
@@ -70,7 +71,8 @@ final class FileManagerController: NSObject {
     func renderedImages() throws -> [UIImage?] {
         var images = [UIImage?]()
         do {
-            let pngURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter { $0.hasSuffix("png") }.sorted(by: <)
+            let pngURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter { $0.hasSuffix("png") }.sorted(by: >)
+            
             let mapped = pngURLs.map {
                 UIImage(contentsOfFile: sketchesDirectoryURL.appendingPathComponent($0).path)
             }

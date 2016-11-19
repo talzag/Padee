@@ -30,12 +30,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         if thumbnails.count > 0 {
             navigationItem.rightBarButtonItem = editButtonItem
         } else {
-            noSketchesMessageLabel = UILabel(frame: view.frame)
-            noSketchesMessageLabel?.text = "You have created any sketches yet 😣"
-            noSketchesMessageLabel?.textAlignment = .center
-            noSketchesMessageLabel?.textColor = UIColor.gray
-            noSketchesMessageLabel?.minimumScaleFactor = 0.75
-            view.addSubview(noSketchesMessageLabel!)
+            addNoSketchesMessageLabel()
         }
     }
     
@@ -49,15 +44,22 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         } else {
             let cancelBarButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didFinishViewingImageGallery(_:)))
             navigationItem.setLeftBarButton(cancelBarButton, animated: true)
+            
+            guard let indexPaths = collectionView?.indexPathsForSelectedItems else {
+                return
+            }
+            
+            for indexPath in indexPaths {
+                collectionView?.deselectItem(at: indexPath, animated: true)
+                
+                let cell = collectionView?.cellForItem(at: indexPath) as? ThumbnailImageCollectionViewCell
+                cell?.selectedImageView.alpha = 0.0
+            }
         }
     }
     
     override var shouldAutorotate: Bool {
         return true
-    }
-    
-    @IBAction func didFinishViewingImageGallery(_ sender: AnyObject) {
-        dismiss(animated: true, completion: nil)
     }
     
     // MARK: UICollectionViewDataSource
@@ -102,6 +104,8 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         updateStateForLeftToolBarItem()
     }
     
+    // MARK: UIPasteboard Functionality
+    
     override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
         // TODO: Fix UIPasteboard-related commands
         return false
@@ -135,9 +139,13 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         destination.restore(sketch, savingCurrentSketch: true)
     }
     
-    // MARK: 
+    // MARK: Helper methods
     
-    @objc func deleteSketches(_ sender: AnyObject) {
+    @IBAction func didFinishViewingImageGallery(_ sender: AnyObject) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func deleteSketches(_ sender: AnyObject) {
         guard let indexPaths = collectionView?.indexPathsForSelectedItems else {
             return
         }
@@ -153,17 +161,35 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
             }
             
             self.fileManagerController.deleteSketches(sketches)
-            self.collectionView?.deleteItems(at: indexPaths)
-            self.isEditing = false
+            
+            self.collectionView?.performBatchUpdates({ 
+                self.collectionView?.deleteItems(at: indexPaths)
+            }) { (done) in
+                self.isEditing = false
+                
+                if done && self.thumbnails.count == 0 {
+                    self.addNoSketchesMessageLabel()
+                    self.navigationItem.rightBarButtonItem = nil
+                }
+            }
         }
         
         alert.addAction(deleteSketches)
         alert.addAction(cancel)
         present(alert, animated: true, completion: nil)
         
-//        let popover = alert.popoverPresentationController
-//        popover?.sourceView = sender
-//        popover?.sourceRect = CGRect(x: 0, y: 5, width: 32, height: 32)
+        let popover = alert.popoverPresentationController
+        popover?.sourceView = (sender as? UIBarButtonItem)?.customView
+        popover?.sourceRect = CGRect(x: 0, y: 5, width: 32, height: 32)
+    }
+    
+    private func addNoSketchesMessageLabel() {
+        noSketchesMessageLabel = UILabel(frame: view.frame)
+        noSketchesMessageLabel?.text = "You have created any sketches yet 😣"
+        noSketchesMessageLabel?.textAlignment = .center
+        noSketchesMessageLabel?.textColor = UIColor.gray
+        noSketchesMessageLabel?.minimumScaleFactor = 0.75
+        view.addSubview(noSketchesMessageLabel!)
     }
     
     private func updateStateForLeftToolBarItem() {
