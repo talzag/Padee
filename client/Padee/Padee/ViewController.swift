@@ -78,6 +78,10 @@ final class ViewController: UIViewController {
     }
     
     func archiveCurrentImage() {
+        guard (view as! CanvasView).pathsForRestoringCurrentImage.count > 0 else {
+            return
+        }
+        
         let fileManager = FileManager.default
         let creationTime = Int(Date.timeIntervalSinceReferenceDate)
         
