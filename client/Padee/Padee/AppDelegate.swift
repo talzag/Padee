@@ -26,4 +26,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         (window?.rootViewController as? ViewController)?.saveCurrentImage()
     }
+    
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        if shortcutItem.type.components(separatedBy: ".").last == "new-sketch" {
+            
+        }
+    }
 }
