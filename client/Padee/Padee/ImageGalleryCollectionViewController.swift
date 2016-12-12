@@ -150,15 +150,18 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
             return
         }
         
-        let alert = UIAlertController(title: "Delete Sketches", message: "This action cannot be undone.", preferredStyle: .actionSheet)
-        
+        let pluralized = indexPaths.count > 1 ? "sketches" : "sketch"
+        let alert = UIAlertController(title: "Delete \(pluralized)", message: "This action cannot be undone.", preferredStyle: .actionSheet)
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
-        let deleteSketches = UIAlertAction(title: "Delete \(indexPaths.count) sketches", style: .destructive) { (action) in
+        let deleteSketches = UIAlertAction(title: "Delete \(indexPaths.count) \(pluralized)", style: .destructive) { (action) in
             let sketches = indexPaths.map { indexPath -> Sketch in
-                let removed = self.thumbnails.remove(at: indexPath.row)
-                return removed.0
+                let name = self.thumbnails[indexPath.row].0
+                self.thumbnails[indexPath.row].1 = nil
+                return name
             }
+            
+            self.thumbnails = self.thumbnails.filter { $0.1 != nil }
             
             self.fileManagerController.deleteSketches(sketches)
             
@@ -185,7 +188,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     
     private func addNoSketchesMessageLabel() {
         noSketchesMessageLabel = UILabel(frame: view.frame)
-        noSketchesMessageLabel?.text = "You have created any sketches yet 😣"
+        noSketchesMessageLabel?.text = "No sketches to display."
         noSketchesMessageLabel?.textAlignment = .center
         noSketchesMessageLabel?.textColor = UIColor.gray
         noSketchesMessageLabel?.minimumScaleFactor = 0.75
