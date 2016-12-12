@@ -21,7 +21,8 @@ let package = Package(
     dependencies: [
         .Package(url: "https://github.com/IBM-Swift/Kitura.git", majorVersion: 1, minor: 0),
         .Package(url: "https://github.com/IBM-Swift/HeliumLogger.git", majorVersion: 1, minor: 0),
-        .Package(url: "https://github.com/IBM-Swift/Swift-cfenv", majorVersion: 1, minor: 7)
+        .Package(url: "https://github.com/IBM-Swift/Swift-cfenv", majorVersion: 1, minor: 7),
+        .Package(url: "https://github.com/vapor/sqlite", Version(1, 0, 2))
     ],
     exclude: ["Makefile", "Package-Builder", "client"]
 )
