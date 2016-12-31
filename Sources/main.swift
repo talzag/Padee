@@ -14,26 +14,11 @@
 * limitations under the License.
 **/
 
-import Foundation
 import Kitura
-import LoggerAPI
-import HeliumLogger
-import CloudFoundryEnv
 
 let router = Router()
 
-router.all("/marketing", middleware: StaticFileServer())
+router.all("/", middleware: StaticFileServer())
 
-
-
-do {
-  let appEnv = try CloudFoundryEnv.getAppEnv()
-  let port: Int = appEnv.port
-  
-  Kitura.addHTTPServer(onPort: port, with: router)
-  Kitura.run()
-  
-  Log.info("Server will be started on '\(appEnv.url)'.")
-} catch CloudFoundryEnvError.InvalidValue {
-  Log.error("Something went wrong. Server did not start!")
-}
+Kitura.addHTTPServer(onPort: 8000, with: router)
+Kitura.run()
