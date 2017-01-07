@@ -15,17 +15,14 @@
 **/
 
 import Kitura
+import HeliumLogger
+
+HeliumLogger.use()
 
 let router = Router()
 
-router.all("/", middleware: StaticFileServer())
-
-router.all("/api") { (req, res, next) in
-    do {
-        try res.send(status: .OK).end()
-    } catch let error {
-        fatalError(error.localizedDescription)
-    }
+router.all("/") { (req, res, next) in
+    res.send("Response from Padee server")
     
     next()
 }
