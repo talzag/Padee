@@ -27,10 +27,6 @@ final class ViewController: UIViewController {
                                                object: nil)
     }
     
-    override func didReceiveMemoryWarning() {
-        print("Did recieve memory warning.")
-    }
-
     override func viewWillDisappear(_ animated: Bool) {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
         super.viewWillDisappear(animated)

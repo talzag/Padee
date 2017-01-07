@@ -21,6 +21,6 @@ let package = Package(
     dependencies: [
         .Package(url: "https://github.com/IBM-Swift/Kitura.git", majorVersion: 1, minor: 4)
     ],
-    exclude: ["Makefile", "Package-Builder", "client"]
+    exclude: ["client"]
 )
 

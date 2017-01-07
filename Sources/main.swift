@@ -20,5 +20,15 @@ let router = Router()
 
 router.all("/", middleware: StaticFileServer())
 
+router.all("/api") { (req, res, next) in
+    do {
+        try res.send(status: .OK).end()
+    } catch let error {
+        fatalError(error.localizedDescription)
+    }
+    
+    next()
+}
+
 Kitura.addHTTPServer(onPort: 8000, with: router)
 Kitura.run()

@@ -74,6 +74,10 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         let thumbnail = thumbnails[indexPath.row]
         cell.imageView.image = thumbnail.1
         cell.imageNameLabel.text = thumbnail.0.name
+        
+        if !isEditing {
+            cell.selectedImageView.alpha = 0.0
+        }
     
         return cell
     }
