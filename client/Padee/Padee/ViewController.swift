@@ -149,6 +149,7 @@ final class ViewController: UIViewController {
     func restoreLastImage() {
         guard let pathData = try? Data(contentsOf: fileManagerController.currentImagePathURL),
               let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {
+                currentSketch = Sketch()
                 return
         }
         

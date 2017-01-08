@@ -15,12 +15,19 @@ final class Sketch: NSObject, NSCoding {
         static let pathsKey = "paths"
     }
     
-    let name: String
+    var name: String!
     var paths = [Path]()
     
     init(withName name: String) {
-        self.name = name
         super.init()
+        self.name = name
+    }
+    
+    override init() {
+        super.init()
+        
+        let creationTime = Int(Date.timeIntervalSinceReferenceDate)
+        self.name = "sketch-\(creationTime)"
     }
     
     init?(coder aDecoder: NSCoder) {

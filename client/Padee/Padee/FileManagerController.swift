@@ -41,6 +41,10 @@ final class FileManagerController: NSObject {
         return sketchesURL
     }()
     
+    func archive(_ sketch: Sketch) {
+        
+    }
+    
     func archivedSketches() throws -> [Sketch] {
         var sketches = [Sketch]()
         do {
@@ -85,11 +89,7 @@ final class FileManagerController: NSObject {
         return images
     }
     
-    func archive(_ sketch: Sketch) {
-        
-    }
-    
-    func deleteSketch(named sketch: Sketch) {
+    func deleteSketch(_ sketch: Sketch) {
         let sketchPath = archiveURLFor(sketch).appendingPathExtension("paths").path
         let imagePath = archiveURLFor(sketch).appendingPathExtension("png").path
         
@@ -104,7 +104,7 @@ final class FileManagerController: NSObject {
     
     func deleteSketches(_ sketches: [Sketch]) {
         for sketch in sketches {
-            deleteSketch(named: sketch)
+            deleteSketch(sketch)
         }
     }
     
