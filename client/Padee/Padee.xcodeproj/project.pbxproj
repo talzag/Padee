@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E336A5DE1E232FB7002F1C5B /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = E336A5DD1E232FB7002F1C5B /* Notifications.swift */; };
 		E3402EFA1D24BAF7009F0312 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3402EF91D24BAF7009F0312 /* CanvasView.swift */; };
 		E362D26E1DCE96C400B6C3A1 /* FileManagerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */; };
 		E37AB8BC1D4D1A060068A637 /* PaletteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */; };
@@ -46,6 +47,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E336A5DD1E232FB7002F1C5B /* Notifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		E3402EF91D24BAF7009F0312 /* CanvasView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileManagerController.swift; sourceTree = "<group>"; };
 		E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaletteViewController.swift; sourceTree = "<group>"; };
@@ -127,6 +129,7 @@
 				E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */,
 				E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */,
 				E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */,
+				E336A5DD1E232FB7002F1C5B /* Notifications.swift */,
 				E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */,
 				E3402EF91D24BAF7009F0312 /* CanvasView.swift */,
 				E37AB8BF1D4D20470068A637 /* ColorWellView.swift */,
@@ -296,6 +299,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E336A5DE1E232FB7002F1C5B /* Notifications.swift in Sources */,
 				E37AB8C01D4D20470068A637 /* ColorWellView.swift in Sources */,
 				E39EDAF11D10676F00D2CA69 /* ViewController.swift in Sources */,
 				E3FDB3E91D7FAA6D0083B0AB /* NSCoder+CGColor.swift in Sources */,

@@ -23,7 +23,12 @@ final class ViewController: UIViewController {
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(ViewController.rotateToolButtons),
-                                               name: NSNotification.Name.UIDeviceOrientationDidChange,
+                                               name: .UIDeviceOrientationDidChange,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(ViewController.didDeleteSketchesHandler(_:)),
+                                               name: .FileManagerDidDeleteSketches,
                                                object: nil)
     }
     
@@ -165,6 +170,16 @@ final class ViewController: UIViewController {
                 button.alpha = 1.0
             }
         }, completion: nil)
+    }
+    
+    @objc private func didDeleteSketchesHandler(_ notification: Notification) {
+        guard let sketchNames = notification.userInfo?["sketches"] as? [String] else {
+            return
+        }
+        
+        if sketchNames.contains(currentSketch.name) {
+            clearCanvas()
+        }
     }
     
     @IBAction func toolSelected(_ sender: UIButton) {

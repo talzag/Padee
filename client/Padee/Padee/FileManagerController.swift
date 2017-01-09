@@ -110,23 +110,17 @@ final class FileManagerController: NSObject {
         return images
     }
     
-    func deleteSketch(_ sketch: Sketch) {
-        let sketchPath = archiveURLFor(sketch).appendingPathExtension(sketchPathExtension).path
-        let imagePath = archiveURLFor(sketch).appendingPathExtension(pngPathExtension).path
-        
-        if fileManager.fileExists(atPath: sketchPath) {
-            try? fileManager.removeItem(atPath: sketchPath)
-        }
-        
-        if fileManager.fileExists(atPath: imagePath) {
-            try? fileManager.removeItem(atPath: imagePath)
-        }
-    }
-    
     func deleteSketches(_ sketches: [Sketch]) {
+        var sketchNames = [String]()
+        
         for sketch in sketches {
+            sketchNames.append(sketch.name)
             deleteSketch(sketch)
         }
+        
+        NotificationCenter.default.post(name: .FileManagerDidDeleteSketches,
+                                        object: self,
+                                        userInfo: ["sketches" : sketchNames])
     }
     
     func sketch(named sketchName: String) -> Sketch? {
@@ -142,6 +136,19 @@ final class FileManagerController: NSObject {
         sketch.paths.append(contentsOf: paths)
         
         return sketch
+    }
+    
+    private func deleteSketch(_ sketch: Sketch) {
+        let sketchPath = archiveURLFor(sketch).appendingPathExtension(sketchPathExtension).path
+        let imagePath = archiveURLFor(sketch).appendingPathExtension(pngPathExtension).path
+        
+        if fileManager.fileExists(atPath: sketchPath) {
+            try? fileManager.removeItem(atPath: sketchPath)
+        }
+        
+        if fileManager.fileExists(atPath: imagePath) {
+            try? fileManager.removeItem(atPath: imagePath)
+        }
     }
     
     private func archiveURLFor(_ sketch: Sketch) -> URL {
