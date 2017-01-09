@@ -39,14 +39,3 @@ enum Tool: String {
         }
     }
 }
-
-//extension UIImageView {
-//    func drawComposite(with otherImage: UIImage?) {
-//        UIGraphicsBeginImageContextWithOptions(frame.size, false, 0.0)
-//        image?.draw(in: frame)
-//        UIGraphicsGetCurrentContext()!.setBlendMode(.normal)
-//        otherImage?.draw(in: frame)
-//        image = UIGraphicsGetImageFromCurrentImageContext()
-//        UIGraphicsEndImageContext()
-//    }
-//}

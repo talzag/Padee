@@ -11,7 +11,7 @@ import UIKit
 
 // Padee file storage layout:
 // Documents/
-//      com.dstrokis.Padee.current          <= current image data (used for quickly saving/restoring user's last sketch)
+//      com.dstrokis.Padee.current          <= current sketch name
 //      com.dstrokis.Padee.sketches/        <= archived sketches
 //          sketch-<CREATE TIME>.paths      <= archived
 //          sketch-<CREATE TIME>.png        <= rendered image
@@ -20,7 +20,7 @@ final class FileManagerController: NSObject {
     
     private let fileManager = FileManager.default
     
-    lazy var currentImagePathURL: URL = {
+    lazy var currentSketchURL: URL = {
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let currentImagePathURL = documentsDirectory.appendingPathComponent("com.dstrokis.Padee.current", isDirectory: false)
         return currentImagePathURL
@@ -41,24 +41,44 @@ final class FileManagerController: NSObject {
         return sketchesURL
     }()
     
-    func archive(_ sketch: Sketch) {
+    func archive(_ sketch: Sketch, with renderedImage: UIImage? = nil) -> Bool {
+        let fileURL = archiveURLFor(sketch)
+        let sketchURL = fileURL.appendingPathExtension("sketch")
         
+        if let image = renderedImage, let imageData = UIImagePNGRepresentation(image) {
+            let imageFile = fileURL.appendingPathExtension("png")
+            let imageWriteSuccess = fileManager.createFile(atPath: imageFile.path, contents: imageData, attributes: nil)
+            if !imageWriteSuccess {
+                print("Could not archive PNG representation of current image.")
+            }
+        }
+        
+        return NSKeyedArchiver.archiveRootObject(sketch, toFile: sketchURL.path) &&
+               NSKeyedArchiver.archiveRootObject(sketch, toFile: currentSketchURL.path)
+    }
+    
+    func lastSavedSketch() -> Sketch? {
+        guard let sketch = NSKeyedUnarchiver.unarchiveObject(withFile: currentSketchURL.path) as? Sketch else {
+            return nil
+        }
+        
+        return sketch
     }
     
     func archivedSketches() throws -> [Sketch] {
         var sketches = [Sketch]()
         do {
-            let pathURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter({ $0.hasSuffix("paths") }).sorted(by: >)
+            let sketchExt = ".sketch"
+            let pathURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter({ $0.hasSuffix(sketchExt) }).sorted(by: >)
             
             let mapped = pathURLs.map { (path: String) -> Sketch in
-                let ext = path.range(of: ".paths")!
+                let ext = path.range(of: sketchExt)!
                 let name = path.substring(to: ext.lowerBound)
-                let sketch = Sketch(withName: name)
+                var sketch = Sketch(withName: name)
                 
-                if let pathData = try? Data(contentsOf: sketchesDirectoryURL.appendingPathComponent(path)) {
-                    if let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] {
-                        sketch.paths.append(contentsOf: paths)
-                    }
+                if let archiveData = try? Data(contentsOf: sketchesDirectoryURL.appendingPathComponent(path)),
+                   let archive = NSKeyedUnarchiver.unarchiveObject(with: archiveData) as? Sketch {
+                    sketch = archive
                 }
                 
                 return sketch

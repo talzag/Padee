@@ -13,11 +13,11 @@ final class ViewController: UIViewController {
 
     @IBOutlet var toolButtons: [UIButton]!
     
-    private var currentSketch: Sketch?
+    private var currentSketch = Sketch()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        restoreLastImage()
+        restoreLastSketch()
         toolButtons.filter({ $0.restorationIdentifier == Tool.Pen.rawValue }).first?.isSelected = true
         
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
@@ -61,104 +61,40 @@ final class ViewController: UIViewController {
         }
     }
     
-    func saveCurrentImage() {
+    func saveCurrentSketch() {
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
-        let pathData = NSKeyedArchiver.archivedData(withRootObject: paths)
-        
-        do {
-            try pathData.write(to: fileManagerController.currentImagePathURL)
-        } catch let error {
-            print(error.localizedDescription)
-            fatalError("Could not archive image drawing paths! This should not happen!")
-        }
-    }
-    
-    func archiveCurrentImage() {
-        guard (view as! CanvasView).pathsForRestoringCurrentImage.count > 0 else {
+        guard paths.count > 0 else {
             return
         }
         
-        let fileManager = FileManager.default
-        let creationTime = Int(Date.timeIntervalSinceReferenceDate)
-        
-        let sketchName: String
-        if let sketch = currentSketch {
-            sketchName = sketch.name
-        } else {
-            sketchName = "sketch-\(creationTime)"
-        }
-        
-        var fileURL = fileManagerController.sketchesDirectoryURL.appendingPathComponent(sketchName, isDirectory: false)
-        
-        if fileURL.pathExtension.contains("png") {
-            if fileManager.fileExists(atPath: fileURL.path) {
-                do {
-                    try fileManager.removeItem(at: fileURL)
-                } catch CocoaError.fileWriteNoPermission {
-                    print("Could not remove sketch path data: \(CocoaError.fileWriteNoPermission)")
-                } catch let error {
-                    print(error.localizedDescription)
-                }
-            }
-            
-            fileURL.deletePathExtension()
-        }
-        
-        guard let image = (view as! CanvasView).canvasImage,
-            let imageData = UIImagePNGRepresentation(image) else {
-                return
-        }
-        let imageFile = fileURL.appendingPathExtension("png")
-        let imageWriteSuccess = fileManager.createFile(atPath: imageFile.path, contents: imageData, attributes: nil)
-        if !imageWriteSuccess {
-            print("Could not archive PNG representation of current image.")
-        }
-        
-        let paths = (view as! CanvasView).pathsForRestoringCurrentImage
-        let pathData = NSKeyedArchiver.archivedData(withRootObject: paths)
-        let pathFile = fileURL.appendingPathExtension("paths")
-        
-        if fileManager.fileExists(atPath: pathFile.path) {
-            do {
-                try fileManager.removeItem(at: pathFile)
-            } catch CocoaError.fileWriteNoPermission {
-                print("Could not remove rendered image: \(CocoaError.fileWriteNoPermission)")
-            } catch let error {
-                print(error.localizedDescription)
-            }
-        }
-        let pathWriteSuccess = fileManager.createFile(atPath: pathFile.path, contents: pathData, attributes: nil)
-        if !pathWriteSuccess {
-            print("Could not archive paths for current image.")
+        currentSketch.paths = paths
+        let image = (view as! CanvasView).canvasImage
+        guard fileManagerController.archive(currentSketch, with: image) else {
+            fatalError("Could not archive sketch")
         }
     }
     
     func restore(_ sketch: Sketch, savingCurrentSketch save: Bool) {
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
         if save && paths.count > 0 {
-            archiveCurrentImage()
+            saveCurrentSketch()
         }
         
         (view as! CanvasView).clear()
-        deleteLastImageData()
         
         currentSketch = sketch
         (view as! CanvasView).restoreImage(using: sketch.paths)
     }
     
-    func restoreLastImage() {
-        guard let pathData = try? Data(contentsOf: fileManagerController.currentImagePathURL),
-              let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {
-                currentSketch = Sketch()
-                return
+    func restoreLastSketch() {
+        if let sketch = fileManagerController.lastSavedSketch()  {
+            currentSketch = sketch
         }
-        
-        (view as! CanvasView).restoreImage(using: paths)
     }
     
     func clearCanvas() {
         (view as! CanvasView).clear()
-        deleteLastImageData()
+        currentSketch = Sketch()
     }
     
     func rotateToolButtons() {
@@ -169,22 +105,6 @@ final class ViewController: UIViewController {
                 button.transform = transform
             }
         }, completion: nil)
-    }
-    
-    private func deleteLastImageData() {
-        currentSketch = nil
-        
-        let fileManager = FileManager.default
-        if fileManager.fileExists(atPath: fileManagerController.currentImagePathURL.path) {
-            do {
-                try fileManager.removeItem(at: fileManagerController.currentImagePathURL)
-            } catch CocoaError.fileNoSuchFile {
-                print("No data to remove.")
-            }
-            catch let error {
-                print(error)
-            }
-        }
     }
     
     private func transformForCurrentDeviceOrientation() -> CGAffineTransform {
@@ -269,7 +189,7 @@ final class ViewController: UIViewController {
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         let saveSketch = UIAlertAction(title: "Save sketch", style: .default) { (action) in
-            self.archiveCurrentImage()
+            self.saveCurrentSketch()
             self.clearCanvas()
         }
         

@@ -29,11 +29,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
-        (window?.rootViewController as? ViewController)?.saveCurrentImage()
+        (window?.rootViewController as? ViewController)?.saveCurrentSketch()
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        (window?.rootViewController as? ViewController)?.saveCurrentImage()
+        (window?.rootViewController as? ViewController)?.saveCurrentSketch()
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
@@ -46,7 +46,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func startNewSketchForShortcutAction() {
         let viewController = window?.rootViewController as? ViewController
-        viewController?.archiveCurrentImage()
+        viewController?.saveCurrentSketch()
         viewController?.clearCanvas()
     }
 }
