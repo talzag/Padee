@@ -184,6 +184,10 @@ final class ViewController: UIViewController {
     }
     
     @IBAction func createNewSketch(_ sender: UIButton?) {
+        guard (view as! CanvasView).pathsForRestoringCurrentImage.count > 0 else {
+            return
+        }
+        
         let alert = UIAlertController(title: "Create new sketch", message: "Save current sketch?", preferredStyle: .actionSheet)
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)

@@ -117,6 +117,61 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>______Target_CHTTPParser</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>______Target_CloudFoundryEnv</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>______Target_HeliumLogger</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>______Target_Kitura</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>______Target_KituraNet</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>______Target_KituraTemplateEngine</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>______Target_LoggerAPI</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>______Target_PadeeServer</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>______Target_SSLService</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>______Target_Socket</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>______Target_SwiftyJSON</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 	</dict>
 </dict>
 </plist>

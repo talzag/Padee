@@ -17,6 +17,8 @@ import UIKit
 //          sketch-<CREATE TIME>.png        <= rendered image
 
 final class FileManagerController: NSObject {
+    fileprivate let sketchPathExtension = "sketch"
+    fileprivate let pngPathExtension = "png"
     
     private let fileManager = FileManager.default
     
@@ -43,10 +45,10 @@ final class FileManagerController: NSObject {
     
     func archive(_ sketch: Sketch, with renderedImage: UIImage? = nil) -> Bool {
         let fileURL = archiveURLFor(sketch)
-        let sketchURL = fileURL.appendingPathExtension("sketch")
+        let sketchURL = fileURL.appendingPathExtension(sketchPathExtension)
         
         if let image = renderedImage, let imageData = UIImagePNGRepresentation(image) {
-            let imageFile = fileURL.appendingPathExtension("png")
+            let imageFile = fileURL.appendingPathExtension(pngPathExtension)
             let imageWriteSuccess = fileManager.createFile(atPath: imageFile.path, contents: imageData, attributes: nil)
             if !imageWriteSuccess {
                 print("Could not archive PNG representation of current image.")
@@ -68,11 +70,10 @@ final class FileManagerController: NSObject {
     func archivedSketches() throws -> [Sketch] {
         var sketches = [Sketch]()
         do {
-            let sketchExt = ".sketch"
-            let pathURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter({ $0.hasSuffix(sketchExt) }).sorted(by: >)
+            let pathURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter({ $0.hasSuffix(sketchPathExtension) }).sorted(by: >)
             
             let mapped = pathURLs.map { (path: String) -> Sketch in
-                let ext = path.range(of: sketchExt)!
+                let ext = path.range(of: ".\(self.sketchPathExtension)")!
                 let name = path.substring(to: ext.lowerBound)
                 var sketch = Sketch(withName: name)
                 
@@ -95,7 +96,7 @@ final class FileManagerController: NSObject {
     func renderedImages() throws -> [UIImage?] {
         var images = [UIImage?]()
         do {
-            let pngURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter { $0.hasSuffix("png") }.sorted(by: >)
+            let pngURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter { $0.hasSuffix(pngPathExtension) }.sorted(by: >)
             
             let mapped = pngURLs.map {
                 UIImage(contentsOfFile: sketchesDirectoryURL.appendingPathComponent($0).path)
@@ -110,8 +111,8 @@ final class FileManagerController: NSObject {
     }
     
     func deleteSketch(_ sketch: Sketch) {
-        let sketchPath = archiveURLFor(sketch).appendingPathExtension("paths").path
-        let imagePath = archiveURLFor(sketch).appendingPathExtension("png").path
+        let sketchPath = archiveURLFor(sketch).appendingPathExtension(sketchPathExtension).path
+        let imagePath = archiveURLFor(sketch).appendingPathExtension(pngPathExtension).path
         
         if fileManager.fileExists(atPath: sketchPath) {
             try? fileManager.removeItem(atPath: sketchPath)
@@ -129,7 +130,7 @@ final class FileManagerController: NSObject {
     }
     
     func sketch(named sketchName: String) -> Sketch? {
-        let filePath = sketchesDirectoryURL.appendingPathComponent(sketchName).appendingPathExtension("paths").path
+        let filePath = sketchesDirectoryURL.appendingPathComponent(sketchName).appendingPathExtension(sketchPathExtension).path
         
         guard fileManager.fileExists(atPath: filePath),
               let pathData = fileManager.contents(atPath: filePath),
