@@ -1,0 +1,51 @@
+
+/* Class = "UIButton"; accessibilityHint = "Start a new sketch. This will clear the canvas."; ObjectID = "GPn-WF-X3b"; */
+"GPn-WF-X3b.accessibilityHint" = "Start a new sketch. This will clear the canvas.";
+
+/* Class = "UIButton"; accessibilityLabel = "New Sketch"; ObjectID = "GPn-WF-X3b"; */
+"GPn-WF-X3b.accessibilityLabel" = "New Sketch";
+
+/* Class = "UIButton"; normalTitle = "Done"; ObjectID = "HRD-9Q-T9O"; */
+"HRD-9Q-T9O.normalTitle" = "Done";
+
+/* Class = "UINavigationItem"; title = "Image Gallery"; ObjectID = "IEm-oc-qw6"; */
+"IEm-oc-qw6.title" = "Image Gallery";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "KZJ-O1-LXt"; */
+"KZJ-O1-LXt.text" = "Label";
+
+/* Class = "UIButton"; accessibilityHint = "Select the pen tool."; ObjectID = "KhP-Pm-PkG"; */
+"KhP-Pm-PkG.accessibilityHint" = "Select the pen tool.";
+
+/* Class = "UIButton"; accessibilityLabel = "Pen"; ObjectID = "KhP-Pm-PkG"; */
+"KhP-Pm-PkG.accessibilityLabel" = "Pen";
+
+/* Class = "UIButton"; accessibilityHint = "Display a gallery of your previous images."; ObjectID = "Xgp-YB-By4"; */
+"Xgp-YB-By4.accessibilityHint" = "Display a gallery of your previous images.";
+
+/* Class = "UIButton"; accessibilityLabel = "Gallery"; ObjectID = "Xgp-YB-By4"; */
+"Xgp-YB-By4.accessibilityLabel" = "Gallery";
+
+/* Class = "UIButton"; accessibilityHint = "Share your image."; ObjectID = "ZKD-dz-fWV"; */
+"ZKD-dz-fWV.accessibilityHint" = "Share your image.";
+
+/* Class = "UIButton"; accessibilityLabel = "Export"; ObjectID = "ZKD-dz-fWV"; */
+"ZKD-dz-fWV.accessibilityLabel" = "Export";
+
+/* Class = "UIButton"; accessibilityHint = "Select the pencil tool."; ObjectID = "jrc-rA-NPB"; */
+"jrc-rA-NPB.accessibilityHint" = "Select the pencil tool.";
+
+/* Class = "UIButton"; accessibilityLabel = "Pencil"; ObjectID = "jrc-rA-NPB"; */
+"jrc-rA-NPB.accessibilityLabel" = "Pencil";
+
+/* Class = "UIButton"; accessibilityHint = "Display a palette for color control."; ObjectID = "kNf-e9-qDf"; */
+"kNf-e9-qDf.accessibilityHint" = "Display a palette for color control.";
+
+/* Class = "UIButton"; accessibilityLabel = "Palette"; ObjectID = "kNf-e9-qDf"; */
+"kNf-e9-qDf.accessibilityLabel" = "Palette";
+
+/* Class = "UIButton"; accessibilityHint = "Select the eraser tool."; ObjectID = "sZh-QL-rkZ"; */
+"sZh-QL-rkZ.accessibilityHint" = "Select the eraser tool.";
+
+/* Class = "UIButton"; accessibilityLabel = "Eraser"; ObjectID = "sZh-QL-rkZ"; */
+"sZh-QL-rkZ.accessibilityLabel" = "Eraser";
