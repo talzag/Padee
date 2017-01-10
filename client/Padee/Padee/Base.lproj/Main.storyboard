@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16B2338c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D17a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -20,8 +24,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="fCM-2u-GYC">
+                                <rect key="frame" x="260" y="26" width="99" height="25"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Pencil" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jrc-rA-NPB" userLabel="Pencil">
+                                        <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
                                         <accessibility key="accessibilityConfiguration" hint="Select the pencil tool." identifier="PencilToolButton" label="Pencil"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -33,6 +39,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Pen" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KhP-Pm-PkG" userLabel="Pen">
+                                        <rect key="frame" x="37" y="0.0" width="25" height="25"/>
                                         <accessibility key="accessibilityConfiguration" hint="Select the pen tool." identifier="PenToolButton" label="Pen"/>
                                         <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <state key="normal" image="Pen"/>
@@ -43,6 +50,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Eraser" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sZh-QL-rkZ" userLabel="Eraser">
+                                        <rect key="frame" x="74" y="0.0" width="25" height="25"/>
                                         <accessibility key="accessibilityConfiguration" hint="Select the eraser tool." identifier="EraserToolButton" label="Eraser"/>
                                         <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <state key="normal" image="Eraser"/>
@@ -55,16 +63,19 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="uAe-nz-B2A">
+                                <rect key="frame" x="16" y="26" width="62" height="25"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Trash" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GPn-WF-X3b" userLabel="Trash">
+                                    <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Trash" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GPn-WF-X3b" userLabel="New Sketch">
+                                        <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
                                         <accessibility key="accessibilityConfiguration" hint="Start a new sketch. This will clear the canvas." identifier="NewSketchButton" label="New Sketch"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <state key="normal" image="NewSketch"/>
                                         <connections>
-                                            <action selector="clearCanvas:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Aru-ej-jhR"/>
+                                            <action selector="createNewSketch:" destination="BYZ-38-t0r" eventType="touchUpInside" id="4wg-HQ-dM5"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Export" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZKD-dz-fWV" userLabel="Export">
+                                        <rect key="frame" x="37" y="0.0" width="25" height="25"/>
                                         <accessibility key="accessibilityConfiguration" hint="Share your image." identifier="ExportButton" label="Export"/>
                                         <state key="normal" image="Share"/>
                                         <connections>
@@ -74,6 +85,7 @@
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Gallery" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xgp-YB-By4" userLabel="Gallery">
+                                <rect key="frame" x="16" y="622" width="25" height="25"/>
                                 <accessibility key="accessibilityConfiguration" hint="Display a gallery of your previous images." identifier="GalleryButton" label="Gallery"/>
                                 <state key="normal" image="Gallery"/>
                                 <connections>
@@ -81,6 +93,8 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Palette" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kNf-e9-qDf" userLabel="Palette">
+                                <rect key="frame" x="334" y="622" width="25" height="25"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <accessibility key="accessibilityConfiguration" hint="Display a palette for color control." identifier="PaletteButton" label="Palette"/>
                                 <state key="normal" image="Palette"/>
                                 <state key="selected" image="SelectedPalette"/>
@@ -96,17 +110,11 @@
                             <constraint firstItem="uAe-nz-B2A" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="8fs-ES-nE3"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="Xgp-YB-By4" secondAttribute="bottom" constant="20" id="NfE-ov-fTG"/>
                             <constraint firstItem="uAe-nz-B2A" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="6" id="Olx-yS-kNL"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="kNf-e9-qDf" secondAttribute="bottom" constant="20" id="a5q-0K-oZg"/>
                             <constraint firstItem="Xgp-YB-By4" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="fiA-5a-g8g"/>
-                            <constraint firstItem="kNf-e9-qDf" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="iH1-Vv-beQ"/>
                         </constraints>
                         <variation key="default">
                             <mask key="subviews">
                                 <exclude reference="kNf-e9-qDf"/>
-                            </mask>
-                            <mask key="constraints">
-                                <exclude reference="iH1-Vv-beQ"/>
-                                <exclude reference="a5q-0K-oZg"/>
                             </mask>
                         </variation>
                     </view>
@@ -131,36 +139,51 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="se6-Mx-YpU">
-                            <size key="itemSize" width="120" height="120"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="16" minimumInteritemSpacing="8" id="se6-Mx-YpU">
+                            <size key="itemSize" width="200" height="243"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            <inset key="sectionInset" minX="20" minY="20" maxX="20" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ImageThumbnailCell" id="0gL-Ri-Yd5" customClass="ThumbnailImageCollectionViewCell" customModule="Padee" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <rect key="frame" x="88" y="20" width="200" height="243"/>
+                                <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="200" height="243"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="rfG-RP-rps"/>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="rfG-RP-rps">
+                                            <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" secondItem="rfG-RP-rps" secondAttribute="height" multiplier="1:1" id="z6P-5e-8Wk"/>
+                                            </constraints>
+                                        </imageView>
+                                        <imageView userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Selected" translatesAutoresizingMaskIntoConstraints="NO" id="VrT-oE-2vQ">
+                                            <rect key="frame" x="160" y="160" width="32" height="32"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KZJ-O1-LXt">
+                                            <rect key="frame" x="8" y="208" width="184" height="35"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
                                     </subviews>
                                 </view>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="rfG-RP-rps" secondAttribute="trailing" id="5YZ-0E-9wE"/>
-                                    <constraint firstAttribute="bottom" secondItem="rfG-RP-rps" secondAttribute="bottom" id="MnB-vH-aNX"/>
+                                    <constraint firstItem="KZJ-O1-LXt" firstAttribute="leading" secondItem="0gL-Ri-Yd5" secondAttribute="leadingMargin" id="RqE-pS-Aep"/>
                                     <constraint firstItem="rfG-RP-rps" firstAttribute="leading" secondItem="0gL-Ri-Yd5" secondAttribute="leading" id="U3Q-IA-5Sl"/>
+                                    <constraint firstAttribute="bottom" secondItem="KZJ-O1-LXt" secondAttribute="bottom" id="aVp-aN-eKn"/>
+                                    <constraint firstItem="KZJ-O1-LXt" firstAttribute="top" secondItem="rfG-RP-rps" secondAttribute="bottom" constant="8" id="eXd-l9-GQ9"/>
                                     <constraint firstItem="rfG-RP-rps" firstAttribute="top" secondItem="0gL-Ri-Yd5" secondAttribute="top" id="raP-6Y-UJt"/>
+                                    <constraint firstItem="KZJ-O1-LXt" firstAttribute="trailing" secondItem="0gL-Ri-Yd5" secondAttribute="trailingMargin" id="s5j-AP-79r"/>
                                 </constraints>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="color">
-                                        <color key="value" red="0.5" green="0.0" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
                                 <connections>
+                                    <outlet property="imageNameLabel" destination="KZJ-O1-LXt" id="5fh-ln-pAe"/>
                                     <outlet property="imageView" destination="rfG-RP-rps" id="8i7-Km-N21"/>
+                                    <outlet property="selectedImageView" destination="VrT-oE-2vQ" id="Fjp-Lh-9RT"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
@@ -170,16 +193,20 @@
                         </connections>
                     </collectionView>
                     <navigationItem key="navigationItem" title="Image Gallery" id="IEm-oc-qw6">
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="PCi-kh-wB8">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="Bq0-xC-VfE">
                             <connections>
-                                <action selector="didFinishViewingImageGallery:" destination="NyN-od-CYr" id="3qE-ct-YfQ"/>
+                                <action selector="didFinishViewingImageGallery:" destination="NyN-od-CYr" id="O6K-2R-9yG"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <segue destination="YWY-Fg-qmG" kind="unwind" identifier="RestoreImageUnwind" unwindAction="unwindSegueWithSender:" id="8bC-Tk-WYh"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hpo-T4-Zqh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="YWY-Fg-qmG" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="2103" y="177"/>
+            <point key="canvasLocation" x="2000.8" y="176.76161919040482"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Ww0-es-PZZ">
@@ -212,6 +239,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cn3-D2-wUk" customClass="PaletteView" customModule="Padee" customModuleProvider="target">
+                                <rect key="frame" x="104" y="88" width="271" height="579"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
@@ -220,8 +248,10 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qgv-aG-Xxs">
+                                <rect key="frame" x="0.0" y="0.0" width="96" height="667"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9ae-Mf-MDg" customClass="ColorWellView" customModule="Padee" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="20" width="60" height="60"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <gestureRecognizers/>
                                         <constraints>
@@ -238,6 +268,7 @@
                                         </connections>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uWc-uw-s8O" customClass="ColorWellView" customModule="Padee" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="88" width="60" height="60"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="6lJ-4Z-y46"/>
@@ -252,6 +283,7 @@
                                         </connections>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2CV-mK-UnQ" customClass="ColorWellView" customModule="Padee" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="156" width="60" height="60"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="31K-ZP-Ish"/>
@@ -266,6 +298,7 @@
                                         </connections>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qUR-wb-Pql" customClass="ColorWellView" customModule="Padee" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="224" width="60" height="60"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="qbh-Eh-9CD"/>
@@ -280,6 +313,7 @@
                                         </connections>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6pL-Qk-HxF" customClass="ColorWellView" customModule="Padee" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="292" width="60" height="60"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="rAb-Zh-X8d"/>
@@ -294,6 +328,7 @@
                                         </connections>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qXD-Ig-kIG" customClass="ColorWellView" customModule="Padee" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="360" width="60" height="60"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="V40-I2-nBN"/>
@@ -308,6 +343,7 @@
                                         </connections>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6L3-0T-Oqp" customClass="ColorWellView" customModule="Padee" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="428" width="60" height="60"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="kwv-xJ-SLx"/>
@@ -322,6 +358,7 @@
                                         </connections>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L0c-7H-oYg" customClass="ColorWellView" customModule="Padee" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="496" width="60" height="60"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="VoV-14-G1U"/>
@@ -369,12 +406,14 @@
                                 </constraints>
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HRD-9Q-T9O">
+                                <rect key="frame" x="322" y="20" width="37" height="30"/>
                                 <state key="normal" title="Done"/>
                                 <connections>
                                     <action selector="done:" destination="33d-EI-xSw" eventType="touchUpInside" id="QWQ-Gy-mCZ"/>
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DRz-Uu-WSD">
+                                <rect key="frame" x="337" y="58" width="22" height="22"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="22" id="T6K-eS-CC9"/>
@@ -418,6 +457,7 @@
         <image name="Palette" width="25" height="25"/>
         <image name="Pen" width="25" height="25"/>
         <image name="Pencil" width="25" height="25"/>
+        <image name="Selected" width="37" height="37"/>
         <image name="SelectedEraser" width="25" height="25"/>
         <image name="SelectedPalette" width="25" height="25"/>
         <image name="SelectedPen" width="25" height="25"/>

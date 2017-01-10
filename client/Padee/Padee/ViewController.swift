@@ -13,68 +13,25 @@ final class ViewController: UIViewController {
 
     @IBOutlet var toolButtons: [UIButton]!
     
-    // Padee file storage layout:
-    // Documents/
-    //      com.dstrokis.Padee.current          <= current image data (used for quickly saving/restoring user's sketch
-    //      com.dstrokis.Padee.archives/        <= archived sketches
-    //          sketch-<CREATE TIME>/           <= individual sketch
-    //              sketch-<CREATE TIME>.paths  <= archived
-    //              sketch-<CREATE TIME>.img    <= rendered image
-    //      com.dstrokis.Padee.thumbnails/      <= image thumbnails
-    //              sketch-<CREATE TIME>.thumb  <= name matches archived sketch
-    
-    private lazy var currentImagePathsURL: URL = {
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let currentImagePathsURL = documentsDirectory.appendingPathComponent("com.dstrokis.Padee.current", isDirectory: false)
-        return currentImagePathsURL
-    }()
-    
-    private lazy var archivesDirectoryURL: URL = {
-        let fileManager = FileManager.default
-        let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let archivesURL = documentsDirectory.appendingPathComponent("archives", isDirectory: true)
-        
-        if !fileManager.fileExists(atPath: archivesURL.path, isDirectory: nil) {
-            do {
-                try fileManager.createDirectory(at: archivesURL, withIntermediateDirectories: false, attributes: [
-                        FileAttributeKey.posixPermissions.rawValue: "rw-rw-rw"
-                    ])
-            } catch let error {
-                fatalError("Could not create Archives directory")
-            }
-        }
-        
-        return archivesURL
-    }()
-    
-    private lazy var thumbnailsDirectoryURL: URL = {
-        let fileManager = FileManager.default
-        let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let thumbnailsURL = documentsDirectory.appendingPathComponent("thumbnails", isDirectory: true)
-        
-        if !fileManager.fileExists(atPath: thumbnailsURL.path, isDirectory: nil) {
-            do {
-                try fileManager.createDirectory(at: thumbnailsURL, withIntermediateDirectories: false, attributes: nil)
-            } catch let error {
-                fatalError("Could not create Thumbnails directory")
-            }
-        }
-        return thumbnailsURL
-    }()
+    private var currentSketch = Sketch()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        restoreLastImage()
-        toolButtons.filter({ $0.restorationIdentifier == "Pen"}).first?.isSelected = true
+        restoreLastSketch()
+        toolButtons.filter({ $0.restorationIdentifier == Tool.Pen.rawValue }).first?.isSelected = true
         
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.rotateToolButtons), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(ViewController.rotateToolButtons),
+                                               name: .UIDeviceOrientationDidChange,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(ViewController.didDeleteSketchesHandler(_:)),
+                                               name: .FileManagerDidDeleteSketches,
+                                               object: nil)
     }
     
-    override func didReceiveMemoryWarning() {
-        print("Did recieve memory warning.")
-    }
-
     override func viewWillDisappear(_ animated: Bool) {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
         super.viewWillDisappear(animated)
@@ -96,98 +53,67 @@ final class ViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         do {
-            let fileManager = FileManager.default
-            let urls = try fileManager.contentsOfDirectory(atPath: thumbnailsDirectoryURL.path)
-            let thumbnails = urls.map { UIImage(contentsOfFile: thumbnailsDirectoryURL.appendingPathComponent($0).path) }
+            let sketches = try fileManagerController.archivedSketches()
+            let images = try fileManagerController.renderedImages()
             
+            let zipped = zip(sketches, images)
+            let thumbnails = zipped.map { ($0, $1) }
             if let navController =  segue.destination as? UINavigationController {
                 (navController.viewControllers.first! as! ImageGalleryCollectionViewController).thumbnails = thumbnails
             }
         } catch let error {
-            print(error)
-        }
-    }
-    
-    func saveCurrentImage() {
-        let paths = (view as! CanvasView).pathsForRestoringCurrentImage
-        let pathData = NSKeyedArchiver.archivedData(withRootObject: paths)
-        
-        do {
-            try pathData.write(to: currentImagePathsURL)
-        } catch let error {
             print(error.localizedDescription)
-            fatalError("Could not archive image drawing paths! This should not happen!")
         }
     }
     
-    func archiveCurrentImage() {
-        let fileManager = FileManager.default
-        let creationTime = Int(Date.timeIntervalSinceReferenceDate)
-        let basePath = "sketch-\(creationTime)"
-        let fileDir = archivesDirectoryURL.appendingPathComponent(basePath, isDirectory: true)
-        
+    func saveCurrentSketch() {
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
-        let pathData = NSKeyedArchiver.archivedData(withRootObject: paths)
-        let pathFile = fileDir.appendingPathComponent("\(basePath).pth", isDirectory: false)
-        let pathWriteSuccess = fileManager.createFile(atPath: pathFile.path, contents: pathData, attributes: [
-            FileAttributeKey.posixPermissions.rawValue: "rw-rw-rw"
-        ])
-        if !pathWriteSuccess {
-            print("Could not archive paths for current image.")
-        }
-        
-        guard let image = (view as! CanvasView).canvasImage,
-              let imageData = UIImageJPEGRepresentation(image, 0.0) else {
+        guard paths.count > 0 else {
             return
         }
-        let imageFile = fileDir.appendingPathComponent("\(basePath).jpeg", isDirectory: false)
-        let imageWriteSuccess = fileManager.createFile(atPath: imageFile.path, contents: imageData, attributes: nil)
-        if !imageWriteSuccess {
-            print("Could not archive PNG representation of current image.")
+        
+        currentSketch.paths = paths
+        let image = (view as! CanvasView).canvasImage
+        guard fileManagerController.archive(currentSketch, with: image) else {
+            fatalError("Could not archive sketch")
+        }
+    }
+    
+    func restore(_ sketch: Sketch, savingCurrentSketch save: Bool) {
+        let paths = (view as! CanvasView).pathsForRestoringCurrentImage
+        if save && paths.count > 0 {
+            saveCurrentSketch()
         }
         
-        guard let thumbnail = generateThumbnailForImage(image: image),
-              let thumbnailData = UIImageJPEGRepresentation(thumbnail, 0.0) else {
-            return
+        (view as! CanvasView).clear()
+        
+        currentSketch = sketch
+        (view as! CanvasView).restoreImage(using: sketch.paths)
+    }
+    
+    func restoreLastSketch() {
+        if let sketch = fileManagerController.lastSavedSketch()  {
+            currentSketch = sketch
         }
-        let thumbnailFile = thumbnailsDirectoryURL.appendingPathComponent("\(basePath).jpeg", isDirectory: false)
-        let thumbnailWriteSuccess = fileManager.createFile(atPath: thumbnailFile.path, contents: thumbnailData, attributes: nil)
-        if !thumbnailWriteSuccess {
-            print("Could not generate PNG representation of thumbnail.")
-        }
+    }
+    
+    func clearCanvas() {
+        (view as! CanvasView).clear()
+        currentSketch = Sketch()
     }
     
     func rotateToolButtons() {
         let transform =  transformForCurrentDeviceOrientation()
         
-        UIView.animate(withDuration: 0.35, delay: 0.0, options: .curveEaseOut, animations: { 
+        UIView.animate(withDuration: 0.35, delay: 0.0, options: .curveEaseOut, animations: {
             for button in self.toolButtons {
                 button.transform = transform
             }
         }, completion: nil)
     }
     
-    private func restoreLastImage() {
-        guard let pathData = try? Data(contentsOf: currentImagePathsURL),
-              let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {
-            return
-        }
-        
-        (view as! CanvasView).restoreImage(using: paths)
-    }
-    
-    private func deleteLastImageData() {
-        let fileManager = FileManager.default
-        if fileManager.fileExists(atPath: self.currentImagePathsURL.path) {
-            do {
-                try fileManager.removeItem(at: self.currentImagePathsURL)
-            } catch let error {
-                print(error)
-            }
-        }
-    }
-    
     private func transformForCurrentDeviceOrientation() -> CGAffineTransform {
+        // Overriding shouldAutorotate on iPad has no effect.
         if UIDevice.current.userInterfaceIdiom == .pad {
             return CGAffineTransform.identity
         }
@@ -223,7 +149,7 @@ final class ViewController: UIViewController {
         let transform = toolButton.transform
             .scaledBy(x: 0.5, y: 0.5)
             .translatedBy(
-                x: toolButton.frame.size.width / -2.0 ,
+                x: toolButton.frame.size.width / -2.0,
                 y: toolButton.frame.size.height / -2.0
             )
         
@@ -246,46 +172,14 @@ final class ViewController: UIViewController {
         }, completion: nil)
     }
     
-    private func generateThumbnail(byDrawing paths: [Path]) -> UIImage? {
-        let thumbnailSize = CGSize(width: 120, height: 120)
-        let screenSize = UIScreen.main.bounds
-        
-        let scale = thumbnailSize.height / screenSize.height
-        let translation = scale * screenSize.height / 2.0
-        
-        UIGraphicsBeginImageContextWithOptions(thumbnailSize, false, 0.0)
-        let context = UIGraphicsGetCurrentContext()
-        context?.saveGState()
-        
-        context?.translateBy(x: translation, y: 0.0)
-        context?.scaleBy(x: scale, y: scale)
-        
-        paths.forEach {
-            $0.draw(in: context)
+    @objc private func didDeleteSketchesHandler(_ notification: Notification) {
+        guard let sketchNames = notification.userInfo?["sketches"] as? [String] else {
+            return
         }
         
-        context?.restoreGState()
-        
-        let thumbnail = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return thumbnail
-    }
-    
-    private func generateThumbnailForImage(image: UIImage) -> UIImage? {
-        // need to scale image here
-        let scaleFactor: CGFloat = 0.5
-        
-        UIGraphicsBeginImageContextWithOptions(image.size, false, 0.0)
-        
-        image.draw(in: CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
-        let context = UIGraphicsGetCurrentContext()
-        context?.scaleBy(x: scaleFactor, y: scaleFactor)
-        
-        let thumbnail = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return thumbnail
+        if sketchNames.contains(currentSketch.name) {
+            clearCanvas()
+        }
     }
     
     @IBAction func toolSelected(_ sender: UIButton) {
@@ -304,20 +198,22 @@ final class ViewController: UIViewController {
         }
     }
     
-    @IBAction func clearCanvas(_ sender: UIButton) {
+    @IBAction func createNewSketch(_ sender: UIButton?) {
+        guard (view as! CanvasView).pathsForRestoringCurrentImage.count > 0 else {
+            return
+        }
+        
         let alert = UIAlertController(title: "Create new sketch", message: "Save current sketch?", preferredStyle: .actionSheet)
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         let saveSketch = UIAlertAction(title: "Save sketch", style: .default) { (action) in
-            self.archiveCurrentImage()
-            (self.view as! CanvasView).clear()
-            self.deleteLastImageData()
+            self.saveCurrentSketch()
+            self.clearCanvas()
         }
         
         let clearCanvas = UIAlertAction(title: "Clear canvas", style: .destructive) { (action) in
-            (self.view as! CanvasView).clear()
-            self.deleteLastImageData()
+            self.clearCanvas()
         }
         
         alert.addAction(saveSketch)
@@ -339,5 +235,9 @@ final class ViewController: UIViewController {
         let popover = shareSheet.popoverPresentationController
         popover?.sourceView = sender
         popover?.sourceRect = CGRect(x: 0, y: 5, width: 32, height: 32)
+    }
+    
+    @IBAction func unwindSegue(sender: UIStoryboardSegue) {
+        // Empty segue to allow unwinding from ImageGalleryViewController
     }
 }

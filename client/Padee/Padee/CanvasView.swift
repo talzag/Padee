@@ -8,6 +8,17 @@
 
 import UIKit
 
+// When passing the [Path] back & forth to other objects,
+// nothing needs to be adjusted as CoreGraphics will be 
+// drawing in the same coordinate system each time; i.e.
+// if a user draws an arrow pointing "up" (pointing towards
+// the top of the device), when another CanvasView instance
+// is given those paths to restore the sketch, the graphics
+// context won't have to be rotated.
+// 
+// However, when rendering the sketch as a UIImage, the sketch
+// will need to rotated so that it still appears right-side up.
+
 final class CanvasView: UIView {
     
     var currentTool: Tool = Tool.Pen
@@ -18,7 +29,19 @@ final class CanvasView: UIView {
                 return nil
             }
 
-            return UIImage(cgImage: image)
+            UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size, false, 0.0)
+            let context = UIGraphicsGetCurrentContext()
+            
+            UIColor.white.setFill()
+            context?.fill(UIScreen.main.bounds)
+            
+            context?.draw(image, in: UIScreen.main.bounds)
+            context?.rotate(by: .pi)
+            let generatedImage = UIGraphicsGetImageFromCurrentImageContext()
+            
+            UIGraphicsEndImageContext()
+            
+            return generatedImage
         }
         
         set {

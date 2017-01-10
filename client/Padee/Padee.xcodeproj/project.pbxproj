@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E336A5DE1E232FB7002F1C5B /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = E336A5DD1E232FB7002F1C5B /* Notifications.swift */; };
 		E3402EFA1D24BAF7009F0312 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3402EF91D24BAF7009F0312 /* CanvasView.swift */; };
+		E362D26E1DCE96C400B6C3A1 /* FileManagerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */; };
 		E37AB8BC1D4D1A060068A637 /* PaletteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */; };
 		E37AB8BE1D4D201F0068A637 /* PaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37AB8BD1D4D201F0068A637 /* PaletteView.swift */; };
 		E37AB8C01D4D20470068A637 /* ColorWellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37AB8BF1D4D20470068A637 /* ColorWellView.swift */; };
@@ -21,6 +23,9 @@
 		E39EDB071D10677000D2CA69 /* PadeeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39EDB061D10677000D2CA69 /* PadeeTests.swift */; };
 		E39EDB121D10677000D2CA69 /* PadeeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39EDB111D10677000D2CA69 /* PadeeUITests.swift */; };
 		E3B672B11D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */; };
+		E3F20D831DD79C6B005911A5 /* Sketch.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D821DD79C6B005911A5 /* Sketch.swift */; };
+		E3F20D851DD79C92005911A5 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D841DD79C92005911A5 /* Point.swift */; };
+		E3F20D871DD79CF8005911A5 /* UIViewController+FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */; };
 		E3FDB3E91D7FAA6D0083B0AB /* NSCoder+CGColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */; };
 /* End PBXBuildFile section */
 
@@ -42,7 +47,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E336A5DD1E232FB7002F1C5B /* Notifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		E3402EF91D24BAF7009F0312 /* CanvasView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
+		E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileManagerController.swift; sourceTree = "<group>"; };
 		E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaletteViewController.swift; sourceTree = "<group>"; };
 		E37AB8BD1D4D201F0068A637 /* PaletteView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaletteView.swift; sourceTree = "<group>"; };
 		E37AB8BF1D4D20470068A637 /* ColorWellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorWellView.swift; sourceTree = "<group>"; };
@@ -62,6 +69,9 @@
 		E39EDB111D10677000D2CA69 /* PadeeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadeeUITests.swift; sourceTree = "<group>"; };
 		E39EDB131D10677000D2CA69 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageGalleryCollectionViewController.swift; sourceTree = "<group>"; };
+		E3F20D821DD79C6B005911A5 /* Sketch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sketch.swift; sourceTree = "<group>"; };
+		E3F20D841DD79C92005911A5 /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
+		E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+FileManager.swift"; sourceTree = "<group>"; };
 		E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSCoder+CGColor.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -115,14 +125,19 @@
 			children = (
 				E39EDAEE1D10676F00D2CA69 /* AppDelegate.swift */,
 				E39EDAF01D10676F00D2CA69 /* ViewController.swift */,
-				E3402EF91D24BAF7009F0312 /* CanvasView.swift */,
-				E37EC9771D4E54F400151587 /* Path.swift */,
-				E3923D5D1D18CD7E00DA946C /* Tools.swift */,
 				E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */,
+				E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */,
+				E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */,
 				E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */,
+				E336A5DD1E232FB7002F1C5B /* Notifications.swift */,
+				E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */,
+				E3402EF91D24BAF7009F0312 /* CanvasView.swift */,
 				E37AB8BF1D4D20470068A637 /* ColorWellView.swift */,
 				E37AB8BD1D4D201F0068A637 /* PaletteView.swift */,
-				E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */,
+				E3923D5D1D18CD7E00DA946C /* Tools.swift */,
+				E3F20D821DD79C6B005911A5 /* Sketch.swift */,
+				E37EC9771D4E54F400151587 /* Path.swift */,
+				E3F20D841DD79C92005911A5 /* Point.swift */,
 				E39EDAF81D10676F00D2CA69 /* Assets.xcassets */,
 				E39EDAF21D10676F00D2CA69 /* Main.storyboard */,
 				E39EDAFA1D10676F00D2CA69 /* LaunchScreen.storyboard */,
@@ -212,7 +227,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Daniel Strokis";
 				TargetAttributes = {
 					E39EDAEA1D10676F00D2CA69 = {
@@ -284,15 +299,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E336A5DE1E232FB7002F1C5B /* Notifications.swift in Sources */,
 				E37AB8C01D4D20470068A637 /* ColorWellView.swift in Sources */,
 				E39EDAF11D10676F00D2CA69 /* ViewController.swift in Sources */,
 				E3FDB3E91D7FAA6D0083B0AB /* NSCoder+CGColor.swift in Sources */,
 				E37AB8BC1D4D1A060068A637 /* PaletteViewController.swift in Sources */,
+				E3F20D851DD79C92005911A5 /* Point.swift in Sources */,
 				E39EDAEF1D10676F00D2CA69 /* AppDelegate.swift in Sources */,
 				E3402EFA1D24BAF7009F0312 /* CanvasView.swift in Sources */,
+				E362D26E1DCE96C400B6C3A1 /* FileManagerController.swift in Sources */,
 				E3B672B11D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift in Sources */,
 				E37EC9781D4E54F400151587 /* Path.swift in Sources */,
+				E3F20D831DD79C6B005911A5 /* Sketch.swift in Sources */,
 				E37AB8BE1D4D201F0068A637 /* PaletteView.swift in Sources */,
+				E3F20D871DD79CF8005911A5 /* UIViewController+FileManager.swift in Sources */,
 				E3923D5E1D18CD7E00DA946C /* Tools.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -362,8 +382,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -371,7 +393,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -390,6 +412,8 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -408,8 +432,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -417,7 +443,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -428,6 +454,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
