@@ -229,7 +229,7 @@ final class ViewController: UIViewController {
     @IBAction func exportCurrentImage(_ sender: UIButton) {
         guard let image = (view as! CanvasView).canvasImage else { return }
         
-        let shareSheet = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+        let shareSheet = UIActivityViewController(activityItems: [image], applicationActivities: [PNGExportActivity()])
         present(shareSheet, animated: true, completion: nil)
        
         let popover = shareSheet.popoverPresentationController
@@ -240,4 +240,6 @@ final class ViewController: UIViewController {
     @IBAction func unwindSegue(sender: UIStoryboardSegue) {
         // Empty segue to allow unwinding from ImageGalleryViewController
     }
+    
+    
 }

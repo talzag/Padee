@@ -11,23 +11,23 @@ import UIKit
 class ExportActivity: UIActivity {
     var image : UIImage!
     
-    override func activityType() -> String? {
-        return "com.dstrokis.Padee.export"
+    override var activityType: UIActivityType? {
+        return UIActivityType("com.dstrokis.Padee.export")
     }
     
-    override func activityTitle() -> String? {
+    override var activityTitle: String? {
         return nil
     }
     
-    override func activityImage() -> UIImage? {
+    override var activityImage: UIImage? {
         return nil
     }
     
-    override class func activityCategory() -> UIActivityCategory {
-        return .Action
+    override class var activityCategory: UIActivityCategory {
+        return .action
     }
     
-    override func canPerformWithActivityItems(activityItems: [AnyObject]) -> Bool {
+    override func canPerform(withActivityItems activityItems: [Any]) -> Bool {
         guard activityItems.count == 1,
               let _ = activityItems.first as? UIImage else {
             return false
@@ -36,61 +36,67 @@ class ExportActivity: UIActivity {
         return true
     }
     
-    override func prepareWithActivityItems(activityItems: [AnyObject]) {
+    override func prepare(withActivityItems activityItems: [Any]) {
         image = activityItems.first! as! UIImage
     }
 }
 
 class PNGExportActivity : ExportActivity {
-    override func activityType() -> String? {
-        return "com.dstrokis.Padee.export.png"
+    override var activityType: UIActivityType? {
+        return UIActivityType("com.dstrokis.Padee.export.png")
     }
     
-    override func activityTitle() -> String? {
-        return "Export PNG"
+    override var activityTitle: String? {
+        return "Save as PNG"
     }
     
-    override func activityImage() -> UIImage? {
+    override var activityImage: UIImage? {
         return UIImage(named: "PNG")
     }
     
-    override func performActivity() {
-//        let imageData = UIImagePNGRepresentation(image)
+    override func perform() {
+        if let imageData = UIImagePNGRepresentation(image) {
+            image = UIImage(data: imageData)
+            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        }
     }
 }
 
 class JPGExportActivity: ExportActivity {
-    override func activityType() -> String? {
-        return "com.dstrokis.Padee.export.jpg"
+    override var activityType: UIActivityType? {
+        return UIActivityType("com.dstrokis.Padee.export.jpg")
     }
     
-    override func activityTitle() -> String? {
-        return "Export JPG"
+    override var activityTitle: String? {
+        return "Save as JPG"
     }
     
-    override func activityImage() -> UIImage? {
+    override var activityImage: UIImage? {
         return UIImage(named: "JPG")
     }
     
-    override func performActivity() {
-//        let imageDate = UIImageJPEGRepresentation(image, 1.0)
+    override func perform() {
+        if let imageData = UIImageJPEGRepresentation(image, 1.0) {
+            image = UIImage(data: imageData)
+            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        }
     }
 }
 
 class PDFExportActivity: ExportActivity {
-    override func activityType() -> String? {
-        return "com.dstrokis.Padee.export.pdf"
+    override var activityType: UIActivityType? {
+        return UIActivityType("com.dstrokis.Padee.export.pdf")
     }
     
-    override func activityTitle() -> String? {
-        return "Export PDF"
+    override var activityTitle: String? {
+        return "Save as PDF"
     }
     
-    override func activityImage() -> UIImage? {
+    override var activityImage: UIImage? {
         return UIImage(named: "PDF")
     }
     
-    override func performActivity() {
+    override func perform() {
         
     }
 }
