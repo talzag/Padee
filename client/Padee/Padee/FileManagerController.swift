@@ -139,14 +139,36 @@ final class FileManagerController: NSObject {
     }
     
     func rename(sketch: Sketch, to newName: String) {
-        let oldName = sketch.name ?? ""
-        sketch.name = newName
-        NotificationCenter.default.post(name: .FileManagerDidRenameSketch,
-                                        object: self,
-                                        userInfo: ["oldName": oldName, "newName": newName])
+        guard let oldName = sketch.name else {
+            fatalError("Trying to call rename(_:,_:) with a Sketch that hasn't been named yet.")
+        }
         
-        // find sketch & image with oldName
-        // update sketch & image with newName
+        let originalURL = archiveURLFor(sketch)
+        
+        sketch.name = newName
+        let newURL = archiveURLFor(sketch)
+        
+        let oldSketchURL = originalURL.appendingPathExtension(sketchPathExtension)
+        let oldPNGURL = originalURL.appendingPathExtension(pngPathExtension)
+        
+        do {
+            if fileManager.fileExists(atPath: oldSketchURL.path) {
+                let newSketchURL = newURL.appendingPathExtension(sketchPathExtension)
+                try fileManager.moveItem(at: oldSketchURL, to: newSketchURL)
+            }
+            
+            if fileManager.fileExists(atPath: oldPNGURL.path) {
+                let newPNGURL = newURL.appendingPathExtension(pngPathExtension)
+                try fileManager.moveItem(at: oldPNGURL, to: newPNGURL)
+            }
+            
+            NotificationCenter.default.post(name: .FileManagerDidRenameSketch,
+                                            object: self,
+                                            userInfo: ["oldName": oldName, "newName": newName])
+        
+        } catch {
+            fatalError(error.localizedDescription)
+        }
     }
     
     private func deleteSketch(_ sketch: Sketch) {

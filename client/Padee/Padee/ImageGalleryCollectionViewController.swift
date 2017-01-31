@@ -199,7 +199,10 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         }
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        let done = UIAlertAction(title: "Done", style: .default) { [unowned alertController] (action) in
+        let done = UIAlertAction(title: "Done", style: .default) { [unowned alertController, supplementaryView] (action) in
+            let newName = alertController.textFields?.first?.text
+            self.selectedSketch?.name = newName
+            supplementaryView.nameLabel.text = newName
             alertController.textFields?.first!.resignFirstResponder()
         }
         
