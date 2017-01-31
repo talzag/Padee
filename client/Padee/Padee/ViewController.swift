@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreGraphics
+import StoreKit
 
 final class ViewController: UIViewController {
 
@@ -229,10 +230,16 @@ final class ViewController: UIViewController {
     @IBAction func exportCurrentImage(_ sender: UIButton) {
         guard let image = (view as! CanvasView).canvasImage else { return }
         
-        let shareSheet = UIActivityViewController(activityItems: [image], applicationActivities: [PNGExportActivity()])
-        present(shareSheet, animated: true, completion: nil)
+        let shareViewController = UIActivityViewController(activityItems: [image], applicationActivities: [PNGExportActivity()])
+
+        // TODO: Uncomment when iOS 10.3 goes public
+        // shareViewController.completionWithItemsHandler = { (items, completed, returnedItems, error) in
+        //     SKStoreReviewController.requestReview()
+        // }
+        
+        present(shareViewController, animated: true, completion: nil)
        
-        let popover = shareSheet.popoverPresentationController
+        let popover = shareViewController.popoverPresentationController
         popover?.sourceView = sender
         popover?.sourceRect = CGRect(x: 0, y: 5, width: 32, height: 32)
     }
@@ -240,6 +247,4 @@ final class ViewController: UIViewController {
     @IBAction func unwindSegue(sender: UIStoryboardSegue) {
         // Empty segue to allow unwinding from ImageGalleryViewController
     }
-    
-    
 }
