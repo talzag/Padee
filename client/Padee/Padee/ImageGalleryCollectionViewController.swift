@@ -1,4 +1,3 @@
-///Users/dstrokis/Developer/Padee/Padee/Padee/ImageGalleryCollectionViewController.swift
 //  ImageGalleryCollectionViewController.swift
 //  Padee
 //
@@ -14,12 +13,16 @@ fileprivate let reuseIdentifier = "ImageThumbnailCell"
 final class ThumbnailImageCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var selectedImageView: UIImageView!
-    @IBOutlet weak var imageNameLabel: UILabel!
 }
 
-final class ImageGalleryCollectionViewController: UICollectionViewController {
+final class SketchNameSupplementaryView: UICollectionReusableView {
+    @IBOutlet weak var nameLabel: UILabel!
+}
 
-    var thumbnails = [(Sketch, UIImage?)]()
+final class ImageGalleryCollectionViewController: UICollectionViewController, UITextFieldDelegate {
+
+    var selectedSketch: Sketch?
+    var thumbnails = [(Sketch?, UIImage?)]()
     var noSketchesMessageLabel: UILabel?
     
     override func viewDidLoad() {
@@ -64,16 +67,19 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     
     // MARK: UICollectionViewDataSource
 
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return thumbnails.count
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 1
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! ThumbnailImageCollectionViewCell
     
-        let thumbnail = thumbnails[indexPath.row]
+        let thumbnail = thumbnails[indexPath.section]
         cell.imageView.image = thumbnail.1
-        cell.imageNameLabel.text = thumbnail.0.name
         
         if !isEditing {
             cell.selectedImageView.alpha = 0.0
@@ -81,12 +87,25 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     
         return cell
     }
+    
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let sketchNameView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "SketchNameView", for: indexPath) as! SketchNameSupplementaryView
+        
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(renameSketch))
+        sketchNameView.addGestureRecognizer(tapRecognizer)
+        
+        let thumbnail = thumbnails[indexPath.section]
+        sketchNameView.nameLabel.text = thumbnail.0?.name
+        
+        return sketchNameView
+    }
 
     // MARK: UICollectionViewDelegate
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath) as? ThumbnailImageCollectionViewCell
+        
         if isEditing {
-            let cell = collectionView.cellForItem(at: indexPath) as? ThumbnailImageCollectionViewCell
             cell?.selectedImageView.alpha = 1.0
             
             updateStateForLeftToolBarItem()
@@ -111,7 +130,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     // MARK: UIPasteboard Functionality
     
     override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        // TODO: Fix UIPasteboard-related commands
+        // FIXME: UIPasteboard-related commands
         return false
     }
     
@@ -123,7 +142,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-        let sketch = thumbnails[indexPath.row]
+        let sketch = thumbnails[indexPath.section]
         UIPasteboard.general.setValue(sketch.1!, forPasteboardType: kUTTypeImage as String)
     }
     
@@ -139,8 +158,27 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
             return
         }
         
-        let sketch = thumbnails[indexPath.row].0
+        guard let sketch = thumbnails[indexPath.section].0 else {
+            fatalError("Sketch should not be nil")
+        }
+        
         destination.restore(sketch, savingCurrentSketch: true)
+    }
+    
+    // MARK: UITextField delegate
+    
+    func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
+        guard let newName = textField.text?.trimmingCharacters(in: .whitespaces) else {
+            return
+        }
+        
+        guard reason == .committed,
+              !newName.isEmpty,
+              newName != selectedSketch?.name else {
+            return
+        }
+        
+        fileManagerController.rename(sketch: selectedSketch!, to: newName)
     }
     
     // MARK: Helper methods
@@ -149,6 +187,34 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         dismiss(animated: true, completion: nil)
     }
     
+    func renameSketch(_ sender: UITapGestureRecognizer) {
+        guard let supplementaryView = sender.view as? SketchNameSupplementaryView else {
+            fatalError("Expected sender to be instance of SketchNameSupplementaryView. Instead got \(sender.view.self)")
+        }
+        
+        selectedSketch =  thumbnails.first(where: { $0.0?.name == supplementaryView.nameLabel.text })?.0
+        
+        let alertController = UIAlertController(title: "Rename Sketch", message: nil, preferredStyle: .alert)
+        
+        alertController.addTextField { [unowned self] (textField) in
+            textField.delegate = self
+            textField.text = supplementaryView.nameLabel.text
+        }
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let done = UIAlertAction(title: "Done", style: .default) { [unowned alertController, supplementaryView] (action) in
+            let newName = alertController.textFields?.first?.text
+            self.selectedSketch?.name = newName
+            supplementaryView.nameLabel.text = newName
+            alertController.textFields?.first!.resignFirstResponder()
+        }
+        
+        alertController.addAction(cancel)
+        alertController.addAction(done)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+
     func deleteSketches(_ sender: AnyObject) {
         guard let indexPaths = collectionView?.indexPathsForSelectedItems else {
             return
@@ -159,9 +225,9 @@ final class ImageGalleryCollectionViewController: UICollectionViewController {
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         let deleteSketches = UIAlertAction(title: "Delete \(indexPaths.count) \(pluralized)", style: .destructive) { (action) in
-            let sketches = indexPaths.map { indexPath -> Sketch in
-                let name = self.thumbnails[indexPath.row].0
-                self.thumbnails[indexPath.row].1 = nil
+            let sketches = indexPaths.map { indexPath -> Sketch? in
+                let name = self.thumbnails[indexPath.section].0
+                self.thumbnails[indexPath.section].1 = nil
                 return name
             }
             

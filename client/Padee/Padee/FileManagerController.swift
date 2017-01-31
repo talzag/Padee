@@ -67,19 +67,20 @@ final class FileManagerController: NSObject {
         return sketch
     }
     
-    func archivedSketches() throws -> [Sketch] {
-        var sketches = [Sketch]()
+    func archivedSketches() throws -> [Sketch?] {
+        var sketches = [Sketch?]()
         do {
             let pathURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter({ $0.hasSuffix(sketchPathExtension) }).sorted(by: >)
             
-            let mapped = pathURLs.map { (path: String) -> Sketch in
+            let mapped = pathURLs.map { (path: String) -> Sketch? in
                 let ext = path.range(of: ".\(self.sketchPathExtension)")!
                 let name = path.substring(to: ext.lowerBound)
-                var sketch = Sketch(withName: name)
+                var sketch: Sketch?
                 
                 if let archiveData = try? Data(contentsOf: sketchesDirectoryURL.appendingPathComponent(path)),
                    let archive = NSKeyedUnarchiver.unarchiveObject(with: archiveData) as? Sketch {
                     sketch = archive
+                    sketch?.name = name
                 }
                 
                 return sketch
@@ -110,12 +111,14 @@ final class FileManagerController: NSObject {
         return images
     }
     
-    func deleteSketches(_ sketches: [Sketch]) {
+    func deleteSketches(_ sketches: [Sketch?]) {
         var sketchNames = [String]()
         
         for sketch in sketches {
-            sketchNames.append(sketch.name)
-            deleteSketch(sketch)
+            if let sketch = sketch {
+                sketchNames.append(sketch.name)
+                deleteSketch(sketch)
+            }
         }
         
         NotificationCenter.default.post(name: .FileManagerDidDeleteSketches,
@@ -136,6 +139,39 @@ final class FileManagerController: NSObject {
         sketch.paths.append(contentsOf: paths)
         
         return sketch
+    }
+    
+    func rename(sketch: Sketch, to newName: String) {
+        guard let oldName = sketch.name else {
+            fatalError("Trying to call rename(_:,_:) with a Sketch that hasn't been named yet.")
+        }
+        
+        let originalURL = archiveURLFor(sketch)
+        
+        sketch.name = newName
+        let newURL = archiveURLFor(sketch)
+        
+        let oldSketchURL = originalURL.appendingPathExtension(sketchPathExtension)
+        let oldPNGURL = originalURL.appendingPathExtension(pngPathExtension)
+        
+        do {
+            if fileManager.fileExists(atPath: oldSketchURL.path) {
+                let newSketchURL = newURL.appendingPathExtension(sketchPathExtension)
+                try fileManager.moveItem(at: oldSketchURL, to: newSketchURL)
+            }
+            
+            if fileManager.fileExists(atPath: oldPNGURL.path) {
+                let newPNGURL = newURL.appendingPathExtension(pngPathExtension)
+                try fileManager.moveItem(at: oldPNGURL, to: newPNGURL)
+            }
+            
+            NotificationCenter.default.post(name: .FileManagerDidRenameSketch,
+                                            object: self,
+                                            userInfo: ["oldName": oldName, "newName": newName])
+        
+        } catch {
+            fatalError(error.localizedDescription)
+        }
     }
     
     private func deleteSketch(_ sketch: Sketch) {
