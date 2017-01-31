@@ -67,19 +67,20 @@ final class FileManagerController: NSObject {
         return sketch
     }
     
-    func archivedSketches() throws -> [Sketch] {
-        var sketches = [Sketch]()
+    func archivedSketches() throws -> [Sketch?] {
+        var sketches = [Sketch?]()
         do {
             let pathURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter({ $0.hasSuffix(sketchPathExtension) }).sorted(by: >)
             
-            let mapped = pathURLs.map { (path: String) -> Sketch in
+            let mapped = pathURLs.map { (path: String) -> Sketch? in
                 let ext = path.range(of: ".\(self.sketchPathExtension)")!
                 let name = path.substring(to: ext.lowerBound)
-                var sketch = Sketch(withName: name)
+                var sketch: Sketch?
                 
                 if let archiveData = try? Data(contentsOf: sketchesDirectoryURL.appendingPathComponent(path)),
                    let archive = NSKeyedUnarchiver.unarchiveObject(with: archiveData) as? Sketch {
                     sketch = archive
+                    sketch?.name = name
                 }
                 
                 return sketch
@@ -110,12 +111,14 @@ final class FileManagerController: NSObject {
         return images
     }
     
-    func deleteSketches(_ sketches: [Sketch]) {
+    func deleteSketches(_ sketches: [Sketch?]) {
         var sketchNames = [String]()
         
         for sketch in sketches {
-            sketchNames.append(sketch.name)
-            deleteSketch(sketch)
+            if let sketch = sketch {
+                sketchNames.append(sketch.name)
+                deleteSketch(sketch)
+            }
         }
         
         NotificationCenter.default.post(name: .FileManagerDidDeleteSketches,

@@ -22,7 +22,7 @@ final class SketchNameSupplementaryView: UICollectionReusableView {
 final class ImageGalleryCollectionViewController: UICollectionViewController, UITextFieldDelegate {
 
     var selectedSketch: Sketch?
-    var thumbnails = [(Sketch, UIImage?)]()
+    var thumbnails = [(Sketch?, UIImage?)]()
     var noSketchesMessageLabel: UILabel?
     
     override func viewDidLoad() {
@@ -95,7 +95,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         sketchNameView.addGestureRecognizer(tapRecognizer)
         
         let thumbnail = thumbnails[indexPath.section]
-        sketchNameView.nameLabel.text = thumbnail.0.name
+        sketchNameView.nameLabel.text = thumbnail.0?.name
         
         return sketchNameView
     }
@@ -158,7 +158,10 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
             return
         }
         
-        let sketch = thumbnails[indexPath.section].0
+        guard let sketch = thumbnails[indexPath.section].0 else {
+            fatalError("Sketch should not be nil")
+        }
+        
         destination.restore(sketch, savingCurrentSketch: true)
     }
     
@@ -189,7 +192,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
             fatalError("Expected sender to be instance of SketchNameSupplementaryView. Instead got \(sender.view.self)")
         }
         
-        selectedSketch =  thumbnails.first(where: { $0.0.name == supplementaryView.nameLabel.text! })!.0
+        selectedSketch =  thumbnails.first(where: { $0.0?.name == supplementaryView.nameLabel.text })?.0
         
         let alertController = UIAlertController(title: "Rename Sketch", message: nil, preferredStyle: .alert)
         
@@ -222,7 +225,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         let deleteSketches = UIAlertAction(title: "Delete \(indexPaths.count) \(pluralized)", style: .destructive) { (action) in
-            let sketches = indexPaths.map { indexPath -> Sketch in
+            let sketches = indexPaths.map { indexPath -> Sketch? in
                 let name = self.thumbnails[indexPath.section].0
                 self.thumbnails[indexPath.section].1 = nil
                 return name
