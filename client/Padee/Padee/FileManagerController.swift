@@ -138,6 +138,17 @@ final class FileManagerController: NSObject {
         return sketch
     }
     
+    func rename(sketch: Sketch, to newName: String) {
+        let oldName = sketch.name ?? ""
+        sketch.name = newName
+        NotificationCenter.default.post(name: .FileManagerDidRenameSketch,
+                                        object: self,
+                                        userInfo: ["oldName": oldName, "newName": newName])
+        
+        // find sketch & image with oldName
+        // update sketch & image with newName
+    }
+    
     private func deleteSketch(_ sketch: Sketch) {
         let sketchPath = archiveURLFor(sketch).appendingPathExtension(sketchPathExtension).path
         let imagePath = archiveURLFor(sketch).appendingPathExtension(pngPathExtension).path
