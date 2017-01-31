@@ -163,18 +163,19 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     }
     
     // MARK: UITextField delegate
-    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-        guard let _ =  textField.text else {
-            return false
-        }
-        
-        return true
-    }
     
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
-        if reason == .committed {
-            fileManagerController.rename(sketch: selectedSketch!, to: textField.text!)
+        guard let newName = textField.text?.trimmingCharacters(in: .whitespaces) else {
+            return
         }
+        
+        guard reason == .committed,
+              !newName.isEmpty,
+              newName != selectedSketch?.name else {
+            return
+        }
+        
+        fileManagerController.rename(sketch: selectedSketch!, to: newName)
     }
     
     // MARK: Helper methods
@@ -184,10 +185,6 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     }
     
     func renameSketch(_ sender: UITapGestureRecognizer) {
-        if !isEditing {
-            return
-        }
-        
         guard let supplementaryView = sender.view as? SketchNameSupplementaryView else {
             fatalError("Expected sender to be instance of SketchNameSupplementaryView. Instead got \(sender.view.self)")
         }
