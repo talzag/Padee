@@ -35,6 +35,14 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         } else {
             addNoSketchesMessageLabel()
         }
+        
+        NotificationCenter.default.addObserver(forName: .FileManagerDidDeleteSketches, object: nil, queue: nil) { (notification) in
+            guard let names = notification.userInfo?["sketches"] as? [String] else {
+                return
+            }
+            
+            self.remove(namedItems: names, from: self.collectionView!)
+        }
     }
     
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -226,25 +234,11 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         
         let deleteSketches = UIAlertAction(title: "Delete \(indexPaths.count) \(pluralized)", style: .destructive) { (action) in
             let sketches = indexPaths.map { indexPath -> Sketch? in
-                let name = self.thumbnails[indexPath.section].0
-                self.thumbnails[indexPath.section].1 = nil
-                return name
+                let sektch = self.thumbnails[indexPath.section].0
+                return sektch
             }
-            
-            self.thumbnails = self.thumbnails.filter { $0.1 != nil }
             
             self.fileManagerController.deleteSketches(sketches)
-            
-            self.collectionView?.performBatchUpdates({ 
-                self.collectionView?.deleteItems(at: indexPaths)
-            }) { (done) in
-                self.isEditing = false
-                
-                if done && self.thumbnails.count == 0 {
-                    self.addNoSketchesMessageLabel()
-                    self.navigationItem.rightBarButtonItem = nil
-                }
-            }
         }
         
         alert.addAction(deleteSketches)
@@ -277,5 +271,40 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         }
         
         navigationItem.leftBarButtonItem?.isEnabled = indexPaths.count > 0
+    }
+    
+    private func remove(namedItems names: [String], from collectionView: UICollectionView) {
+        var indexes = [Int]()
+        for x in 0..<self.thumbnails.count {
+            if let name = self.thumbnails[x].0?.name {
+                if names.contains(name) {
+                    indexes.append(x)
+                }
+            }
+        }
+        
+        let indexSet = IndexSet(indexes)
+        
+        self.thumbnails = self.thumbnails.filter {
+            guard let name = $0.0?.name else {
+                fatalError()
+            }
+            
+            let delete = names.contains(name)
+            
+            
+            return !delete
+        }
+        
+        collectionView.performBatchUpdates({
+            collectionView.deleteSections(indexSet)
+        }) { (done) in
+            self.isEditing = false
+            
+            if done && self.thumbnails.count == 0 {
+                self.addNoSketchesMessageLabel()
+                self.navigationItem.rightBarButtonItem = nil
+            }
+        }
     }
 }
