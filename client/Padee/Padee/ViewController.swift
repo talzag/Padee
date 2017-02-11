@@ -10,7 +10,7 @@ import UIKit
 import CoreGraphics
 import StoreKit
 
-final class ViewController: UIViewController {
+final class ViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet var toolButtons: [UIButton]!
     
@@ -71,6 +71,25 @@ final class ViewController: UIViewController {
         guard paths.count > 0 else {
             return
         }
+        
+//        let alertController = UIAlertController(title: "Rename Sketch", message: nil, preferredStyle: .alert)
+//        
+//        alertController.addTextField { [unowned self] (textField) in
+//            textField.delegate = self
+//            textField.text = self.currentSketch.name
+//        }
+//        
+//        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+//        let done = UIAlertAction(title: "Done", style: .default) { [unowned alertController] (action) in
+//            let newName = alertController.textFields?.first?.text
+//            self.currentSketch.name = newName
+//            alertController.textFields?.first!.resignFirstResponder()
+//        }
+//        
+//        alertController.addAction(cancel)
+//        alertController.addAction(done)
+//        
+//        present(alertController, animated: true, completion: nil)
         
         currentSketch.paths = paths
         let image = (view as! CanvasView).canvasImage
@@ -230,11 +249,13 @@ final class ViewController: UIViewController {
         guard let image = (view as! CanvasView).canvasImage else { return }
         
         let shareViewController = UIActivityViewController(activityItems: [image], applicationActivities: [PNGExportActivity()])
-
+        
         // TODO: Uncomment when iOS 10.3 goes public
-        // shareViewController.completionWithItemsHandler = { (items, completed, returnedItems, error) in
-        //     SKStoreReviewController.requestReview()
-        // }
+//        if #available(iOS 10.3, *) {
+//            shareViewController.completionWithItemsHandler = { (items, completed, returnedItems, error) in
+//                SKStoreReviewController.requestReview()
+//            }
+//        }
         
         present(shareViewController, animated: true, completion: nil)
        
