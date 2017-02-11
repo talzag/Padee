@@ -36,7 +36,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
             addNoSketchesMessageLabel()
         }
         
-        NotificationCenter.default.addObserver(forName: .FileManagerDidDeleteSketches, object: nil, queue: nil) { (notification) in
+        NotificationCenter.default.addObserver(forName: .FileManagerDidDeleteSketches, object: nil, queue: nil) { [unowned self] (notification) in
             guard let names = notification.userInfo?["sketches"] as? [String] else {
                 return
             }

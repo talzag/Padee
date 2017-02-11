@@ -33,10 +33,8 @@ extension NSCoder {
             colors.append(color)
         }
         
-        let color = withUnsafePointer(to: &colors, { (ptr) -> CGColor in
-            let colorSpace = CGColorSpaceCreateDeviceRGB()
-            return CGColor(colorSpace: colorSpace, components: ptr.pointee)!
-        })
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let color = CGColor(colorSpace: colorSpace, components: colors)!
         
         return color
     }

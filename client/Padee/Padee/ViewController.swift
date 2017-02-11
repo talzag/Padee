@@ -57,10 +57,9 @@ final class ViewController: UIViewController {
             let sketches = try fileManagerController.archivedSketches()
             let images = try fileManagerController.renderedImages()
             
-            let zipped = zip(sketches, images)
-            let thumbnails = zipped.map { ($0, $1) }
+            let thumbnails = zip(sketches, images)
             if let navController =  segue.destination as? UINavigationController {
-                (navController.viewControllers.first! as! ImageGalleryCollectionViewController).thumbnails = thumbnails
+                (navController.viewControllers.first! as! ImageGalleryCollectionViewController).thumbnails = Array(thumbnails)
             }
         } catch let error {
             print(error.localizedDescription)
