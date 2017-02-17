@@ -10,16 +10,16 @@ import UIKit
 
 @UIApplicationMain
 final class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    
     var window: UIWindow?
     let fileManager = FileManagerController()
     
-    private let newSketchShortcutType = "new-sketch"
+    private let newSketchShortcutType = "com.dstrokis.Padee.new-sketch"
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
 
         if let shortcutItem = launchOptions?[.shortcutItem] as? UIApplicationShortcutItem {
-            if shortcutItem.type.components(separatedBy: ".").last == newSketchShortcutType  {
+            if shortcutItem.type == newSketchShortcutType  {
                 startNewSketchForShortcutAction()
                 return false
             }
@@ -37,7 +37,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
-        if shortcutItem.type.components(separatedBy: ".").last == newSketchShortcutType {
+        if shortcutItem.type == newSketchShortcutType {
             startNewSketchForShortcutAction()
         }
     }
