@@ -250,12 +250,11 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         
         let shareViewController = UIActivityViewController(activityItems: [image], applicationActivities: [PNGExportActivity()])
         
-        // TODO: Uncomment when iOS 10.3 goes public
-//        if #available(iOS 10.3, *) {
-//            shareViewController.completionWithItemsHandler = { (items, completed, returnedItems, error) in
-//                SKStoreReviewController.requestReview()
-//            }
-//        }
+        if #available(iOS 10.3, *) {
+            shareViewController.completionWithItemsHandler = { (items, completed, returnedItems, error) in
+                SKStoreReviewController.requestReview()
+            }
+        }
         
         present(shareViewController, animated: true, completion: nil)
        

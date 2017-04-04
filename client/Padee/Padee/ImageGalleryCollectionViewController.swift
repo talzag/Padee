@@ -19,6 +19,7 @@ final class SketchNameSupplementaryView: UICollectionReusableView {
     @IBOutlet weak var nameLabel: UILabel!
 }
 
+// , UIViewControllerPreviewing, UIViewControllerPreviewingDelegate
 final class ImageGalleryCollectionViewController: UICollectionViewController, UITextFieldDelegate {
 
     var selectedSketch: Sketch?
@@ -189,6 +190,34 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         fileManagerController.rename(sketch: selectedSketch!, to: newName)
     }
     
+    // MARK: UIViewControllerPreviewing
+    
+//    var sourceRect: CGRect {
+//        
+//    }
+//    
+//    var previewingGestureRecognizerForFailureRelationship: UIGestureRecognizer {
+//        
+//    }
+//    
+//    var delegate: UIViewControllerPreviewingDelegate {
+//        
+//    }
+//    
+//    var sourceView: UIView {
+//        
+//    }
+    
+    // MARK: UIViewControllerPreviewingDelegate 
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        return nil
+    }
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        
+    }
+    
     // MARK: Helper methods
     
     @IBAction func didFinishViewingImageGallery(_ sender: AnyObject) {
@@ -197,7 +226,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     
     func renameSketch(_ sender: UITapGestureRecognizer) {
         guard let supplementaryView = sender.view as? SketchNameSupplementaryView else {
-            fatalError("Expected sender to be instance of SketchNameSupplementaryView. Instead got \(sender.view.self)")
+            fatalError("Expected sender to be instance of SketchNameSupplementaryView. Instead got \(String(describing: sender.view.self))")
         }
         
         selectedSketch =  thumbnails.first(where: { $0.0?.name == supplementaryView.nameLabel.text })?.0
