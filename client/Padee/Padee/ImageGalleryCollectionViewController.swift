@@ -19,8 +19,7 @@ final class SketchNameSupplementaryView: UICollectionReusableView {
     @IBOutlet weak var nameLabel: UILabel!
 }
 
-// , UIViewControllerPreviewing, UIViewControllerPreviewingDelegate
-final class ImageGalleryCollectionViewController: UICollectionViewController, UITextFieldDelegate {
+final class ImageGalleryCollectionViewController: UICollectionViewController, UITextFieldDelegate, UIViewControllerPreviewingDelegate {
 
     var selectedSketch: Sketch?
     var thumbnails = [(Sketch?, UIImage?)]()
@@ -37,12 +36,8 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
             addNoSketchesMessageLabel()
         }
         
-        NotificationCenter.default.addObserver(forName: .FileManagerDidDeleteSketches, object: nil, queue: nil) { [unowned self] (notification) in
-            guard let names = notification.userInfo?["sketches"] as? [String] else {
-                return
-            }
-            
-            self.remove(namedItems: names, from: self.collectionView!)
+        if traitCollection.forceTouchCapability == .available {
+            registerForPreviewing(with: self, sourceView: view)
         }
     }
     
@@ -190,32 +185,33 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         fileManagerController.rename(sketch: selectedSketch!, to: newName)
     }
     
-    // MARK: UIViewControllerPreviewing
-    
-//    var sourceRect: CGRect {
-//        
-//    }
-//    
-//    var previewingGestureRecognizerForFailureRelationship: UIGestureRecognizer {
-//        
-//    }
-//    
-//    var delegate: UIViewControllerPreviewingDelegate {
-//        
-//    }
-//    
-//    var sourceView: UIView {
-//        
-//    }
-    
     // MARK: UIViewControllerPreviewingDelegate 
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
-        return nil
+        guard let indexPath = collectionView?.indexPathForItem(at: location),
+              let cell = collectionView?.cellForItem(at: indexPath) as? ThumbnailImageCollectionViewCell else {
+            return nil
+        }
+        
+        collectionView?.selectItem(at: indexPath, animated: false, scrollPosition: UICollectionViewScrollPosition.centeredHorizontally)
+        
+        previewingContext.sourceRect = cell.frame
+        
+        let thumbnail = thumbnails[indexPath.section]
+        guard let image = thumbnail.1 else {
+            return nil
+        }
+        
+        let imageView = UIImageView(image: image)
+        let imagePreviewViewController = UIViewController()
+        imagePreviewViewController.view = imageView
+        imagePreviewViewController.preferredContentSize = CGSize(width: 0.0, height: 0.0)
+        
+        return imagePreviewViewController
     }
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        
+        performSegue(withIdentifier: "RestoreImageUnwind", sender: collectionView)
     }
     
     // MARK: Helper methods
@@ -267,7 +263,9 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
                 return sektch
             }
             
-            self.fileManagerController.deleteSketches(sketches)
+            self.fileManagerController.deleteSketches(sketches) { deleted in
+                self.remove(namedItems: deleted)
+            }
         }
         
         alert.addAction(deleteSketches)
@@ -302,7 +300,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         navigationItem.leftBarButtonItem?.isEnabled = indexPaths.count > 0
     }
     
-    private func remove(namedItems names: [String], from collectionView: UICollectionView) {
+    private func remove(namedItems names: [String]) {
         var indexes = [Int]()
         for x in 0..<self.thumbnails.count {
             if let name = self.thumbnails[x].0?.name {
@@ -325,14 +323,16 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
             return !delete
         }
         
-        collectionView.performBatchUpdates({
-            collectionView.deleteSections(indexSet)
-        }) { (done) in
-            self.isEditing = false
-            
-            if done && self.thumbnails.count == 0 {
-                self.addNoSketchesMessageLabel()
-                self.navigationItem.rightBarButtonItem = nil
+        DispatchQueue.main.async {
+            self.collectionView?.performBatchUpdates({
+                self.collectionView?.deleteSections(indexSet)
+            }) { (done) in
+                self.isEditing = false
+                
+                if done && self.thumbnails.count == 0 {
+                    self.addNoSketchesMessageLabel()
+                    self.navigationItem.rightBarButtonItem = nil
+                }
             }
         }
     }
