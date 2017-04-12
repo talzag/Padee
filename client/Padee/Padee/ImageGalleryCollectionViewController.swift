@@ -37,7 +37,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         }
         
         if traitCollection.forceTouchCapability == .available {
-            registerForPreviewing(with: self, sourceView: view)
+            registerForPreviewing(with: self, sourceView: collectionView!)
         }
     }
     
