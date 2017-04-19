@@ -28,7 +28,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        collectionView?.allowsMultipleSelection = true
+        collectionView?.allowsMultipleSelection = false
         
         if thumbnails.count > 0 {
             navigationItem.rightBarButtonItem = editButtonItem
@@ -45,10 +45,14 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         super.setEditing(editing, animated: animated)
         
         if editing {
+            collectionView?.allowsMultipleSelection = true
+            
             let deleteBarButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(deleteSketches(_:)))
             deleteBarButton.isEnabled = false;
             navigationItem.setLeftBarButton(deleteBarButton, animated: true)
         } else {
+            collectionView?.allowsMultipleSelection = false
+            
             let cancelBarButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didFinishViewingImageGallery(_:)))
             navigationItem.setLeftBarButton(cancelBarButton, animated: true)
             
@@ -188,12 +192,13 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     // MARK: UIViewControllerPreviewingDelegate 
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
-        guard let indexPath = collectionView?.indexPathForItem(at: location),
+        guard !self.isEditing,
+              let indexPath = collectionView?.indexPathForItem(at: location),
               let cell = collectionView?.cellForItem(at: indexPath) as? ThumbnailImageCollectionViewCell else {
             return nil
         }
         
-        collectionView?.selectItem(at: indexPath, animated: false, scrollPosition: UICollectionViewScrollPosition.centeredHorizontally)
+        collectionView?.selectItem(at: indexPath, animated: false, scrollPosition: .centeredHorizontally)
         
         previewingContext.sourceRect = cell.frame
         

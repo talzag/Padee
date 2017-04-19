@@ -15,6 +15,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet var toolButtons: [UIButton]!
     
     private var currentSketch = Sketch()
+    private var feedbackGenerator: UISelectionFeedbackGenerator?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -202,6 +203,11 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func toolSelected(_ sender: UIButton) {
+        if feedbackGenerator == nil {
+            feedbackGenerator = UISelectionFeedbackGenerator()
+            feedbackGenerator?.prepare()
+        }
+        
         guard let id = sender.restorationIdentifier else {
             fatalError("Tool button missing restoration identifier: \(sender)")
         }
@@ -214,7 +220,10 @@ final class ViewController: UIViewController, UITextFieldDelegate {
             }
             
             sender.isSelected = true
+            feedbackGenerator?.selectionChanged()
         }
+        
+        feedbackGenerator = nil
     }
     
     @IBAction func createNewSketch(_ sender: UIButton?) {
