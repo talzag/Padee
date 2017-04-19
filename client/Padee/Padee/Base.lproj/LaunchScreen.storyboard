@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16B2338c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16F43c" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -20,8 +23,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="k8X-SJ-byw">
+                                <rect key="frame" x="260" y="28" width="99" height="25"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Pencil" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FrN-fC-Yrg" userLabel="Pencil">
+                                        <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
                                         <accessibility key="accessibilityConfiguration" hint="Select the pencil tool" identifier="PencilToolButton" label="Pencil"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -30,6 +35,7 @@
                                         <state key="highlighted" image="SelectedPencil"/>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Pen" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hLf-TH-JPd" userLabel="Pen">
+                                        <rect key="frame" x="37" y="0.0" width="25" height="25"/>
                                         <accessibility key="accessibilityConfiguration" hint="Select the pen tool" identifier="PenToolButton" label="Pen"/>
                                         <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <state key="normal" image="Pen"/>
@@ -39,6 +45,7 @@
                                         <state key="highlighted" image="SelectedPen"/>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Eraser" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HAf-Y5-reK" userLabel="Eraser">
+                                        <rect key="frame" x="74" y="0.0" width="25" height="25"/>
                                         <accessibility key="accessibilityConfiguration" hint="Select the eraser tool" identifier="EraserToolButton" label="Eraser"/>
                                         <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <state key="normal" image="Eraser"/>
@@ -48,25 +55,41 @@
                                 </subviews>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="hIH-7F-c06">
+                                <rect key="frame" x="16" y="28" width="62" height="25"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Trash" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vL2-bX-5ud" userLabel="Trash">
+                                        <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
                                         <accessibility key="accessibilityConfiguration" hint="Delete the current sketch. This will clear the canvas." identifier="ClearCanvasButton" label="Delete"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <state key="normal" image="NewSketch"/>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Export" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QsG-6e-FFl" userLabel="Export">
+                                        <rect key="frame" x="37" y="0.0" width="25" height="25"/>
                                         <accessibility key="accessibilityConfiguration" hint="Export your image in a number of ways" identifier="ExportButton" label="Export"/>
                                         <state key="normal" image="Share"/>
                                     </button>
                                 </subviews>
                             </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Gallery" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YZH-9r-my1" userLabel="Gallery">
+                                <rect key="frame" x="16" y="603" width="44" height="44"/>
+                                <accessibility key="accessibilityConfiguration" hint="Display a gallery of your previous images." identifier="GalleryButton" label="Gallery"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="44" id="M55-6d-mwQ"/>
+                                    <constraint firstAttribute="height" constant="44" id="TPI-Wl-deM"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="44" id="VhA-kt-ETY"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="oJi-zt-ZlM"/>
+                                </constraints>
+                                <state key="normal" image="Gallery"/>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="k8X-SJ-byw" firstAttribute="trailing" secondItem="Ze5-6b-2t3" secondAttribute="trailingMargin" id="22S-hF-gw7"/>
                             <constraint firstItem="hIH-7F-c06" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" id="8fE-3c-brg"/>
                             <constraint firstItem="hIH-7F-c06" firstAttribute="top" secondItem="k8X-SJ-byw" secondAttribute="top" id="K8p-Co-jgU"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="YZH-9r-my1" secondAttribute="bottom" constant="20" id="Sx3-Bb-C9G"/>
                             <constraint firstItem="hIH-7F-c06" firstAttribute="top" secondItem="Llm-lL-Icb" secondAttribute="bottom" constant="8" symbolic="YES" id="dJA-jr-f4Y"/>
+                            <constraint firstItem="YZH-9r-my1" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" id="s0b-YW-JOW"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -77,6 +100,7 @@
     </scenes>
     <resources>
         <image name="Eraser" width="25" height="25"/>
+        <image name="Gallery" width="25" height="25"/>
         <image name="NewSketch" width="25" height="25"/>
         <image name="Pen" width="25" height="25"/>
         <image name="Pencil" width="25" height="25"/>
