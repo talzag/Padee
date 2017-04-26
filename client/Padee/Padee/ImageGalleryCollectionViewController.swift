@@ -73,7 +73,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         return true
     }
     
-    // MARK: UICollectionViewDataSource
+    // MARK: - UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return thumbnails.count
@@ -108,7 +108,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         return sketchNameView
     }
 
-    // MARK: UICollectionViewDelegate
+    // MARK: - UICollectionViewDelegate
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as? ThumbnailImageCollectionViewCell
@@ -135,7 +135,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         updateStateForLeftToolBarItem()
     }
     
-    // MARK: UIPasteboard Functionality
+    // MARK: - UIPasteboard Functionality
     
     override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
         // FIXME: UIPasteboard-related commands
@@ -154,7 +154,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         UIPasteboard.general.setValue(sketch.1!, forPasteboardType: kUTTypeImage as String)
     }
     
-    // MARK: Navigation 
+    // MARK: - Navigation
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let collectionView = sender as? UICollectionView,
@@ -173,7 +173,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         destination.restore(sketch, savingCurrentSketch: true)
     }
     
-    // MARK: UITextField delegate
+    // MARK: - UITextField delegate
     
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
         guard let newName = textField.text?.trimmingCharacters(in: .whitespaces) else {
@@ -189,7 +189,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         fileManagerController.rename(sketch: selectedSketch!, to: newName)
     }
     
-    // MARK: UIViewControllerPreviewingDelegate 
+    // MARK: - UIViewControllerPreviewingDelegate
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
         guard !self.isEditing,
@@ -219,7 +219,28 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         performSegue(withIdentifier: "RestoreImageUnwind", sender: collectionView)
     }
     
-    // MARK: Helper methods
+    override var previewActionItems: [UIPreviewActionItem] {
+        guard let indexPaths = collectionView?.indexPathsForSelectedItems,
+              let indexPath = indexPaths.first else {
+            return []
+        }
+        
+        let thumnail = thumbnails[indexPath.section]
+        guard let image = thumnail.1 else {
+            return []
+        }
+        
+        let shareAction = UIPreviewAction(title: "Share", style: .default) { (action, controller) in
+            let activities = [PNGExportActivity(), JPGExportActivity()]
+            let shareViewController = UIActivityViewController(activityItems: [image], applicationActivities: activities)
+            
+            self.present(shareViewController, animated: true, completion: nil)
+        }
+        
+        return [shareAction]
+    }
+    
+    // MARK: - Helper methods
     
     @IBAction func didFinishViewingImageGallery(_ sender: AnyObject) {
         dismiss(animated: true, completion: nil)

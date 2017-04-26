@@ -111,7 +111,7 @@
 		OBJ_291 /* KituraTemplateEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = OBJ_129 /* KituraTemplateEngine.framework */; };
 		OBJ_304 /* HeliumLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_115 /* HeliumLogger.swift */; };
 		OBJ_306 /* LoggerAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = OBJ_123 /* LoggerAPI.framework */; };
-		OBJ_313 /* APIRouterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_117 /* APIRouterController.swift */; };
+		OBJ_313 /* APIRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_117 /* APIRouter.swift */; };
 		OBJ_314 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_118 /* main.swift */; };
 		OBJ_316 /* LoggerAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = OBJ_123 /* LoggerAPI.framework */; };
 		OBJ_317 /* Socket.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = OBJ_124 /* Socket.framework */; };
@@ -317,10 +317,9 @@
 		OBJ_112 /* ResponseHeadersSetter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseHeadersSetter.swift; sourceTree = "<group>"; };
 		OBJ_113 /* StaticFileServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticFileServer.swift; sourceTree = "<group>"; };
 		OBJ_115 /* HeliumLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeliumLogger.swift; sourceTree = "<group>"; };
-		OBJ_117 /* APIRouterController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRouterController.swift; sourceTree = "<group>"; };
+		OBJ_117 /* APIRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRouter.swift; sourceTree = "<group>"; };
 		OBJ_118 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		OBJ_12 /* SocketProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketProtocols.swift; sourceTree = "<group>"; };
-		OBJ_120 /* client */ = {isa = PBXFileReference; lastKnownFileType = folder; path = client; sourceTree = SOURCE_ROOT; };
 		OBJ_121 /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = SOURCE_ROOT; };
 		OBJ_123 /* LoggerAPI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = LoggerAPI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_124 /* Socket.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Socket.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -555,7 +554,7 @@
 		OBJ_116 /* PadeeServer */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_117 /* APIRouterController.swift */,
+				OBJ_117 /* APIRouter.swift */,
 				OBJ_118 /* main.swift */,
 			);
 			name = PadeeServer;
@@ -668,17 +667,15 @@
 			path = HTTP;
 			sourceTree = "<group>";
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
 				OBJ_7 /* Sources */,
 				OBJ_119 /* Tests */,
-				OBJ_120 /* client */,
 				OBJ_121 /* public */,
 				OBJ_122 /* Products */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_52 /* HTTPParser */ = {
@@ -1005,7 +1002,7 @@
 			knownRegions = (
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_122 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1192,7 +1189,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_313 /* APIRouterController.swift in Sources */,
+				OBJ_313 /* APIRouter.swift in Sources */,
 				OBJ_314 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -6,8 +6,10 @@ HeliumLogger.use()
 let router = Router()
 router.all("/", middleware: StaticFileServer())
 
-let apiController = APIRouterController()
-router.all("/api", middleware: apiController.router)
+router.get("/api") { (request, response, next) in
+    response.status(.OK).send("Response from Padee server API router")
+    next()
+}
 
 Kitura.addHTTPServer(onPort: 8000, with: router)
 Kitura.run()

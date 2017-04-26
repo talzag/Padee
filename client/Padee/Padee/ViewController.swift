@@ -257,7 +257,8 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     @IBAction func exportCurrentImage(_ sender: UIButton) {
         guard let image = (view as! CanvasView).canvasImage else { return }
         
-        let shareViewController = UIActivityViewController(activityItems: [image], applicationActivities: [PNGExportActivity()])
+        let activities = [PNGExportActivity(), JPGExportActivity()]
+        let shareViewController = UIActivityViewController(activityItems: [image], applicationActivities: activities)
         
         if #available(iOS 10.3, *) {
             shareViewController.completionWithItemsHandler = { (items, completed, returnedItems, error) in

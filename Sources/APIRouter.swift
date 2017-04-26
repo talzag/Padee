@@ -10,7 +10,7 @@ import Kitura
 
 typealias RouteHandler = () -> Void
 
-class APIRouterController {
+class APIRouter {
     let router = Router()
     
     public init() {
@@ -20,5 +20,9 @@ class APIRouterController {
     func getAPICall(request: RouterRequest, response: RouterResponse, next: @escaping RouteHandler) throws {
         response.status(.OK).send("Response from Padee server API router")
         next()
+    }
+    
+    func postAPICall(request: RouterRequest, response: RouterResponse, next: @escaping RouteHandler) throws {
+        
     }
 }
