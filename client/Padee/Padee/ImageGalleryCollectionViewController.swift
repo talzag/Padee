@@ -19,6 +19,33 @@ final class SketchNameSupplementaryView: UICollectionReusableView {
     @IBOutlet weak var nameLabel: UILabel!
 }
 
+final class ImagePreviewViewController: UIViewController {
+    var shareActionCompletionHandler: ((UIImage) -> Void)?
+    
+    var image: UIImage? {
+        didSet {
+            (view as! UIImageView).image = image
+        }
+    }
+    
+    override func loadView() {
+        view = UIImageView()
+        view.frame = (CGRect(origin: .zero, size: preferredContentSize))
+    }
+    
+    override var previewActionItems: [UIPreviewActionItem] {
+        guard let image = image else {
+            return []
+        }
+        
+        let shareAction = UIPreviewAction(title: "Share", style: .default) { [unowned self] (action, controller) in
+            self.shareActionCompletionHandler?(image)
+        }
+        
+        return [shareAction]
+    }
+}
+
 final class ImageGalleryCollectionViewController: UICollectionViewController, UITextFieldDelegate, UIViewControllerPreviewingDelegate {
 
     var selectedSketch: Sketch?
@@ -207,9 +234,9 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
             return nil
         }
         
-        let imageView = UIImageView(image: image)
-        let imagePreviewViewController = UIViewController()
-        imagePreviewViewController.view = imageView
+        let imagePreviewViewController = ImagePreviewViewController()
+        imagePreviewViewController.image = image
+        imagePreviewViewController.shareActionCompletionHandler = shareImage(_:)
         imagePreviewViewController.preferredContentSize = CGSize(width: 0.0, height: 0.0)
         
         return imagePreviewViewController
@@ -217,27 +244,6 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
         performSegue(withIdentifier: "RestoreImageUnwind", sender: collectionView)
-    }
-    
-    override var previewActionItems: [UIPreviewActionItem] {
-        guard let indexPaths = collectionView?.indexPathsForSelectedItems,
-              let indexPath = indexPaths.first else {
-            return []
-        }
-        
-        let thumnail = thumbnails[indexPath.section]
-        guard let image = thumnail.1 else {
-            return []
-        }
-        
-        let shareAction = UIPreviewAction(title: "Share", style: .default) { (action, controller) in
-            let activities = [PNGExportActivity(), JPGExportActivity()]
-            let shareViewController = UIActivityViewController(activityItems: [image], applicationActivities: activities)
-            
-            self.present(shareViewController, animated: true, completion: nil)
-        }
-        
-        return [shareAction]
     }
     
     // MARK: - Helper methods
@@ -303,6 +309,13 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         popover?.sourceRect = CGRect(x: 0, y: 5, width: 32, height: 32)
     }
     
+    func shareImage(_ image: UIImage) {
+        let activities = [PNGExportActivity(), JPGExportActivity()]
+        let shareViewController = UIActivityViewController(activityItems: [image], applicationActivities: activities)
+        
+        present(shareViewController, animated: true, completion: nil)
+    }
+    
     private func addNoSketchesMessageLabel() {
         noSketchesMessageLabel = UILabel(frame: view.frame)
         noSketchesMessageLabel?.text = "No sketches to display."
@@ -344,7 +357,6 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
             }
             
             let delete = names.contains(name)
-            
             
             return !delete
         }
