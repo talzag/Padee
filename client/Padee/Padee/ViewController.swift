@@ -15,6 +15,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet var toolButtons: [UIButton]!
     
     private var currentSketch = Sketch()
+    private var feedbackGenerator: UISelectionFeedbackGenerator?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -202,6 +203,11 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func toolSelected(_ sender: UIButton) {
+        if feedbackGenerator == nil {
+            feedbackGenerator = UISelectionFeedbackGenerator()
+            feedbackGenerator?.prepare()
+        }
+        
         guard let id = sender.restorationIdentifier else {
             fatalError("Tool button missing restoration identifier: \(sender)")
         }
@@ -214,7 +220,10 @@ final class ViewController: UIViewController, UITextFieldDelegate {
             }
             
             sender.isSelected = true
+            feedbackGenerator?.selectionChanged()
         }
+        
+        feedbackGenerator = nil
     }
     
     @IBAction func createNewSketch(_ sender: UIButton?) {
@@ -250,12 +259,11 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         
         let shareViewController = UIActivityViewController(activityItems: [image], applicationActivities: [PNGExportActivity()])
         
-        // TODO: Uncomment when iOS 10.3 goes public
-//        if #available(iOS 10.3, *) {
-//            shareViewController.completionWithItemsHandler = { (items, completed, returnedItems, error) in
-//                SKStoreReviewController.requestReview()
-//            }
-//        }
+        if #available(iOS 10.3, *) {
+            shareViewController.completionWithItemsHandler = { (items, completed, returnedItems, error) in
+                SKStoreReviewController.requestReview()
+            }
+        }
         
         present(shareViewController, animated: true, completion: nil)
        

@@ -111,7 +111,7 @@ final class FileManagerController: NSObject {
         return images
     }
     
-    func deleteSketches(_ sketches: [Sketch?]) {
+    func deleteSketches(_ sketches: [Sketch?], _ completionHandler: ((_ deleted: [String]) -> ())?) {
         var sketchNames = [String]()
         
         for sketch in sketches {
@@ -119,6 +119,10 @@ final class FileManagerController: NSObject {
                 sketchNames.append(sketch.name)
                 deleteSketch(sketch)
             }
+        }
+        
+        if let handler = completionHandler {
+            handler(sketchNames)
         }
         
         NotificationCenter.default.post(name: .FileManagerDidDeleteSketches,
