@@ -22,6 +22,9 @@ final class FileManagerController: NSObject {
     
     private let fileManager = FileManager.default
     
+    private var isUsingiCloud = UserDefaults.standard.bool(forKey: iCloudInUseKey)
+    private var iCloudContainerURL: URL?
+    
     lazy var currentSketchURL: URL = {
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let currentImagePathURL = documentsDirectory.appendingPathComponent("com.dstrokis.Padee.current", isDirectory: false)
@@ -42,6 +45,20 @@ final class FileManagerController: NSObject {
         
         return sketchesURL
     }()
+    
+    
+    
+    override init() {
+        super.init()
+        
+        let manager = fileManager
+        
+        DispatchQueue.global(qos: .default).async {
+            if let iCloudURL = manager.url(forUbiquityContainerIdentifier: nil) {
+                self.iCloudContainerURL = iCloudURL
+            }
+        }
+    }
     
     func archive(_ sketch: Sketch, with renderedImage: UIImage? = nil) -> Bool {
         let fileURL = archiveURLFor(sketch)
@@ -175,6 +192,49 @@ final class FileManagerController: NSObject {
         
         } catch {
             fatalError(error.localizedDescription)
+        }
+    }
+    
+    func moveSketchesToUbiquityContainer() {
+        let manager = fileManager
+        
+        DispatchQueue.global(qos: .default).async {
+            guard let ubiquityURL = manager.url(forUbiquityContainerIdentifier: nil) else {
+                return
+            }
+            
+            do {
+                let sketches = try self.archivedSketches()
+                for sketch in sketches {
+                    if let sketch = sketch {
+                        let url = self.archiveURLFor(sketch)
+                        // FIXME: Need to change file system representation of Sketches
+                        try manager.setUbiquitous(true, itemAt: url, destinationURL: ubiquityURL)
+                    }
+                }
+            } catch {
+                // try again later?
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func evictSketchesFromUbiquityContainer() {
+        let manager = fileManager
+        
+        DispatchQueue.global(qos: .default).async {
+            do {
+                let sketches = try self.archivedSketches()
+                for sketch in sketches {
+                    if let sketch = sketch {
+                        // FIXME: Replace archive URL with iCloud archive URL
+                        let url = self.archiveURLFor(sketch)
+                        try manager.evictUbiquitousItem(at: url)
+                    }
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
         }
     }
     

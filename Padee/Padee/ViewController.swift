@@ -12,6 +12,7 @@ import StoreKit
 
 final class ViewController: UIViewController, UITextFieldDelegate {
 
+    var shouldPromptForiCloudUse = true
     @IBOutlet var toolButtons: [UIButton]!
     
     private var currentSketch = Sketch()
@@ -32,6 +33,10 @@ final class ViewController: UIViewController, UITextFieldDelegate {
                                                selector: #selector(ViewController.didDeleteSketchesHandler(_:)),
                                                name: .FileManagerDidDeleteSketches,
                                                object: nil)
+        
+        if shouldPromptForiCloudUse {
+            promptUserForiCloudPreference()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -275,5 +280,23 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func unwindSegue(sender: UIStoryboardSegue) {
         // Empty segue to allow unwinding from ImageGalleryViewController
+    }
+    
+    func promptUserForiCloudPreference() {
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        let iCloudAction = UIAlertAction(title: "Use iCloud", style: .default, handler: { (action) in
+            UserDefaults.standard.set(true, forKey: iCloudInUseKey)
+            self.fileManagerController.moveSketchesToUbiquityContainer()
+        })
+        
+        let alert = UIAlertController(title: "Use iCloud?", message: "Would you like to store your documents in iCloud? This can be changed at any time in Settings.", preferredStyle: .alert)
+        
+        alert.addAction(cancel)
+        alert.addAction(iCloudAction)
+
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 }

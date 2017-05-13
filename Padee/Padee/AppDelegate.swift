@@ -8,6 +8,10 @@
 
 import UIKit
 
+
+let iCloudTokenKey = "com.dstrokis.Padee.iCloud.token"
+let iCloudInUseKey = "com.dstrokis.Padee.iCloud.using"
+
 @UIApplicationMain
 final class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -24,6 +28,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 return false
             }
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(iCloudAvailabilityDidChange(_:)), name: .NSUbiquityIdentityDidChange, object: nil)
+        
+        configureApplicationForiCloudUsage()
         
         return true
     }
@@ -43,6 +51,32 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     // MARK: Helper methods
+    
+    @objc private func iCloudAvailabilityDidChange(_ notification: Notification) {
+        configureApplicationForiCloudUsage()
+    }
+    
+    private func configureApplicationForiCloudUsage() {
+        let userDefaults = UserDefaults.standard
+        let iCloudToken = FileManager.default.ubiquityIdentityToken
+        
+        if let token = iCloudToken {
+            let tokenData = NSKeyedArchiver.archivedData(withRootObject: token)
+            userDefaults.set(tokenData, forKey: iCloudTokenKey)
+            
+            let usingiCloud = userDefaults.bool(forKey: iCloudInUseKey)
+            if !usingiCloud {                
+                guard let controller = window?.rootViewController as? ViewController else {
+                    return
+                }
+                
+                controller.shouldPromptForiCloudUse = true
+            }
+        } else {
+            userDefaults.removeObject(forKey: iCloudTokenKey)
+            self.fileManager.evictSketchesFromUbiquityContainer()
+        }
+    }
     
     private func startNewSketchForShortcutAction() {
         let viewController = window?.rootViewController as? ViewController
