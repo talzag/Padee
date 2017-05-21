@@ -36,15 +36,11 @@ final class SketchPadFile: UIDocument {
             throw NSError(domain: "com.dstrokis.Padee", code: 1, userInfo: nil)
         }
         
-        guard let sketchWrapper = wrapper.fileWrappers?[sketchFile] else {
+        guard let sketchWrapper = wrapper.fileWrappers?[sketchFile],
+              let sketchDate = sketchWrapper.regularFileContents,
+              let sketch = NSKeyedUnarchiver.unarchiveObject(with: sketchDate) as? Sketch else {
             throw NSError(domain: "com.dstrokis.Padee", code: 2, userInfo: nil)
         }
-        
-        guard let sketchDate = sketchWrapper.regularFileContents,
-              let sketch = NSKeyedUnarchiver.unarchiveObject(with: sketchDate) as? Sketch else {
-            throw NSError(domain: "com.dstrokis.Padee", code: 3, userInfo: nil)
-        }
-        
         self.sketch = sketch
         
         if let imageWrapper = wrapper.fileWrappers?[imageFile] {
