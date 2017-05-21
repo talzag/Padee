@@ -25,6 +25,7 @@
 		E39EDB071D10677000D2CA69 /* PadeeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39EDB061D10677000D2CA69 /* PadeeTests.swift */; };
 		E39EDB121D10677000D2CA69 /* PadeeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39EDB111D10677000D2CA69 /* PadeeUITests.swift */; };
 		E3B672B11D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */; };
+		E3D0847B1ECB5D090005D1C3 /* SketchPadFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D0847A1ECB5D090005D1C3 /* SketchPadFile.swift */; };
 		E3F20D831DD79C6B005911A5 /* Sketch.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D821DD79C6B005911A5 /* Sketch.swift */; };
 		E3F20D851DD79C92005911A5 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D841DD79C92005911A5 /* Point.swift */; };
 		E3F20D871DD79CF8005911A5 /* UIViewController+FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */; };
@@ -74,6 +75,7 @@
 		E39EDB111D10677000D2CA69 /* PadeeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PadeeUITests.swift; sourceTree = "<group>"; };
 		E39EDB131D10677000D2CA69 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageGalleryCollectionViewController.swift; sourceTree = "<group>"; };
+		E3D0847A1ECB5D090005D1C3 /* SketchPadFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SketchPadFile.swift; sourceTree = "<group>"; };
 		E3F20D821DD79C6B005911A5 /* Sketch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sketch.swift; sourceTree = "<group>"; };
 		E3F20D841DD79C92005911A5 /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
 		E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+FileManager.swift"; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 				E39EDAF01D10676F00D2CA69 /* ViewController.swift */,
 				E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */,
 				E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */,
+				E3D0847A1ECB5D090005D1C3 /* SketchPadFile.swift */,
 				E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */,
 				E35E04661E2862DA007B786C /* ExportActivity.swift */,
 				E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */,
@@ -332,6 +335,7 @@
 				E3F20D851DD79C92005911A5 /* Point.swift in Sources */,
 				E39EDAEF1D10676F00D2CA69 /* AppDelegate.swift in Sources */,
 				E3402EFA1D24BAF7009F0312 /* CanvasView.swift in Sources */,
+				E3D0847B1ECB5D090005D1C3 /* SketchPadFile.swift in Sources */,
 				E362D26E1DCE96C400B6C3A1 /* FileManagerController.swift in Sources */,
 				E3B672B11D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift in Sources */,
 				E37EC9781D4E54F400151587 /* Path.swift in Sources */,

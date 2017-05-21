@@ -25,11 +25,16 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         if let shortcutItem = launchOptions?[.shortcutItem] as? UIApplicationShortcutItem {
             if shortcutItem.type.components(separatedBy: ".").last == newSketchShortcutType  {
                 startNewSketchForShortcutAction()
-                return false
+                return true
             }
+            
+            return false
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(iCloudAvailabilityDidChange(_:)), name: .NSUbiquityIdentityDidChange, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(iCloudAvailabilityDidChange(_:)),
+                                               name: .NSUbiquityIdentityDidChange,
+                                               object: nil)
         
         configureApplicationForiCloudUsage()
         
@@ -74,6 +79,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         } else {
             userDefaults.removeObject(forKey: iCloudTokenKey)
+            userDefaults.set(false, forKey: iCloudInUseKey)
             self.fileManager.evictSketchesFromUbiquityContainer()
         }
     }

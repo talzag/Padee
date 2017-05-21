@@ -13,8 +13,9 @@ import UIKit
 // Documents/
 //      com.dstrokis.Padee.current          <= current sketch name
 //      com.dstrokis.Padee.sketches/        <= archived sketches
-//          sketch-<CREATE TIME>.paths      <= archived
-//          sketch-<CREATE TIME>.png        <= rendered image
+//          <SKETCH NAME>.pad/              <= Sketch file wrapper
+//              <SKETCH NAME>.paths         <= archived
+//              <SKETCH NAME>.png           <= rendered image
 
 final class FileManagerController: NSObject {
     fileprivate let sketchPathExtension = "sketch"
@@ -46,8 +47,6 @@ final class FileManagerController: NSObject {
         return sketchesURL
     }()
     
-    
-    
     override init() {
         super.init()
         
@@ -58,6 +57,8 @@ final class FileManagerController: NSObject {
                 self.iCloudContainerURL = iCloudURL
             }
         }
+        
+        performFileSystemUpgrade()
     }
     
     func archive(_ sketch: Sketch, with renderedImage: UIImage? = nil) -> Bool {
@@ -253,5 +254,45 @@ final class FileManagerController: NSObject {
     
     private func archiveURLFor(_ sketch: Sketch) -> URL {
         return sketchesDirectoryURL.appendingPathComponent(sketch.name)
+    }
+    
+    fileprivate func performFileSystemUpgrade() {
+        if UserDefaults.standard.bool(forKey: "com.dstrokis.Padee.hasNewFS") {
+            return
+        }
+        
+        do {
+            let sketches = try archivedSketches()
+            let images = try renderedImages()
+            
+            let zipped = zip(sketches, images)
+            let packaged = Array(zipped)
+            
+            let directoryURL: URL
+            if isUsingiCloud {
+                directoryURL = fileManager.url(forUbiquityContainerIdentifier: nil)!
+            } else {
+                directoryURL = sketchesDirectoryURL
+            }
+            
+            for (sketch, thumbnail) in packaged {
+                let docURL = directoryURL.appendingPathComponent(sketch!.name).appendingPathExtension(".pad")
+                try fileManager.createDirectory(at: docURL, withIntermediateDirectories: false, attributes: nil)
+                
+                let document = SketchPadFile(fileURL: docURL)
+                document.prerenderedSketchImage = thumbnail
+                document.sketch = sketch
+                
+                document.save(to: document.fileURL, for: .forCreating) { (success) in
+                    if !success {
+                        print("Error saving document")
+                    }
+                }
+            }
+            
+            UserDefaults.standard.set(true, forKey: "com.dstrokis.Padee.hasNewFS")
+        } catch {
+            
+        }
     }
 }
