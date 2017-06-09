@@ -75,12 +75,11 @@ final class FileManagerController: NSObject {
         }
     }
     
-    func archive(_ sketch: Sketch, with renderedImage: UIImage? = nil, completionHandler: ((Bool) -> Void)? = nil) {
+    func archive(_ sketch: Sketch, completionHandler: ((Bool) -> Void)? = nil) {
         let fileURL = archiveURLFor(sketch)
         
         let file = SketchPadFile(fileURL: fileURL)
         file.sketch = sketch
-        file.prerenderedSketchImage = renderedImage
         
         file.save(to: fileURL, for: .forCreating) { (success) in
             completionHandler?(success)
@@ -96,7 +95,7 @@ final class FileManagerController: NSObject {
         return current
     }
     
-    func archivedSketches() throws -> [Sketch?] {
+    func archivedSketches() throws -> [SketchPadFile?] {
         var sketches = [Sketch?]()
         do {
 //            let pathURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter({ $0.hasSuffix(sketchPathExtension) }).sorted(by: >)
@@ -123,7 +122,7 @@ final class FileManagerController: NSObject {
         return sketches
     }
     
-    func renderedImages() throws -> [UIImage?] {
+    func thumbnails() throws -> [UIImage?] {
         var images = [UIImage?]()
         do {
 //            let pngURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter { $0.hasSuffix(pngPathExtension) }.sorted(by: >)
@@ -159,7 +158,7 @@ final class FileManagerController: NSObject {
                                         userInfo: ["sketches" : sketchNames])
     }
     
-    func sketch(named sketchName: String) -> Sketch? {
+    func sketch(named sketchName: String) -> SketchPadFile? {
 //        let filePath = sketchesDirectoryURL.appendingPathComponent(sketchName).appendingPathExtension(sketchPathExtension).path
 //        
 //        guard fileManager.fileExists(atPath: filePath),

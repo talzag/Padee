@@ -10,24 +10,18 @@ import UIKit
 
 final class SketchPadFile: UIDocument {
     private let sketchFile = "SketchPaths.path"
-    private let imageFile = "SketchImage.png"
     
     var sketch: Sketch?
-    var prerenderedSketchImage: UIImage?
     
     override func contents(forType typeName: String) throws -> Any {
-        let wrapper = FileWrapper(directoryWithFileWrappers: [:])
         
-        if let sketch = sketch {
-            let data = NSKeyedArchiver.archivedData(withRootObject: sketch)
-            wrapper.addRegularFile(withContents: data, preferredFilename: sketchFile)
+        guard let sketch = sketch else {
+            fatalError()
         }
         
-        if let image = prerenderedSketchImage, let imageData = UIImagePNGRepresentation(image) {
-            wrapper.addRegularFile(withContents: imageData, preferredFilename: sketchFile)
-        }
+        let data = NSKeyedArchiver.archivedData(withRootObject: sketch)
         
-        return wrapper
+        return FileWrapper(regularFileWithContents: data)
     }
     
     // TODO: Populate error userInfo dicts
@@ -36,17 +30,34 @@ final class SketchPadFile: UIDocument {
             throw NSError(domain: "com.dstrokis.Padee", code: 1, userInfo: nil)
         }
         
-        guard let sketchWrapper = wrapper.fileWrappers?[sketchFile],
-              let sketchDate = sketchWrapper.regularFileContents,
-              let sketch = NSKeyedUnarchiver.unarchiveObject(with: sketchDate) as? Sketch else {
+        guard let sketchData = wrapper.regularFileContents,
+              let sketch = NSKeyedUnarchiver.unarchiveObject(with: sketchData) as? Sketch else {
             throw NSError(domain: "com.dstrokis.Padee", code: 2, userInfo: nil)
         }
-        self.sketch = sketch
         
-        if let imageWrapper = wrapper.fileWrappers?[imageFile] {
-            if let imageData = imageWrapper.regularFileContents, let image = UIImage(data: imageData) {
-                prerenderedSketchImage = image
+        self.sketch = sketch
+    }
+    
+    override func fileAttributesToWrite(to url: URL, for saveOperation: UIDocumentSaveOperation) throws -> [AnyHashable : Any] {
+        let thumbnailSize = CGSize(width: 10240.0, height: 1024.0)
+        
+        UIGraphicsBeginImageContext(thumbnailSize)
+        
+        let context = UIGraphicsGetCurrentContext()
+        if let sketch = sketch {
+            for path in sketch.paths {
+                path.draw(in: context)
             }
         }
+        
+        let image = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
+        
+        UIGraphicsEndImageContext()
+        
+        return [
+            URLResourceKey.thumbnailDictionaryKey: [
+                URLThumbnailDictionaryItem.NSThumbnail1024x1024SizeKey: image
+            ]
+        ]
     }
 }

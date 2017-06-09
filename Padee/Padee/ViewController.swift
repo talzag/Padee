@@ -98,11 +98,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
 //        present(alertController, animated: true, completion: nil)
         
         currentSketch.paths = paths
-        let image = (view as! CanvasView).canvasImage
-        fileManagerController.archive(currentSketch, with: image)
-//        guard fileManagerController.archive(currentSketch, with: image) else {
-//            fatalError("Could not archive sketch")
-//        }
+        fileManagerController.archive(currentSketch)
     }
     
     func restore(_ sketch: Sketch, savingCurrentSketch save: Bool) {
