@@ -99,9 +99,10 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         
         currentSketch.paths = paths
         let image = (view as! CanvasView).canvasImage
-        guard fileManagerController.archive(currentSketch, with: image) else {
-            fatalError("Could not archive sketch")
-        }
+        fileManagerController.archive(currentSketch, with: image)
+//        guard fileManagerController.archive(currentSketch, with: image) else {
+//            fatalError("Could not archive sketch")
+//        }
     }
     
     func restore(_ sketch: Sketch, savingCurrentSketch save: Bool) {
@@ -117,8 +118,16 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     func restoreLastSketch() {
-        if let sketch = fileManagerController.lastSavedSketch()  {
-            currentSketch = sketch
+        guard let lastSketch = fileManagerController.lastSavedSketch() else {
+            return
+        }
+        
+        lastSketch.open { [unowned self] (success) in
+            guard success, let sketch = lastSketch.sketch else {
+                return
+            }
+            
+            self.currentSketch = sketch
         }
     }
     
@@ -283,7 +292,9 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     func promptUserForiCloudPreference() {
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
+            UserDefaults.standard.set(true, forKey: iCloudInUseKey)
+        })
         
         let iCloudAction = UIAlertAction(title: "Use iCloud", style: .default, handler: { (action) in
             UserDefaults.standard.set(true, forKey: iCloudInUseKey)

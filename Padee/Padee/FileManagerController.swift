@@ -11,7 +11,7 @@ import UIKit
 
 // Padee file storage layout:
 // Documents/
-//      com.dstrokis.Padee.current          <= current sketch name
+//      com.dstrokis.Padee.current.pad      <= current sketch name (will move to UserDefaults)
 //      com.dstrokis.Padee.sketches/        <= archived sketches
 //          <SKETCH NAME>.pad/              <= Sketch file wrapper
 //              <SKETCH NAME>.paths         <= archived
@@ -27,13 +27,25 @@ final class FileManagerController: NSObject {
     private var iCloudContainerURL: URL?
     
     lazy var currentSketchURL: URL = {
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let currentImagePathURL = documentsDirectory.appendingPathComponent("com.dstrokis.Padee.current", isDirectory: false)
+        let documentsDirectory: URL
+        if self.isUsingiCloud, let url = FileManager.default.url(forUbiquityContainerIdentifier: nil) {
+            documentsDirectory = url
+        } else {
+            documentsDirectory = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        }
+
+        let currentImagePathURL = documentsDirectory.appendingPathComponent("com.dstrokis.Padee.current").appendingPathExtension("pad")
         return currentImagePathURL
     }()
     
     lazy var sketchesDirectoryURL: URL = {
-        let documentsDirectory = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let documentsDirectory: URL
+        if self.isUsingiCloud, let url = FileManager.default.url(forUbiquityContainerIdentifier: nil) {
+            documentsDirectory = url
+        } else {
+            documentsDirectory = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        }
+        
         let sketchesURL = documentsDirectory.appendingPathComponent("com.dstrokis.Padee.sketches", isDirectory: true)
         
         if !self.fileManager.fileExists(atPath: sketchesURL.path, isDirectory: nil) {
@@ -58,51 +70,50 @@ final class FileManagerController: NSObject {
             }
         }
         
-        performFileSystemUpgrade()
-    }
-    
-    func archive(_ sketch: Sketch, with renderedImage: UIImage? = nil) -> Bool {
-        let fileURL = archiveURLFor(sketch)
-        let sketchURL = fileURL.appendingPathExtension(sketchPathExtension)
-        
-        if let image = renderedImage, let imageData = UIImagePNGRepresentation(image) {
-            let imageFile = fileURL.appendingPathExtension(pngPathExtension)
-            let imageWriteSuccess = fileManager.createFile(atPath: imageFile.path, contents: imageData, attributes: nil)
-            if !imageWriteSuccess {
-                print("Could not archive PNG representation of current image.")
-            }
+        if !UserDefaults.standard.bool(forKey: "com.dstrokis.Padee.hasNewFS") {
+            performFileSystemUpgrade()
         }
-        
-        return NSKeyedArchiver.archiveRootObject(sketch, toFile: sketchURL.path) &&
-               NSKeyedArchiver.archiveRootObject(sketch, toFile: currentSketchURL.path)
     }
     
-    func lastSavedSketch() -> Sketch? {
-        guard let sketch = NSKeyedUnarchiver.unarchiveObject(withFile: currentSketchURL.path) as? Sketch else {
+    func archive(_ sketch: Sketch, with renderedImage: UIImage? = nil, completionHandler: ((Bool) -> Void)? = nil) {
+        let fileURL = archiveURLFor(sketch)
+        
+        let file = SketchPadFile(fileURL: fileURL)
+        file.sketch = sketch
+        file.prerenderedSketchImage = renderedImage
+        
+        file.save(to: fileURL, for: .forCreating) { (success) in
+            completionHandler?(success)
+        }
+    }
+    
+    func lastSavedSketch() -> SketchPadFile? {
+        guard fileManager.fileExists(atPath: currentSketchURL.path) else {
             return nil
         }
         
-        return sketch
+        let current = SketchPadFile(fileURL: currentSketchURL)
+        return current
     }
     
     func archivedSketches() throws -> [Sketch?] {
         var sketches = [Sketch?]()
         do {
-            let pathURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter({ $0.hasSuffix(sketchPathExtension) }).sorted(by: >)
-            
-            let mapped = pathURLs.map { (path: String) -> Sketch? in
-                let ext = path.range(of: ".\(self.sketchPathExtension)")!
-                let name = path.substring(to: ext.lowerBound)
-                var sketch: Sketch?
-                
-                if let archiveData = try? Data(contentsOf: sketchesDirectoryURL.appendingPathComponent(path)),
-                   let archive = NSKeyedUnarchiver.unarchiveObject(with: archiveData) as? Sketch {
-                    sketch = archive
-                    sketch?.name = name
-                }
-                
-                return sketch
-            }
+//            let pathURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter({ $0.hasSuffix(sketchPathExtension) }).sorted(by: >)
+//            
+//            let mapped = pathURLs.map { (path: String) -> Sketch? in
+//                let ext = path.range(of: ".\(self.sketchPathExtension)")!
+//                let name = path.substring(to: ext.lowerBound)
+//                var sketch: Sketch?
+//                
+//                if let archiveData = try? Data(contentsOf: sketchesDirectoryURL.appendingPathComponent(path)),
+//                   let archive = NSKeyedUnarchiver.unarchiveObject(with: archiveData) as? Sketch {
+//                    sketch = archive
+//                    sketch?.name = name
+//                }
+//                
+//                return sketch
+//            }
             
             sketches.append(contentsOf: mapped)
         } catch let error {
@@ -115,11 +126,11 @@ final class FileManagerController: NSObject {
     func renderedImages() throws -> [UIImage?] {
         var images = [UIImage?]()
         do {
-            let pngURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter { $0.hasSuffix(pngPathExtension) }.sorted(by: >)
-            
-            let mapped = pngURLs.map {
-                UIImage(contentsOfFile: sketchesDirectoryURL.appendingPathComponent($0).path)
-            }
+//            let pngURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter { $0.hasSuffix(pngPathExtension) }.sorted(by: >)
+//            
+//            let mapped = pngURLs.map {
+//                UIImage(contentsOfFile: sketchesDirectoryURL.appendingPathComponent($0).path)
+//            }
             
             images.append(contentsOf: mapped)
         } catch let error {
@@ -149,13 +160,13 @@ final class FileManagerController: NSObject {
     }
     
     func sketch(named sketchName: String) -> Sketch? {
-        let filePath = sketchesDirectoryURL.appendingPathComponent(sketchName).appendingPathExtension(sketchPathExtension).path
-        
-        guard fileManager.fileExists(atPath: filePath),
-              let pathData = fileManager.contents(atPath: filePath),
-              let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {
-            return nil
-        }
+//        let filePath = sketchesDirectoryURL.appendingPathComponent(sketchName).appendingPathExtension(sketchPathExtension).path
+//        
+//        guard fileManager.fileExists(atPath: filePath),
+//              let pathData = fileManager.contents(atPath: filePath),
+//              let paths = NSKeyedUnarchiver.unarchiveObject(with: pathData) as? [Path] else {
+//            return nil
+//        }
         
         let sketch = Sketch(withName: sketchName)
         sketch.paths.append(contentsOf: paths)
@@ -173,19 +184,19 @@ final class FileManagerController: NSObject {
         sketch.name = newName
         let newURL = archiveURLFor(sketch)
         
-        let oldSketchURL = originalURL.appendingPathExtension(sketchPathExtension)
-        let oldPNGURL = originalURL.appendingPathExtension(pngPathExtension)
+//        let oldSketchURL = originalURL.appendingPathExtension(sketchPathExtension)
+//        let oldPNGURL = originalURL.appendingPathExtension(pngPathExtension)
         
         do {
-            if fileManager.fileExists(atPath: oldSketchURL.path) {
-                let newSketchURL = newURL.appendingPathExtension(sketchPathExtension)
-                try fileManager.moveItem(at: oldSketchURL, to: newSketchURL)
-            }
-            
-            if fileManager.fileExists(atPath: oldPNGURL.path) {
-                let newPNGURL = newURL.appendingPathExtension(pngPathExtension)
-                try fileManager.moveItem(at: oldPNGURL, to: newPNGURL)
-            }
+//            if fileManager.fileExists(atPath: oldSketchURL.path) {
+//                let newSketchURL = newURL.appendingPathExtension(sketchPathExtension)
+//                try fileManager.moveItem(at: oldSketchURL, to: newSketchURL)
+//            }
+//            
+//            if fileManager.fileExists(atPath: oldPNGURL.path) {
+//                let newPNGURL = newURL.appendingPathExtension(pngPathExtension)
+//                try fileManager.moveItem(at: oldPNGURL, to: newPNGURL)
+//            }
             
             NotificationCenter.default.post(name: .FileManagerDidRenameSketch,
                                             object: self,
@@ -214,6 +225,7 @@ final class FileManagerController: NSObject {
                     }
                 }
             } catch {
+                // FIXME: Add proper error handling here
                 // try again later?
                 print(error.localizedDescription)
             }
@@ -234,33 +246,25 @@ final class FileManagerController: NSObject {
                     }
                 }
             } catch {
+                // FIXME: Add proper error handling here
                 print(error.localizedDescription)
             }
         }
     }
     
     private func deleteSketch(_ sketch: Sketch) {
-        let sketchPath = archiveURLFor(sketch).appendingPathExtension(sketchPathExtension).path
-        let imagePath = archiveURLFor(sketch).appendingPathExtension(pngPathExtension).path
+        let sketchPath = archiveURLFor(sketch).path
         
         if fileManager.fileExists(atPath: sketchPath) {
             try? fileManager.removeItem(atPath: sketchPath)
         }
-        
-        if fileManager.fileExists(atPath: imagePath) {
-            try? fileManager.removeItem(atPath: imagePath)
-        }
     }
     
     private func archiveURLFor(_ sketch: Sketch) -> URL {
-        return sketchesDirectoryURL.appendingPathComponent(sketch.name)
+        return sketchesDirectoryURL.appendingPathComponent(sketch.name).appendingPathExtension("pad")
     }
     
     fileprivate func performFileSystemUpgrade() {
-        if UserDefaults.standard.bool(forKey: "com.dstrokis.Padee.hasNewFS") {
-            return
-        }
-        
         do {
             let sketches = try archivedSketches()
             let images = try renderedImages()
@@ -268,15 +272,9 @@ final class FileManagerController: NSObject {
             let zipped = zip(sketches, images)
             let packaged = Array(zipped)
             
-            let directoryURL: URL
-            if isUsingiCloud {
-                directoryURL = fileManager.url(forUbiquityContainerIdentifier: nil)!
-            } else {
-                directoryURL = sketchesDirectoryURL
-            }
             
             for (sketch, thumbnail) in packaged {
-                let docURL = directoryURL.appendingPathComponent(sketch!.name).appendingPathExtension(".pad")
+                let docURL = archiveURLFor(sketch!)
                 try fileManager.createDirectory(at: docURL, withIntermediateDirectories: false, attributes: nil)
                 
                 let document = SketchPadFile(fileURL: docURL)
