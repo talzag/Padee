@@ -112,23 +112,23 @@ final class FileManagerController: NSObject {
         return sketches
     }
     
-    func deleteSketches(_ sketches: [Sketch?], _ completionHandler: ((_ deleted: [String]) -> ())?) {
-        var sketchNames = [String]()
+    func deleteSketches(_ sketches: [SketchPadFile?], _ completionHandler: ((_ deleted: [String]) -> ())?) {
+        var sketchURLs = [String]()
         
         for sketch in sketches {
             if let sketch = sketch {
-                sketchNames.append(sketch.name)
+                sketchURLs.append(sketch.fileURL.path)
                 deleteSketch(sketch)
             }
         }
         
         if let handler = completionHandler {
-            handler(sketchNames)
+            handler(sketchURLs)
         }
         
         NotificationCenter.default.post(name: .FileManagerDidDeleteSketches,
                                         object: self,
-                                        userInfo: ["sketches" : sketchNames])
+                                        userInfo: ["sketches" : sketchURLs])
     }
     
     func sketch(named sketchName: String) -> SketchPadFile? {
@@ -142,29 +142,29 @@ final class FileManagerController: NSObject {
         return sketch
     }
     
-    func rename(sketch: Sketch, to newName: String) {
-        guard let oldName = sketch.name else {
-            fatalError("Trying to call rename(_:,_:) with a Sketch that hasn't been named yet.")
-        }
-        
-        let originalURL = archiveURLFor(sketch)
-        
-        sketch.name = newName
-        let newURL = archiveURLFor(sketch)
-        
-        do {
-            if fileManager.fileExists(atPath: originalURL.path) {
-                try fileManager.moveItem(at: originalURL, to: newURL)
-            }
-            
-            NotificationCenter.default.post(name: .FileManagerDidRenameSketch,
-                                            object: self,
-                                            userInfo: ["oldName": oldName, "newName": newName])
-        
-        } catch {
-            fatalError(error.localizedDescription)
-        }
-    }
+//    func rename(sketch: Sketch, to newName: String) {
+//        guard let oldName = sketch.name else {
+//            fatalError("Trying to call rename(_:,_:) with a Sketch that hasn't been named yet.")
+//        }
+//        
+//        let originalURL = archiveURLFor(sketch)
+//        
+//        sketch.name = newName
+//        let newURL = archiveURLFor(sketch)
+//        
+//        do {
+//            if fileManager.fileExists(atPath: originalURL.path) {
+//                try fileManager.moveItem(at: originalURL, to: newURL)
+//            }
+//            
+//            NotificationCenter.default.post(name: .FileManagerDidRenameSketch,
+//                                            object: self,
+//                                            userInfo: ["oldName": oldName, "newName": newName])
+//        
+//        } catch {
+//            fatalError(error.localizedDescription)
+//        }
+//    }
     
     func moveSketchesToUbiquityContainer() {
 //        let manager = fileManager
@@ -211,11 +211,9 @@ final class FileManagerController: NSObject {
 //        }
     }
     
-    private func deleteSketch(_ sketch: Sketch) {
-        let sketchPath = archiveURLFor(sketch).path
-        
-        if fileManager.fileExists(atPath: sketchPath) {
-            try? fileManager.removeItem(atPath: sketchPath)
+    private func deleteSketch(_ sketch: SketchPadFile) {
+        if fileManager.fileExists(atPath: sketch.fileURL.path) {
+            try? fileManager.removeItem(atPath: sketch.fileURL.path)
         }
     }
     

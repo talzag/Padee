@@ -48,8 +48,8 @@ final class ImagePreviewViewController: UIViewController {
 
 final class ImageGalleryCollectionViewController: UICollectionViewController, UITextFieldDelegate, UIViewControllerPreviewingDelegate {
 
-    var selectedSketch: Sketch?
-    var thumbnails = [(Sketch?, UIImage?)]()
+    var selectedSketch: SketchPadFile?
+    var files = [SketchPadFile]()
     var noSketchesMessageLabel: UILabel?
     
     override func viewDidLoad() {
@@ -57,7 +57,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         
         collectionView?.allowsMultipleSelection = false
         
-        if thumbnails.count > 0 {
+        if files.count > 0 {
             navigationItem.rightBarButtonItem = editButtonItem
         } else {
             addNoSketchesMessageLabel()
@@ -103,7 +103,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     // MARK: - UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return thumbnails.count
+        return files.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -113,8 +113,12 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! ThumbnailImageCollectionViewCell
     
-        let thumbnail = thumbnails[indexPath.section]
-        cell.imageView.image = thumbnail.1
+        let sketch = files[indexPath.section]
+        
+        let attributes = try? sketch.fileAttributesToWrite(to: sketch.fileURL, for: .forOverwriting)
+        if let thumbnails = attributes?[URLResourceKey.thumbnailDictionaryKey] as? [AnyHashable: AnyObject?] {
+            cell.imageView.image = thumbnails[URLThumbnailDictionaryItem.NSThumbnail1024x1024SizeKey] as? UIImage
+        }
         
         if !isEditing {
             cell.selectedImageView.alpha = 0.0
@@ -129,8 +133,11 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(renameSketch))
         sketchNameView.addGestureRecognizer(tapRecognizer)
         
-        let thumbnail = thumbnails[indexPath.section]
-        sketchNameView.nameLabel.text = thumbnail.0?.name
+        let sketch = files[indexPath.section]
+        let attributes = try? sketch.fileAttributesToWrite(to: sketch.fileURL, for: .forOverwriting)
+        if let name = attributes?[URLResourceKey.nameKey] as? String {
+            sketchNameView.nameLabel.text = name
+        }
         
         return sketchNameView
     }
@@ -177,8 +184,13 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     }
     
     override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-        let sketch = thumbnails[indexPath.section]
-        UIPasteboard.general.setValue(sketch.1!, forPasteboardType: kUTTypeImage as String)
+        let sketch = files[indexPath.section]
+        let attributes = try? sketch.fileAttributesToWrite(to: sketch.fileURL, for: .forOverwriting)
+        if let thumbnails = attributes?[URLResourceKey.thumbnailDictionaryKey] as? [AnyHashable: AnyObject?] {
+            if let thumbnail = thumbnails[URLThumbnailDictionaryItem.NSThumbnail1024x1024SizeKey] as? UIImage {
+                UIPasteboard.general.setValue(thumbnail, forPasteboardType: kUTTypeImage as String)
+            }
+        }
     }
     
     // MARK: - Navigation
@@ -193,9 +205,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
             return
         }
         
-        guard let sketch = thumbnails[indexPath.section].0 else {
-            fatalError("Sketch should not be nil")
-        }
+        let sketch = files[indexPath.section]
         
         destination.restore(sketch, savingCurrentSketch: true)
     }
@@ -203,17 +213,17 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     // MARK: - UITextField delegate
     
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
-        guard let newName = textField.text?.trimmingCharacters(in: .whitespaces) else {
+        guard let _ = textField.text?.trimmingCharacters(in: .whitespaces) else {
             return
         }
         
-        guard reason == .committed,
-              !newName.isEmpty,
-              newName != selectedSketch?.name else {
-            return
-        }
-        
-        fileManagerController.rename(sketch: selectedSketch!, to: newName)
+//        guard reason == .committed,
+//              !newName.isEmpty,
+//              newName != selectedSketch?.name else {
+//            return
+//        }
+//        
+//        fileManagerController.rename(sketch: selectedSketch!, to: newName)
     }
     
     // MARK: - UIViewControllerPreviewingDelegate
@@ -229,8 +239,10 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         
         previewingContext.sourceRect = cell.frame
         
-        let thumbnail = thumbnails[indexPath.section]
-        guard let image = thumbnail.1 else {
+        let sketch = files[indexPath.section]
+        let attributes = try? sketch.fileAttributesToWrite(to: sketch.fileURL, for: .forOverwriting)
+        guard let thumbnails = attributes?[URLResourceKey.thumbnailDictionaryKey] as? [AnyHashable: AnyObject?],
+              let image = thumbnails[URLThumbnailDictionaryItem.NSThumbnail1024x1024SizeKey] as? UIImage else {
             return nil
         }
         
@@ -257,27 +269,43 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
             fatalError("Expected sender to be instance of SketchNameSupplementaryView. Instead got \(String(describing: sender.view.self))")
         }
         
-        selectedSketch =  thumbnails.first(where: { $0.0?.name == supplementaryView.nameLabel.text })?.0
+        let sketchName = supplementaryView.nameLabel.text
         
-        let alertController = UIAlertController(title: "Rename Sketch", message: nil, preferredStyle: .alert)
-        
-        alertController.addTextField { [unowned self] (textField) in
-            textField.delegate = self
-            textField.text = supplementaryView.nameLabel.text
+        guard let indexPaths = collectionView?.indexPathsForVisibleSupplementaryElements(ofKind: "SketchNameSupplementaryView") else {
+            return
         }
         
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        let done = UIAlertAction(title: "Done", style: .default) { [unowned alertController, supplementaryView] (action) in
-            let newName = alertController.textFields?.first?.text
-            self.selectedSketch?.name = newName
-            supplementaryView.nameLabel.text = newName
-            alertController.textFields?.first!.resignFirstResponder()
+        for index in indexPaths {
+            let view = collectionView?.supplementaryView(forElementKind: "SketchNameSupplementaryView", at: index )as? SketchNameSupplementaryView
+            if view?.nameLabel.text == sketchName {
+                selectedSketch = files[index.section]
+            }
         }
         
-        alertController.addAction(cancel)
-        alertController.addAction(done)
-        
-        present(alertController, animated: true, completion: nil)
+//        guard let sketch = selectedSketch else {
+//            return
+//        }
+//        
+//        let alertController = UIAlertController(title: "Rename Sketch", message: nil, preferredStyle: .alert)
+//        
+//        alertController.addTextField { [unowned self] (textField) in
+//            textField.delegate = self
+//            textField.text = supplementaryView.nameLabel.text
+//        }
+//        
+//        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+//        let done = UIAlertAction(title: "Done", style: .default) { [unowned alertController, supplementaryView] (action) in
+//            let newName = alertController.textFields?.first?.text
+//            self.selectedSketch?.name = newName
+//            
+//            supplementaryView.nameLabel.text = newName
+//            alertController.textFields?.first!.resignFirstResponder()
+//        }
+//        
+//        alertController.addAction(cancel)
+//        alertController.addAction(done)
+//        
+//        present(alertController, animated: true, completion: nil)
     }
 
     func deleteSketches(_ sender: AnyObject) {
@@ -290,13 +318,13 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         let deleteSketches = UIAlertAction(title: "Delete \(indexPaths.count) \(pluralized)", style: .destructive) { (action) in
-            let sketches = indexPaths.map { indexPath -> Sketch? in
-                let sektch = self.thumbnails[indexPath.section].0
-                return sektch
+            let sketches = indexPaths.map { indexPath -> SketchPadFile in
+                let sketch = self.files[indexPath.section]
+                return sketch
             }
             
             self.fileManagerController.deleteSketches(sketches) { deleted in
-                self.remove(namedItems: deleted)
+                self.removeItems(deleted)
             }
         }
         
@@ -339,24 +367,21 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         navigationItem.leftBarButtonItem?.isEnabled = indexPaths.count > 0
     }
     
-    private func remove(namedItems names: [String]) {
+    private func removeItems(_ urls: [String]) {
         var indexes = [Int]()
-        for x in 0..<self.thumbnails.count {
-            if let name = self.thumbnails[x].0?.name {
-                if names.contains(name) {
-                    indexes.append(x)
-                }
+        for x in 0..<self.files.count {
+            let url = self.files[x].fileURL.path
+            if urls.contains(url) {
+                indexes.append(x)
             }
         }
         
         let indexSet = IndexSet(indexes)
         
-        self.thumbnails = self.thumbnails.filter {
-            guard let name = $0.0?.name else {
-                fatalError()
-            }
+        self.files = self.files.filter {
+            let url = $0.fileURL.path
             
-            let delete = names.contains(name)
+            let delete = urls.contains(url)
             
             return !delete
         }
@@ -367,7 +392,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
             }) { (done) in
                 self.isEditing = false
                 
-                if done && self.thumbnails.count == 0 {
+                if done && self.files.count == 0 {
                     self.addNoSketchesMessageLabel()
                     self.navigationItem.rightBarButtonItem = nil
                 }

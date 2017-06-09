@@ -61,11 +61,9 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         do {
             let sketches = try fileManagerController.archivedSketches()
-            let images = try fileManagerController.renderedImages()
             
-            let thumbnails = zip(sketches, images)
             if let navController =  segue.destination as? UINavigationController {
-                (navController.viewControllers.first! as! ImageGalleryCollectionViewController).thumbnails = Array(thumbnails)
+                (navController.viewControllers.first! as! ImageGalleryCollectionViewController).files = sketches
             }
         } catch let error {
             print(error.localizedDescription)
@@ -77,6 +75,9 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         guard paths.count > 0 else {
             return
         }
+        
+        currentSketch.paths = paths
+        fileManagerController.archive(currentSketch)
         
 //        let alertController = UIAlertController(title: "Rename Sketch", message: nil, preferredStyle: .alert)
 //        
@@ -97,11 +98,9 @@ final class ViewController: UIViewController, UITextFieldDelegate {
 //        
 //        present(alertController, animated: true, completion: nil)
         
-        currentSketch.paths = paths
-        fileManagerController.archive(currentSketch)
     }
     
-    func restore(_ sketch: Sketch, savingCurrentSketch save: Bool) {
+    func restore(_ sketchPadFile: SketchPadFile, savingCurrentSketch save: Bool) {
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
         if save && paths.count > 0 {
             saveCurrentSketch()
@@ -109,8 +108,16 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         
         (view as! CanvasView).clear()
         
-        currentSketch = sketch
-        (view as! CanvasView).restoreImage(using: sketch.paths)
+        sketchPadFile.open { [unowned self] (success) in
+            guard success, let sketch = sketchPadFile.sketch else {
+                return
+            }
+            
+            self.currentSketch = sketch
+            
+            self.currentSketch = sketch
+            (self.view as! CanvasView).restoreImage(using: sketch.paths)
+        }
     }
     
     func restoreLastSketch() {

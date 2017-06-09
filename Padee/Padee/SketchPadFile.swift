@@ -55,6 +55,7 @@ final class SketchPadFile: UIDocument {
         UIGraphicsEndImageContext()
         
         return [
+            URLResourceKey.nameKey: sketch?.name ?? "",
             URLResourceKey.thumbnailDictionaryKey: [
                 URLThumbnailDictionaryItem.NSThumbnail1024x1024SizeKey: image
             ]
