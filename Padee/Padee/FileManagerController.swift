@@ -13,7 +13,7 @@ import UIKit
 // Documents/
 //      com.dstrokis.Padee.current.pad      <= current sketch name (will move to UserDefaults)
 //      com.dstrokis.Padee.sketches/        <= archived sketches
-//          <SKETCH NAME>.pad/              <= Sketch file wrapper
+//          <SKETCH NAME>/                  <= Sketch file wrapper
 //              <SKETCH NAME>.paths         <= archived
 //              <SKETCH NAME>.png           <= rendered image
 
@@ -34,7 +34,7 @@ final class FileManagerController: NSObject {
             documentsDirectory = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
         }
 
-        let currentImagePathURL = documentsDirectory.appendingPathComponent("com.dstrokis.Padee.current").appendingPathExtension("pad")
+        let currentImagePathURL = documentsDirectory.appendingPathComponent("com.dstrokis.Padee.current")
         return currentImagePathURL
     }()
     
@@ -98,7 +98,7 @@ final class FileManagerController: NSObject {
     func archivedSketches() throws -> [SketchPadFile] {
         var sketches = [SketchPadFile]()
         do {
-            let paths = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).filter({ $0.hasSuffix("pad") }).sorted(by: >)
+            let paths = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).sorted(by: >)
             for path in paths {
                 if let url = URL(string: path) {
                     let file = SketchPadFile(fileURL: url)
@@ -132,7 +132,7 @@ final class FileManagerController: NSObject {
     }
     
     func sketch(named sketchName: String) -> SketchPadFile? {
-        let fileURL = sketchesDirectoryURL.appendingPathComponent(sketchName).appendingPathExtension("pad")
+        let fileURL = sketchesDirectoryURL.appendingPathComponent(sketchName)
         
         var sketch: SketchPadFile?
         if fileManager.fileExists(atPath: fileURL.path) {
@@ -218,7 +218,7 @@ final class FileManagerController: NSObject {
     }
     
     private func archiveURLFor(_ sketch: Sketch) -> URL {
-        return sketchesDirectoryURL.appendingPathComponent(sketch.name).appendingPathExtension("pad")
+        return sketchesDirectoryURL.appendingPathComponent(sketch.name)
     }
     
     
@@ -251,40 +251,28 @@ final class FileManagerController: NSObject {
         return sketches
     }
     
-    fileprivate func _renderedImages() -> [UIImage?] {
-        var images = [UIImage?]()
-        do {
-            let sketchesDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.sketches", isDirectory: true)
-            let pngURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirURL.path).filter { $0.hasSuffix("png") }.sorted(by: >)
-            
-            let mapped = pngURLs.map {
-                UIImage(contentsOfFile: sketchesDirURL.appendingPathComponent($0).path)
-            }
-            
-            images.append(contentsOf: mapped)
-        } catch let error {
-            print(error.localizedDescription)
-        }
-        
-        return images
-    }
-    
     fileprivate func performFileSystemUpgrade() {
         do {
+            let sketchesDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.sketches", isDirectory: true)
+            let backupDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.upgrade-backup", isDirectory: true)
+            
             let sketches = _archivedSketches()
             
+            try fileManager.moveItem(at: sketchesDirURL, to: backupDirectory)
+            try fileManager.createDirectory(at: sketchesDirURL, withIntermediateDirectories: false, attributes: nil)
+            
+            
             for sketch in sketches {
-                let docURL = archiveURLFor(sketch!)
-                try fileManager.createDirectory(at: docURL, withIntermediateDirectories: false, attributes: nil)
+                guard let sketch = sketch else {
+                    continue
+                }
+                
+                let docURL = archiveURLFor(sketch)
                 
                 let document = SketchPadFile(fileURL: docURL)
                 document.sketch = sketch
                 
-                document.save(to: document.fileURL, for: .forCreating) { (success) in
-                    if !success {
-                        print("Error saving document")
-                    }
-                }
+                document.save(to: docURL, for: .forCreating)
             }
             
             UserDefaults.standard.set(true, forKey: "com.dstrokis.Padee.hasNewFS")
