@@ -100,10 +100,9 @@ final class FileManagerController: NSObject {
         do {
             let paths = try fileManager.contentsOfDirectory(atPath: sketchesDirectoryURL.path).sorted(by: >)
             for path in paths {
-                if let url = URL(string: path) {
-                    let file = SketchPadFile(fileURL: url)
-                    sketches.append(file)
-                }
+                let url = sketchesDirectoryURL.appendingPathComponent(path)
+                let file = SketchPadFile(fileURL: url)
+                sketches.append(file)
             }
         } catch let error {
             print(error.localizedDescription)

@@ -24,15 +24,11 @@ final class SketchPadFile: UIDocument {
         return FileWrapper(regularFileWithContents: data)
     }
     
-    // TODO: Populate error userInfo dicts
+    // TODO: Populate error userInfo dict
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
-        guard let wrapper = contents as? FileWrapper else {
-            throw NSError(domain: "com.dstrokis.Padee", code: 1, userInfo: nil)
-        }
-        
-        guard let sketchData = wrapper.regularFileContents,
+        guard let sketchData = contents as? Data ,
               let sketch = NSKeyedUnarchiver.unarchiveObject(with: sketchData) as? Sketch else {
-            throw NSError(domain: "com.dstrokis.Padee", code: 2, userInfo: nil)
+            throw NSError(domain: "com.dstrokis.Padee", code: 1, userInfo: nil)
         }
         
         self.sketch = sketch
