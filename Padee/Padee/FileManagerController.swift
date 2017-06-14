@@ -13,13 +13,9 @@ import UIKit
 // Documents/
 //      com.dstrokis.Padee.current.pad      <= current sketch name (will move to UserDefaults)
 //      com.dstrokis.Padee.sketches/        <= archived sketches
-//          <SKETCH NAME>/                  <= Sketch file wrapper
-//              <SKETCH NAME>.paths         <= archived
-//              <SKETCH NAME>.png           <= rendered image
+//          <SKETCH NAME>                   <= Sketch file wrapper (regular file wrapper with paths archived as Data)
 
 final class FileManagerController: NSObject {
-    fileprivate let sketchPathExtension = "sketch"
-    fileprivate let pngPathExtension = "png"
     
     private let fileManager = FileManager.default
     
@@ -64,7 +60,7 @@ final class FileManagerController: NSObject {
         
         let manager = fileManager
         
-        DispatchQueue.global(qos: .default).async {
+        DispatchQueue.global().async {
             if let iCloudURL = manager.url(forUbiquityContainerIdentifier: nil) {
                 self.iCloudContainerURL = iCloudURL
             }
@@ -141,7 +137,7 @@ final class FileManagerController: NSObject {
         return sketch
     }
     
-//    func rename(sketch: Sketch, to newName: String) {
+    func rename(sketch: Sketch, to newName: String) {
 //        guard let oldName = sketch.name else {
 //            fatalError("Trying to call rename(_:,_:) with a Sketch that hasn't been named yet.")
 //        }
@@ -163,51 +159,34 @@ final class FileManagerController: NSObject {
 //        } catch {
 //            fatalError(error.localizedDescription)
 //        }
-//    }
+    }
     
     func moveSketchesToUbiquityContainer() {
-//        let manager = fileManager
-//        
-//        DispatchQueue.global(qos: .default).async {
-//            guard let ubiquityURL = manager.url(forUbiquityContainerIdentifier: nil) else {
-//                return
-//            }
-//            
-//            do {
-//                let sketches = try self.archivedSketches()
-//                for sketch in sketches {
-//                    if let sketch = sketch {
-//                        let url = self.archiveURLFor(sketch)
-//                        // FIXME: Need to change file system representation of Sketches
-//                        try manager.setUbiquitous(true, itemAt: url, destinationURL: ubiquityURL)
-//                    }
-//                }
-//            } catch {
-//                // FIXME: Add proper error handling here
-//                // try again later?
-//                print(error.localizedDescription)
-//            }
-//        }
+        DispatchQueue.global().async { [unowned self] in
+            let sketchesDirURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.sketches", isDirectory: true)
+            guard let iCloudDirURL = self.fileManager.url(forUbiquityContainerIdentifier: nil) else {
+                return
+            }
+            
+            do {
+                try self.fileManager.moveItem(at: sketchesDirURL, to: iCloudDirURL)
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
     
     func evictSketchesFromUbiquityContainer() {
-//        let manager = fileManager
-//        
-//        DispatchQueue.global(qos: .default).async {
-//            do {
-//                let sketches = try self.archivedSketches()
-//                for sketch in sketches {
-//                    if let sketch = sketch {
-//                        // FIXME: Replace archive URL with iCloud archive URL
-//                        let url = self.archiveURLFor(sketch)
-//                        try manager.evictUbiquitousItem(at: url)
-//                    }
-//                }
-//            } catch {
-//                // FIXME: Add proper error handling here
-//                print(error.localizedDescription)
-//            }
-//        }
+        let sketchesDirURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.sketches", isDirectory: true)
+        guard let iCloudDirURL = self.fileManager.url(forUbiquityContainerIdentifier: nil) else {
+            return
+        }
+        
+        do {
+            try self.fileManager.moveItem(at: iCloudDirURL, to: sketchesDirURL)
+        } catch {
+            print(error.localizedDescription)
+        }
     }
     
     private func deleteSketch(_ sketch: SketchPadFile) {

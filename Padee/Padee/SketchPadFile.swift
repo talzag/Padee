@@ -14,7 +14,6 @@ final class SketchPadFile: UIDocument {
     var sketch: Sketch?
     
     override func contents(forType typeName: String) throws -> Any {
-        
         guard let sketch = sketch else {
             fatalError()
         }
@@ -37,7 +36,7 @@ final class SketchPadFile: UIDocument {
     override func fileAttributesToWrite(to url: URL, for saveOperation: UIDocumentSaveOperation) throws -> [AnyHashable : Any] {
         let thumbnailSize = CGSize(width: 10240.0, height: 1024.0)
         
-        UIGraphicsBeginImageContext(thumbnailSize)
+        UIGraphicsBeginImageContextWithOptions(thumbnailSize, true, 0.0)
         
         let context = UIGraphicsGetCurrentContext()
         if let sketch = sketch {
@@ -51,7 +50,7 @@ final class SketchPadFile: UIDocument {
         UIGraphicsEndImageContext()
         
         return [
-            URLResourceKey.nameKey: sketch?.name ?? "",
+            URLResourceKey.nameKey: url.lastPathComponent,
             URLResourceKey.thumbnailDictionaryKey: [
                 URLThumbnailDictionaryItem.NSThumbnail1024x1024SizeKey: image
             ]
