@@ -36,8 +36,8 @@ final class Point: NSObject, NSCoding {
     
     func updateWithTouch(_ touch: UITouch) {
         guard let updateIndex = touch.estimationUpdateIndex,
-            estimationUpdateIndex == updateIndex else {
-                return
+              estimationUpdateIndex == updateIndex else {
+            return
         }
         
         propertiesExpectingUpdates = touch.estimatedPropertiesExpectingUpdates

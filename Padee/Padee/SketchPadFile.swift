@@ -34,7 +34,7 @@ final class SketchPadFile: UIDocument {
     }
     
     override func fileAttributesToWrite(to url: URL, for saveOperation: UIDocumentSaveOperation) throws -> [AnyHashable : Any] {
-        let thumbnailSize = CGSize(width: 10240.0, height: 1024.0)
+        let thumbnailSize = CGSize(width: 1024.0, height: 1024.0)
         
         UIGraphicsBeginImageContextWithOptions(thumbnailSize, true, 0.0)
         
