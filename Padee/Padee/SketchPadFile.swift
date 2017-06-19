@@ -9,51 +9,72 @@
 import UIKit
 
 final class SketchPadFile: UIDocument {
-    private let sketchFile = "SketchPaths.path"
+    private let sketchFilename = "Sketch.path"
+    private var thumbnailFilename = "Sketch.png"
     
     var sketch: Sketch?
     
-    override func contents(forType typeName: String) throws -> Any {
-        guard let sketch = sketch else {
-            fatalError()
+    var thumbnail: UIImage {
+        let image: UIImage
+        
+        if let sketch = sketch {
+            let thumbnailSize = UIScreen.main.bounds
+            UIGraphicsBeginImageContextWithOptions(thumbnailSize.size, true, 0.0)
+            let context = UIGraphicsGetCurrentContext()
+            
+            UIColor.white.setFill()
+            context?.fill(thumbnailSize)
+            
+            for path in sketch.paths {
+                path.draw(in: context)
+            }
+            
+            image = UIGraphicsGetImageFromCurrentImageContext()!
+            UIGraphicsEndImageContext()
+        } else if let data = FileManager.default.contents(atPath: fileURL.appendingPathComponent(thumbnailFilename).path), let preview = UIImage(data: data) {
+            image = preview
+        } else {
+            image = #imageLiteral(resourceName: "File")
         }
         
-        let data = NSKeyedArchiver.archivedData(withRootObject: sketch)
+        return image
+    }
+    
+    override func contents(forType typeName: String) throws -> Any {
+        guard let sketch = sketch else {
+            throw NSError(domain: "com.dstrokis.Padee", code: 1, userInfo: nil)
+        }
         
-        return FileWrapper(regularFileWithContents: data)
+        let sketchData = NSKeyedArchiver.archivedData(withRootObject: sketch)
+        let imageData = UIImagePNGRepresentation(thumbnail)!
+        
+        let sketchFileWrapper = FileWrapper(regularFileWithContents: sketchData)
+        sketchFileWrapper.preferredFilename = sketchFilename
+        
+        let thumbnailFileWrapper = FileWrapper(regularFileWithContents: imageData)
+        thumbnailFileWrapper.preferredFilename = thumbnailFilename
+        
+        return FileWrapper(directoryWithFileWrappers: [
+            sketchFilename: sketchFileWrapper,
+            thumbnailFilename: thumbnailFileWrapper
+        ])
     }
     
     // TODO: Populate error userInfo dict
     override func load(fromContents contents: Any, ofType typeName: String?) throws {
-        guard let sketchData = contents as? Data ,
+        guard let wrapper = contents as? FileWrapper else {
+            throw NSError(domain: "com.dstrokis.Padee", code: 2, userInfo: nil)
+        }
+        
+        guard let sketchData = wrapper.fileWrappers?[sketchFilename]?.regularFileContents,
               let sketch = NSKeyedUnarchiver.unarchiveObject(with: sketchData) as? Sketch else {
-            throw NSError(domain: "com.dstrokis.Padee", code: 1, userInfo: nil)
+            throw NSError(domain: "com.dstrokis.Padee", code: 3, userInfo: nil)
         }
         
         self.sketch = sketch
     }
     
-    override func fileAttributesToWrite(to url: URL, for saveOperation: UIDocumentSaveOperation) throws -> [AnyHashable : Any] {
-        let thumbnailSize = CGSize(width: 1024.0, height: 1024.0)
-        
-        UIGraphicsBeginImageContextWithOptions(thumbnailSize, true, 0.0)
-        
-        let context = UIGraphicsGetCurrentContext()
-        if let sketch = sketch {
-            for path in sketch.paths {
-                path.draw(in: context)
-            }
-        }
-        
-        let image = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
-        
-        UIGraphicsEndImageContext()
-        
-        return [
-            URLResourceKey.nameKey: url.lastPathComponent,
-            URLResourceKey.thumbnailDictionaryKey: [
-                URLThumbnailDictionaryItem.NSThumbnail1024x1024SizeKey: image
-            ]
-        ]
+    override func fileNameExtension(forType typeName: String?, saveOperation: UIDocumentSaveOperation) -> String {
+        return "pad"
     }
 }

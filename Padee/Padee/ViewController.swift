@@ -13,6 +13,7 @@ import StoreKit
 final class ViewController: UIViewController, UITextFieldDelegate {
 
     var shouldPromptForiCloudUse = true
+    
     @IBOutlet var toolButtons: [UIButton]!
     
     private var currentSketch = Sketch()
@@ -24,6 +25,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         toolButtons.filter({ $0.restorationIdentifier == Tool.Pen.rawValue }).first?.isSelected = true
         
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(ViewController.rotateToolButtons),
                                                name: .UIDeviceOrientationDidChange,
@@ -33,10 +35,6 @@ final class ViewController: UIViewController, UITextFieldDelegate {
                                                selector: #selector(ViewController.didDeleteSketchesHandler(_:)),
                                                name: .FileManagerDidDeleteSketches,
                                                object: nil)
-        
-        if shouldPromptForiCloudUse {
-            promptUserForiCloudPreference()
-        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -52,6 +50,11 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {        
         restoreToolButtons()
         super.touchesEnded(touches, with: event)
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        restoreToolButtons()
+        super.touchesCancelled(touches, with: event)
     }
     
     override var shouldAutorotate: Bool {
@@ -78,26 +81,6 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         
         currentSketch.paths = paths
         fileManagerController.archive(currentSketch)
-        
-//        let alertController = UIAlertController(title: "Rename Sketch", message: nil, preferredStyle: .alert)
-//        
-//        alertController.addTextField { [unowned self] (textField) in
-//            textField.delegate = self
-//            textField.text = self.currentSketch.name
-//        }
-//        
-//        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-//        let done = UIAlertAction(title: "Done", style: .default) { [unowned alertController] (action) in
-//            let newName = alertController.textFields?.first?.text
-//            self.currentSketch.name = newName
-//            alertController.textFields?.first!.resignFirstResponder()
-//        }
-//        
-//        alertController.addAction(cancel)
-//        alertController.addAction(done)
-//        
-//        present(alertController, animated: true, completion: nil)
-        
     }
     
     func restore(_ sketchPadFile: SketchPadFile, savingCurrentSketch save: Bool) {
@@ -142,7 +125,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     func rotateToolButtons() {
         let transform =  transformForCurrentDeviceOrientation()
         
-        UIView.animate(withDuration: 0.35, delay: 0.0, options: .curveEaseOut, animations: {
+        UIView.animate(withDuration: 0.35, delay: 0.0, options: .curveEaseOut, animations: { [unowned self] in
             for button in self.toolButtons {
                 button.transform = transform
             }
@@ -196,7 +179,6 @@ final class ViewController: UIViewController, UITextFieldDelegate {
                 button.alpha = 0.4
             }
         }, completion: nil)
-        
     }
     
     private func restoreToolButtons() {
@@ -292,25 +274,5 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func unwindSegue(sender: UIStoryboardSegue) {
         // Empty segue to allow unwinding from ImageGalleryViewController
-    }
-    
-    func promptUserForiCloudPreference() {
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
-            UserDefaults.standard.set(true, forKey: iCloudInUseKey)
-        })
-        
-        let iCloudAction = UIAlertAction(title: "Use iCloud", style: .default, handler: { (action) in
-            UserDefaults.standard.set(true, forKey: iCloudInUseKey)
-            self.fileManagerController.moveSketchesToUbiquityContainer()
-        })
-        
-        let alert = UIAlertController(title: "Use iCloud?", message: "Would you like to store your documents in iCloud? This can be changed at any time in Settings.", preferredStyle: .alert)
-        
-        alert.addAction(cancel)
-        alert.addAction(iCloudAction)
-
-        DispatchQueue.main.async {
-            self.present(alert, animated: true, completion: nil)
-        }
     }
 }

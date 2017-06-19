@@ -75,7 +75,23 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     return
                 }
                 
-                controller.shouldPromptForiCloudUse = true
+                let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
+                    UserDefaults.standard.set(true, forKey: iCloudInUseKey)
+                })
+                
+                let iCloudAction = UIAlertAction(title: "Use iCloud", style: .default, handler: { (action) in
+                    UserDefaults.standard.set(true, forKey: iCloudInUseKey)
+                    controller.fileManagerController.moveSketchesToUbiquityContainer()
+                })
+                
+                let alert = UIAlertController(title: "Use iCloud?", message: "Would you like to store your documents in iCloud? This can be changed at any time in Settings.", preferredStyle: .alert)
+                
+                alert.addAction(cancel)
+                alert.addAction(iCloudAction)
+                
+                DispatchQueue.main.async {
+                    controller.present(alert, animated: true, completion: nil)
+                }
             }
         } else {
             userDefaults.removeObject(forKey: iCloudTokenKey)

@@ -28,9 +28,25 @@ final class CanvasView: UIView {
             guard let image = canvasBackingImage else {
                 return nil
             }
-
+            
             UIGraphicsBeginImageContextWithOptions(UIScreen.main.bounds.size, false, 0.0)
             let context = UIGraphicsGetCurrentContext()
+            
+            /*
+             let size = pathsForRestoringCurrentImage.map { (p) -> CGRect in
+             var rect = CGRect.zero
+             for point in p.points {
+             rect = rect.union(p.updateRectForPoint(point: point))
+             }
+             
+             return rect
+             }.reduce(CGRect.zero) { $0.0.union($0.1) }
+             
+             UIColor.white.setFill()
+             context?.fill(size)
+             
+             context?.draw(image, in: size)
+             */
             
             UIColor.white.setFill()
             context?.fill(UIScreen.main.bounds)

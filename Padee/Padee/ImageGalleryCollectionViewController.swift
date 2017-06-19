@@ -114,12 +114,8 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! ThumbnailImageCollectionViewCell
     
         let sketch = files[indexPath.section]
-        
-        let attributes = try? sketch.fileAttributesToWrite(to: sketch.fileURL, for: .forOverwriting)
-        if let thumbnails = attributes?[URLResourceKey.thumbnailDictionaryKey] as? [AnyHashable: AnyObject?] {
-            cell.imageView.image = thumbnails[URLThumbnailDictionaryItem.NSThumbnail1024x1024SizeKey] as? UIImage
-        }
-        
+        cell.imageView.image = sketch.thumbnail
+
         if !isEditing {
             cell.selectedImageView.alpha = 0.0
         }
@@ -134,10 +130,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         sketchNameView.addGestureRecognizer(tapRecognizer)
         
         let sketch = files[indexPath.section]
-        let attributes = try? sketch.fileAttributesToWrite(to: sketch.fileURL, for: .forOverwriting)
-        if let name = attributes?[URLResourceKey.nameKey] as? String {
-            sketchNameView.nameLabel.text = name
-        }
+        sketchNameView.nameLabel.text = sketch.fileURL.lastPathComponent
         
         return sketchNameView
     }
@@ -185,12 +178,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     
     override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
         let sketch = files[indexPath.section]
-        let attributes = try? sketch.fileAttributesToWrite(to: sketch.fileURL, for: .forOverwriting)
-        if let thumbnails = attributes?[URLResourceKey.thumbnailDictionaryKey] as? [AnyHashable: AnyObject?] {
-            if let thumbnail = thumbnails[URLThumbnailDictionaryItem.NSThumbnail1024x1024SizeKey] as? UIImage {
-                UIPasteboard.general.setValue(thumbnail, forPasteboardType: kUTTypeImage as String)
-            }
-        }
+        UIPasteboard.general.setValue(sketch.thumbnail, forPasteboardType: kUTTypeImage as String)
     }
     
     // MARK: - Navigation
@@ -213,17 +201,17 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     // MARK: - UITextField delegate
     
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextFieldDidEndEditingReason) {
-        guard let _ = textField.text?.trimmingCharacters(in: .whitespaces) else {
+        guard let newName = textField.text?.trimmingCharacters(in: .whitespaces) else {
             return
         }
         
-//        guard reason == .committed,
-//              !newName.isEmpty,
-//              newName != selectedSketch?.name else {
-//            return
-//        }
-//        
-//        fileManagerController.rename(sketch: selectedSketch!, to: newName)
+        guard reason == .committed,
+              !newName.isEmpty,
+              newName != selectedSketch?.sketch?.name else {
+            return
+        }
+        
+        fileManagerController.rename(sketchPadFile: selectedSketch!, to: newName)
     }
     
     // MARK: - UIViewControllerPreviewingDelegate
@@ -265,47 +253,49 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     }
     
     func renameSketch(_ sender: UITapGestureRecognizer) {
+        // TODO: Clean up this mess
         guard let supplementaryView = sender.view as? SketchNameSupplementaryView else {
             fatalError("Expected sender to be instance of SketchNameSupplementaryView. Instead got \(String(describing: sender.view.self))")
         }
         
         let sketchName = supplementaryView.nameLabel.text
         
-        guard let indexPaths = collectionView?.indexPathsForVisibleSupplementaryElements(ofKind: "SketchNameSupplementaryView") else {
+        guard let indexPaths = collectionView?.indexPathsForVisibleSupplementaryElements(ofKind: UICollectionElementKindSectionFooter) else {
             return
         }
         
         for index in indexPaths {
-            let view = collectionView?.supplementaryView(forElementKind: "SketchNameSupplementaryView", at: index )as? SketchNameSupplementaryView
+            let view = collectionView?.supplementaryView(forElementKind: UICollectionElementKindSectionFooter, at: index )as? SketchNameSupplementaryView
             if view?.nameLabel.text == sketchName {
                 selectedSketch = files[index.section]
             }
         }
         
-//        guard let sketch = selectedSketch else {
-//            return
-//        }
-//        
-//        let alertController = UIAlertController(title: "Rename Sketch", message: nil, preferredStyle: .alert)
-//        
-//        alertController.addTextField { [unowned self] (textField) in
-//            textField.delegate = self
-//            textField.text = supplementaryView.nameLabel.text
-//        }
-//        
-//        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-//        let done = UIAlertAction(title: "Done", style: .default) { [unowned alertController, supplementaryView] (action) in
-//            let newName = alertController.textFields?.first?.text
-//            self.selectedSketch?.name = newName
-//            
-//            supplementaryView.nameLabel.text = newName
-//            alertController.textFields?.first!.resignFirstResponder()
-//        }
-//        
-//        alertController.addAction(cancel)
-//        alertController.addAction(done)
-//        
-//        present(alertController, animated: true, completion: nil)
+        guard selectedSketch != nil else {
+            return
+        }
+        
+        let alertController = UIAlertController(title: "Rename Sketch", message: nil, preferredStyle: .alert)
+        
+        alertController.addTextField { [unowned self] (textField) in
+            textField.delegate = self
+            textField.text = supplementaryView.nameLabel.text
+        }
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let done = UIAlertAction(title: "Done", style: .default) { [unowned alertController, supplementaryView] (action) in
+            if let newName = alertController.textFields?.first?.text {
+                self.fileManagerController.rename(sketchPadFile: self.selectedSketch!, to: newName)
+                supplementaryView.nameLabel.text = newName
+            }
+            
+            alertController.textFields?.first!.resignFirstResponder()
+        }
+        
+        alertController.addAction(cancel)
+        alertController.addAction(done)
+        
+        present(alertController, animated: true, completion: nil)
     }
 
     func deleteSketches(_ sender: AnyObject) {
