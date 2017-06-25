@@ -55,54 +55,54 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    // MARK: Helper methods
+    private func startNewSketchForShortcutAction() {
+        let viewController = window?.rootViewController as? ViewController
+        viewController?.saveCurrentSketch()
+        viewController?.clearCanvas()
+    }
+    
+    // MARK: iCloud
     
     @objc private func iCloudAvailabilityDidChange(_ notification: Notification) {
         configureApplicationForiCloudUsage()
     }
     
     private func configureApplicationForiCloudUsage() {
-        let userDefaults = UserDefaults.standard
-        let iCloudToken = FileManager.default.ubiquityIdentityToken
-        
-        if let token = iCloudToken {
-            let tokenData = NSKeyedArchiver.archivedData(withRootObject: token)
-            userDefaults.set(tokenData, forKey: iCloudTokenKey)
-            
-            let usingiCloud = userDefaults.bool(forKey: iCloudInUseKey)
-            if !usingiCloud {                
-                guard let controller = window?.rootViewController as? ViewController else {
-                    return
-                }
-                
-                let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
-                    UserDefaults.standard.set(true, forKey: iCloudInUseKey)
-                })
-                
-                let iCloudAction = UIAlertAction(title: "Use iCloud", style: .default, handler: { (action) in
-                    UserDefaults.standard.set(true, forKey: iCloudInUseKey)
-                    controller.fileManagerController.moveSketchesToUbiquityContainer()
-                })
-                
-                let alert = UIAlertController(title: "Use iCloud?", message: "Would you like to store your documents in iCloud? This can be changed at any time in Settings.", preferredStyle: .alert)
-                
-                alert.addAction(cancel)
-                alert.addAction(iCloudAction)
-                
-                DispatchQueue.main.async {
-                    controller.present(alert, animated: true, completion: nil)
-                }
-            }
-        } else {
-            userDefaults.removeObject(forKey: iCloudTokenKey)
-            userDefaults.set(false, forKey: iCloudInUseKey)
-            self.fileManager.evictSketchesFromUbiquityContainer()
-        }
-    }
-    
-    private func startNewSketchForShortcutAction() {
-        let viewController = window?.rootViewController as? ViewController
-        viewController?.saveCurrentSketch()
-        viewController?.clearCanvas()
+//        let userDefaults = UserDefaults.standard
+//        let iCloudToken = FileManager.default.ubiquityIdentityToken
+//        
+//        if let token = iCloudToken {
+//            let tokenData = NSKeyedArchiver.archivedData(withRootObject: token)
+//            userDefaults.set(tokenData, forKey: iCloudTokenKey)
+//            
+//            let usingiCloud = userDefaults.bool(forKey: iCloudInUseKey)
+//            if !usingiCloud {                
+//                guard let controller = window?.rootViewController as? ViewController else {
+//                    return
+//                }
+//                
+//                let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) in
+//                    UserDefaults.standard.set(true, forKey: iCloudInUseKey)
+//                })
+//                
+//                let iCloudAction = UIAlertAction(title: "Use iCloud", style: .default, handler: { (action) in
+//                    UserDefaults.standard.set(true, forKey: iCloudInUseKey)
+//                    controller.fileManagerController.moveSketchesToUbiquityContainer()
+//                })
+//                
+//                let alert = UIAlertController(title: "Use iCloud?", message: "Would you like to store your documents in iCloud? This can be changed at any time in Settings.", preferredStyle: .alert)
+//                
+//                alert.addAction(cancel)
+//                alert.addAction(iCloudAction)
+//                
+//                DispatchQueue.main.async {
+//                    controller.present(alert, animated: true, completion: nil)
+//                }
+//            }
+//        } else {
+//            userDefaults.removeObject(forKey: iCloudTokenKey)
+//            userDefaults.set(false, forKey: iCloudInUseKey)
+//            self.fileManager.evictSketchesFromUbiquityContainer()
+//        }
     }
 }

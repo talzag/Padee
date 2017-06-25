@@ -11,12 +11,10 @@ import CoreGraphics
 import StoreKit
 
 final class ViewController: UIViewController, UITextFieldDelegate {
-
-    var shouldPromptForiCloudUse = true
     
     @IBOutlet var toolButtons: [UIButton]!
     
-    private var currentSketch = Sketch()
+    private var currentSketch: SketchPadFile?
     private var feedbackGenerator: UISelectionFeedbackGenerator?
     
     override func viewDidLoad() {
@@ -38,6 +36,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        currentSketch?.close()
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
         super.viewWillDisappear(animated)
     }
@@ -79,8 +78,9 @@ final class ViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
-        currentSketch.paths = paths
-        fileManagerController.archive(currentSketch)
+        currentSketch?.sketch?.paths = paths
+        currentSketch?.save(to: currentSketch!.fileURL, for: .forOverwriting)
+//        fileManagerController.lastSavedSketchFile = currentSketch
     }
     
     func restore(_ sketchPadFile: SketchPadFile, savingCurrentSketch save: Bool) {
@@ -91,35 +91,37 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         
         (view as! CanvasView).clear()
         
+        currentSketch = sketchPadFile
         sketchPadFile.open { [unowned self] (success) in
             guard success, let sketch = sketchPadFile.sketch else {
                 return
             }
             
-            self.currentSketch = sketch
-            
-            self.currentSketch = sketch
             (self.view as! CanvasView).restoreImage(using: sketch.paths)
         }
     }
     
     func restoreLastSketch() {
-        guard let lastSketch = fileManagerController.lastSavedSketch() else {
-            return
-        }
-        
-        lastSketch.open { [unowned self] (success) in
-            guard success, let sketch = lastSketch.sketch else {
-                return
+        if let lastSketch = fileManagerController.lastSavedSketchFile {
+            currentSketch = lastSketch
+            lastSketch.open { [unowned self] (success) in
+                guard success, let sketch = lastSketch.sketch else {
+                    return
+                }
+                
+                (self.view as! CanvasView).restoreImage(using: sketch.paths)
             }
-            
-            self.currentSketch = sketch
+        } else {
+            currentSketch = fileManagerController.newSketchPadFile()
+            currentSketch?.save(to: currentSketch!.fileURL, for: .forCreating)
         }
     }
     
     func clearCanvas() {
         (view as! CanvasView).clear()
-        currentSketch = Sketch()
+        currentSketch = fileManagerController.newSketchPadFile()
+        currentSketch?.save(to: currentSketch!.fileURL, for: .forCreating)
+        fileManagerController.lastSavedSketchFile = nil
     }
     
     func rotateToolButtons() {
@@ -192,11 +194,12 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc private func didDeleteSketchesHandler(_ notification: Notification) {
-        guard let sketchNames = notification.userInfo?["sketches"] as? [String] else {
+        guard let sketchNames = notification.userInfo?["sketches"] as? [String],
+              let sketch = currentSketch else {
             return
         }
         
-        if sketchNames.contains(currentSketch.name) {
+        if sketchNames.contains(sketch.fileURL.lastPathComponent) {
             clearCanvas()
         }
     }

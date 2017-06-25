@@ -142,11 +142,11 @@
 			children = (
 				E32660151EBD6E820013C3D0 /* Padee.entitlements */,
 				E39EDAEE1D10676F00D2CA69 /* AppDelegate.swift */,
+				E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */,
 				E39EDAF01D10676F00D2CA69 /* ViewController.swift */,
 				E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */,
 				E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */,
 				E3D0847A1ECB5D090005D1C3 /* SketchPadFile.swift */,
-				E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */,
 				E35E04661E2862DA007B786C /* ExportActivity.swift */,
 				E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */,
 				E336A5DD1E232FB7002F1C5B /* Notifications.swift */,
