@@ -74,13 +74,13 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     func saveCurrentSketch() {
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
-        guard paths.count > 0 else {
+        guard paths.count > 0,
+              let sketch = currentSketch else {
             return
         }
         
-        currentSketch?.sketch?.paths = paths
-        currentSketch?.save(to: currentSketch!.fileURL, for: .forOverwriting)
-//        fileManagerController.lastSavedSketchFile = currentSketch
+        sketch.sketch?.paths = paths
+        fileManagerController.lastSavedSketchFile = currentSketch
     }
     
     func restore(_ sketchPadFile: SketchPadFile, savingCurrentSketch save: Bool) {
@@ -113,15 +113,13 @@ final class ViewController: UIViewController, UITextFieldDelegate {
             }
         } else {
             currentSketch = fileManagerController.newSketchPadFile()
-            currentSketch?.save(to: currentSketch!.fileURL, for: .forCreating)
         }
     }
     
     func clearCanvas() {
         (view as! CanvasView).clear()
         currentSketch = fileManagerController.newSketchPadFile()
-        currentSketch?.save(to: currentSketch!.fileURL, for: .forCreating)
-        fileManagerController.lastSavedSketchFile = nil
+        fileManagerController.lastSavedSketchFile = currentSketch
     }
     
     func rotateToolButtons() {
