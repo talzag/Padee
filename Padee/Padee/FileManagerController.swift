@@ -14,8 +14,14 @@ import UIKit
 //      com.dstrokis.Padee.sketches/        <= archived sketches
 //          <SKETCH NAME>                   <= Sketch file wrapper (regular file wrapper with paths archived as Data)
 
+/// Handles the creation, saving, deleting, and moving of `SketchPadFile`s in the application. 
+/// Users of this class don't need to know if the files they are operating on are stored in
+/// iCloud or not.
 final class FileManagerController: NSObject {
     private let filesUpgradedKey = "com.dstrokis.Padee.files-upgraded"
+    
+    private let currentSketchKey = "com.dstrokis.Padee.current"
+    private let sketchDirectoryPathComponent = "com.dstrokis.Padee.sketches"
     
     private let fileManager = FileManager.default
     
@@ -30,7 +36,7 @@ final class FileManagerController: NSObject {
 //            documentsDirectory = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
 //        }
         
-        let sketchesURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.sketches", isDirectory: true)
+        let sketchesURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(self.sketchDirectoryPathComponent, isDirectory: true)
         
         if !self.fileManager.fileExists(atPath: sketchesURL.path, isDirectory: nil) {
             do {
@@ -45,7 +51,7 @@ final class FileManagerController: NSObject {
     
     var lastSavedSketchFile: SketchPadFile? {
         get {
-            guard let url = UserDefaults.standard.url(forKey: "com.dstrokis.Padee.current"),
+            guard let url = UserDefaults.standard.url(forKey: currentSketchKey),
                   self.fileManager.fileExists(atPath: url.path) else {
                 return nil
             }
@@ -55,11 +61,11 @@ final class FileManagerController: NSObject {
         }
         set {
             guard let file = newValue else {
-                UserDefaults.standard.set(nil, forKey: "com.dstrokis.Padee.current")
+                UserDefaults.standard.set(nil, forKey: currentSketchKey)
                 return
             }
             
-            UserDefaults.standard.set(file.fileURL, forKey: "com.dstrokis.Padee.current")
+            UserDefaults.standard.set(file.fileURL, forKey: currentSketchKey)
         }
     }
     
@@ -77,15 +83,29 @@ final class FileManagerController: NSObject {
         performFileSystemUpgrade()
     }
     
-    func newSketchPadFile() -> SketchPadFile? {
+    /// Create a new SketchPadFile, save it, and then call a completion handler with the new file.
+    ///
+    /// - Parameter completionHandler: Optional completion handler. If there were no issues when saving the file, the file will be passed as the only parameter to the completion handler.
+    func newSketchPadFile(completionHandler: ((SketchPadFile?) -> Void)? = nil) {
         let sketch = Sketch()
         let file = SketchPadFile(fileURL: sketchesDirectoryURL.appendingPathComponent(sketch.name))
-        file.save(to: file.fileURL, for: .forCreating)
-        
-        return file
+        file.sketch = sketch
+        file.save(to: file.fileURL, for: .forCreating) { (success) in
+            if success {
+                completionHandler?(file)
+            } else {
+                completionHandler?(nil)
+            }
+        }
     }
     
-    func archive(_ sketch: Sketch, completionHandler: ((Bool) -> Void)? = nil) {
+    /// Saves a `Sketch` in a SketchPadFile. If there is not a file for the sketch, a new file will be created.
+    ///
+    /// - Parameters:
+    ///   - sketch: `Sketch` to save
+    ///   - completionHandler: Optional completion handler. Will be called with the result of the file saving operation.
+    @available(*, deprecated)
+    private func archive(_ sketch: Sketch, completionHandler: ((Bool) -> Void)? = nil) {
         let fileURL = sketchesDirectoryURL.appendingPathComponent(sketch.name)
         
         let file = SketchPadFile(fileURL: fileURL)
@@ -159,7 +179,7 @@ final class FileManagerController: NSObject {
     
     func moveSketchesToUbiquityContainer() {
         DispatchQueue.global().async { [unowned self] in
-            let sketchesDirURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.sketches", isDirectory: true)
+            let sketchesDirURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(self.sketchDirectoryPathComponent, isDirectory: true)
             guard let iCloudDirURL = self.fileManager.url(forUbiquityContainerIdentifier: nil) else {
                 return
             }
@@ -173,7 +193,7 @@ final class FileManagerController: NSObject {
     }
     
     func evictSketchesFromUbiquityContainer() {
-        let sketchesDirURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.sketches", isDirectory: true)
+        let sketchesDirURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
         guard let iCloudDirURL = self.fileManager.url(forUbiquityContainerIdentifier: nil) else {
             return
         }
@@ -185,13 +205,16 @@ final class FileManagerController: NSObject {
         }
     }
     
-    func deleteSketch(_ sketch: SketchPadFile) {
+    private func deleteSketch(_ sketch: SketchPadFile) {
         if fileManager.fileExists(atPath: sketch.fileURL.path) {
             try? fileManager.removeItem(atPath: sketch.fileURL.path)
         }
     }
     
-    private func _archivedSketches() -> [Sketch?] {
+    /// Old implementation of the `archivedSketches` method. Used during the upgrade process to gather the archives of user sketches.
+    ///
+    /// - Returns: An array of `Sketch` instances.
+    private func _oldArchivedSketches() -> [Sketch?] {
         var sketches = [Sketch?]()
         
         do {
@@ -220,21 +243,7 @@ final class FileManagerController: NSObject {
         return sketches
     }
     
-    private func _prerenderedSketches() -> [UIImage?] {
-        var images = [UIImage?]()
-        
-        do {
-            let sketchesDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.upgrade-backup", isDirectory: true)
-            let pathURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirURL.path).filter({ $0.hasSuffix("png") }).sorted(by: >)
-            
-            images = pathURLs.map { UIImage(contentsOfFile: sketchesDirURL.appendingPathComponent($0).path) }
-        } catch {
-            print(error.localizedDescription)
-        }
-        
-        return images
-    }
-    
+    /// Upgrades the "file system" of Padee. User sketches used to be stored as archives. Now they are wrapped in a FileWrapper and stored by `SketchPadFile`.
     private func performFileSystemUpgrade() {
         if UserDefaults.standard.bool(forKey: filesUpgradedKey) { // already performed upgrade
             if let failedSketches = UserDefaults.standard.array(forKey: "com.dstrokis.Padee.failed-upgrades") as? [String] { // check for any failed upgrades
@@ -246,14 +255,22 @@ final class FileManagerController: NSObject {
             }
         }
         
+        // manually creating sketches dir URL so we don't lazily create it by accessing the property
+        // if this directory doesn't exist, then this is a new install and we don't need to perform
+        // a backup.
+        let sketchesURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
+        if !fileManager.fileExists(atPath: sketchesURL.path) {
+            return
+        }
+        
         var currentSketchName: String?
         
-        let currentSketchURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.current")
+        let currentSketchURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(currentSketchKey)
         if let sketch = NSKeyedUnarchiver.unarchiveObject(withFile: currentSketchURL.path) as? Sketch {
             currentSketchName = sketch.name
         }
         
-        let sketchesDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.sketches", isDirectory: true)
+        let sketchesDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
         let backupDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.upgrade-backup", isDirectory: true)
         
         do {
@@ -268,11 +285,9 @@ final class FileManagerController: NSObject {
             return // will try again on next launch
         }
         
-        let sketches = _archivedSketches()
-        let thumbnails = _prerenderedSketches()
+        let sketches = _oldArchivedSketches()
         
-        let zipped = zip(sketches, thumbnails)
-        for (sketch, _) in zipped {
+        for sketch in sketches {
             guard let sketch = sketch else {
                 continue
             }

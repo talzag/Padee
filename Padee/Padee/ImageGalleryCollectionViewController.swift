@@ -163,9 +163,9 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     }
     
     // MARK: - UIPasteboard Functionality
+    // FIXME: UIPasteboard-related commands
     
     override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        // FIXME: UIPasteboard-related commands
         return false
     }
     

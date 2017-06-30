@@ -12,7 +12,7 @@ final class SketchPadFile: UIDocument {
     private let sketchFilename = "Sketch.path"
     private var thumbnailFilename = "Sketch.png"
     
-    var sketch: Sketch?
+    var sketch: Sketch!
     
     var thumbnail: UIImage {
         let image: UIImage
