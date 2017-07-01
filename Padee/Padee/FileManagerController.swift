@@ -260,6 +260,7 @@ final class FileManagerController: NSObject {
         // a backup.
         let sketchesURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
         if !fileManager.fileExists(atPath: sketchesURL.path) {
+            UserDefaults.standard.set(true, forKey: filesUpgradedKey)
             return
         }
         

@@ -21,7 +21,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private let newSketchShortcutType = "new-sketch"
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
-
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(iCloudAvailabilityDidChange(_:)),
+                                               name: .NSUbiquityIdentityDidChange,
+                                               object: nil)
+        
+        configureApplicationForiCloudUsage()
+        
         if let shortcutItem = launchOptions?[.shortcutItem] as? UIApplicationShortcutItem {
             if shortcutItem.type.components(separatedBy: ".").last == newSketchShortcutType  {
                 startNewSketchForShortcutAction()
@@ -31,22 +39,18 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             return false
         }
         
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(iCloudAvailabilityDidChange(_:)),
-                                               name: .NSUbiquityIdentityDidChange,
-                                               object: nil)
-        
-        configureApplicationForiCloudUsage()
-        
         return true
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
         (window?.rootViewController as? ViewController)?.saveCurrentSketch()
+        UIDevice.current.endGeneratingDeviceOrientationNotifications()
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
         (window?.rootViewController as? ViewController)?.saveCurrentSketch()
+        (window?.rootViewController as? ViewController)?.clearCanvas()
+        UIDevice.current.endGeneratingDeviceOrientationNotifications()
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
@@ -60,9 +64,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             return
         }
         
-        viewController.saveCurrentSketch()
-        viewController.clearCanvas()
-        viewController.startNewSketch()
+        viewController.createNewSketch()
     }
     
     // MARK: iCloud

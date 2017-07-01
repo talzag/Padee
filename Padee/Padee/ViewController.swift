@@ -14,8 +14,8 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet var toolButtons: [UIButton]!
     
-    private var currentSketch: SketchPadFile?
-    private var feedbackGenerator: UISelectionFeedbackGenerator?
+    var currentSketch: SketchPadFile?
+    var feedbackGenerator: UISelectionFeedbackGenerator?
     
     override var shouldAutorotate: Bool {
         return false
@@ -41,8 +41,6 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         
         toolButtons.filter({ $0.restorationIdentifier == Tool.Pen.rawValue }).first?.isSelected = true
         
-        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-        
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(ViewController.rotateToolButtons),
                                                name: .UIDeviceOrientationDidChange,
@@ -56,8 +54,6 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     override func viewWillDisappear(_ animated: Bool) {
         saveCurrentSketch()
-        clearCanvas()
-        UIDevice.current.endGeneratingDeviceOrientationNotifications()
         super.viewWillDisappear(animated)
     }
     
@@ -81,8 +77,6 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     // MARK: - Navigation
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        saveCurrentSketch()
-        
         do {
             let sketches = try fileManagerController.archivedSketches()
             
@@ -116,6 +110,10 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     func restore(_ sketchPadFile: SketchPadFile, savingCurrentSketch save: Bool) {
+        if let current = currentSketch, sketchPadFile.fileURL == current.fileURL {
+            return
+        }
+        
         saveCurrentSketch()
         clearCanvas()
         
@@ -214,8 +212,8 @@ final class ViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
-        if sketchNames.contains(sketch.fileURL.lastPathComponent) {
-            (view as! CanvasView).clear()
+        if sketchNames.contains(sketch.fileURL.path) {
+            clearCanvas()
             startNewSketch()
         }
     }
@@ -244,7 +242,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         feedbackGenerator = nil
     }
     
-    @IBAction func createNewSketch(_ sender: UIButton?) {
+    @IBAction func createNewSketch(_ sender: UIButton? = nil) {
         saveCurrentSketch()
         clearCanvas()
         startNewSketch()
