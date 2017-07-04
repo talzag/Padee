@@ -99,14 +99,17 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     func saveCurrentSketch() {
-        guard let sketch = currentSketch else {
+        guard let file = currentSketch else {
             return
         }
         
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
-        sketch.sketch.paths = paths // SketchPadFile's sketch should never be null
-        sketch.save(to: sketch.fileURL, for: .forOverwriting)
-        fileManagerController.lastSavedSketchFile = sketch
+        if paths.count == 0 {
+            return
+        }
+        
+        file.sketch.paths = paths // SketchPadFile's sketch should never be null
+        fileManagerController.save(sketchPadFile: file)
     }
     
     func restore(_ sketchPadFile: SketchPadFile, savingCurrentSketch save: Bool) {
@@ -118,9 +121,8 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         clearCanvas()
         
         currentSketch = sketchPadFile
-        fileManagerController.lastSavedSketchFile = sketchPadFile
-        sketchPadFile.open { [unowned self] (success) in
-            guard success, let sketch = sketchPadFile.sketch else {
+        fileManagerController.open(sketchPadFile: sketchPadFile) { [unowned self] (file) in
+            guard let sketch = file?.sketch else {
                 return
             }
             
@@ -130,11 +132,12 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     func clearCanvas() {
         (view as! CanvasView).clear()
-        currentSketch?.close() { (success) in
-            if !success {
-                print("Error saving current sketch.")
-            }
+        
+        guard let file = currentSketch else {
+            return
         }
+        
+        fileManagerController.close(sketchPadFile: file)
     }
     
     func rotateToolButtons() {
@@ -267,7 +270,8 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         popover?.sourceRect = CGRect(x: 0, y: 5, width: 32, height: 32)
     }
     
-    @IBAction func unwindSegue(sender: UIStoryboardSegue) {
-        // Empty segue to allow unwinding from ImageGalleryViewController
-    }
+    /// Empty segue to allow unwinding from ImageGalleryViewController
+    ///
+    /// - Parameter sender: Storyboard segue from ImageGalleryViewController
+    @IBAction func unwindSegue(sender: UIStoryboardSegue) { }
 }

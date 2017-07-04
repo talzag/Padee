@@ -85,11 +85,13 @@ final class FileManagerController: NSObject {
     
     /// Create a new SketchPadFile, save it, and then call a completion handler with the new file.
     ///
-    /// - Parameter completionHandler: Optional completion handler. If there were no issues when saving the file, the file will be passed as the only parameter to the completion handler.
+    /// - Parameter completionHandler: Optional completion handler. If there are no issues when saving the file,
+    /// the file will be passed as the only parameter to the completion handler.
     func newSketchPadFile(completionHandler: ((SketchPadFile?) -> Void)? = nil) {
         let sketch = Sketch()
         let file = SketchPadFile(fileURL: sketchesDirectoryURL.appendingPathComponent(sketch.name))
         file.sketch = sketch
+        
         file.save(to: file.fileURL, for: .forCreating) { (success) in
             if success {
                 completionHandler?(file)
@@ -126,9 +128,11 @@ final class FileManagerController: NSObject {
     func archivedSketches() throws -> [SketchPadFile] {
         var sketches = [SketchPadFile]()
         do {
-            let paths = try fileManager.contentsOfDirectory(at: sketchesDirectoryURL, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions.skipsHiddenFiles)
-            for path in paths {
-                let file = SketchPadFile(fileURL: path)
+            let options = FileManager.DirectoryEnumerationOptions.skipsHiddenFiles
+            let urls = try fileManager.contentsOfDirectory(at: sketchesDirectoryURL, includingPropertiesForKeys: nil, options: options)
+            
+            for url in urls {
+                let file = SketchPadFile(fileURL: url)
                 sketches.append(file)
             }
         } catch let error {
@@ -177,32 +181,65 @@ final class FileManagerController: NSObject {
         }
     }
     
-    func moveSketchesToUbiquityContainer() {
-        DispatchQueue.global().async { [unowned self] in
-            let sketchesDirURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(self.sketchDirectoryPathComponent, isDirectory: true)
-            guard let iCloudDirURL = self.fileManager.url(forUbiquityContainerIdentifier: nil) else {
-                return
-            }
+    /// Convenience method. Enables all file saving operations to be done via `FileManagerController` API.
+    /// Only called on existing `SketchPadFile`s, and as such all file save operations are for `.forOverwriting`.
+    ///
+    /// - Parameters:
+    ///   - file: `SketchPadFile` to save
+    ///   - completionHandler: Optional completion handler if caller in interested in the success of the operation.
+    func save(sketchPadFile file: SketchPadFile, completionHandler: ((Bool) -> Void)? = nil) {
+        file.save(to: file.fileURL, for: .forOverwriting) { [weak self] (success) in
+            completionHandler?(success)
             
-            do {
-                try self.fileManager.moveItem(at: sketchesDirURL, to: iCloudDirURL)
-            } catch {
-                print(error.localizedDescription)
+            if success {
+                self?.lastSavedSketchFile = file
             }
         }
     }
     
-    func evictSketchesFromUbiquityContainer() {
-        let sketchesDirURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
-        guard let iCloudDirURL = self.fileManager.url(forUbiquityContainerIdentifier: nil) else {
+    func open(sketchPadFile file: SketchPadFile, completionHandler: @escaping ((SketchPadFile?) -> Void)) {
+        file.open {[unowned self] (success) in
+            guard success else {
+                completionHandler(nil)
+                return
+            }
+            
+            completionHandler(file)
+            self.lastSavedSketchFile = file
+        }
+    }
+    
+    func close(sketchPadFile file: SketchPadFile, completionHandler: ((Bool) -> Void)? = nil) {
+        // delete empty sketches, kind of like Notes.app when you start a new note but don't type anything
+        let shouldDelete = file.sketch.paths.count == 0
+        
+        file.close { [unowned self] (success) in
+            completionHandler?(success)
+            
+            if success && shouldDelete {
+                self.deleteSketch(file)
+            }
+        }
+    }
+    
+    func moveSketchesToUbiquityContainer() throws {
+        let sketchesDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
+        
+        guard let iCloudDirURL = fileManager.url(forUbiquityContainerIdentifier: nil) else {
             return
         }
         
-        do {
-            try self.fileManager.moveItem(at: iCloudDirURL, to: sketchesDirURL)
-        } catch {
-            print(error.localizedDescription)
+        try fileManager.moveItem(at: sketchesDirURL, to: iCloudDirURL)
+    }
+    
+    func evictSketchesFromUbiquityContainer() throws {
+        let sketchesDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
+        
+        guard let iCloudDirURL = fileManager.url(forUbiquityContainerIdentifier: nil) else {
+            return
         }
+        
+        try fileManager.moveItem(at: iCloudDirURL, to: sketchesDirURL)
     }
     
     private func deleteSketch(_ sketch: SketchPadFile) {

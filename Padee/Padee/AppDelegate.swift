@@ -60,11 +60,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func startNewSketchForShortcutAction() {
-        guard let viewController = window?.rootViewController as? ViewController else {
-            return
-        }
-        
-        viewController.createNewSketch()
+        (window?.rootViewController as? ViewController)?.createNewSketch()
     }
     
     // MARK: iCloud
