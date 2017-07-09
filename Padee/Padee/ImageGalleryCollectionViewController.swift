@@ -207,7 +207,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         
         guard reason == .committed,
               !newName.isEmpty,
-              newName != selectedSketch?.sketch?.name else {
+              newName != selectedSketch?.sketch.name else {
             return
         }
         

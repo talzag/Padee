@@ -29,11 +29,12 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         if let lastSketch = fileManagerController.lastSavedSketchFile {
             currentSketch = lastSketch
             lastSketch.open { [unowned self] (success) in
-                guard success, let sketch = lastSketch.sketch else {
+                guard success else {
+                    self.startNewSketch()
                     return
                 }
                 
-                (self.view as! CanvasView).restoreImage(using: sketch.paths)
+                (self.view as! CanvasView).restoreImage(using: lastSketch.sketch.paths)
             }
         } else {
             startNewSketch()
@@ -99,21 +100,21 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     func saveCurrentSketch() {
-        guard let file = currentSketch else {
-            return
-        }
-        
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
         if paths.count == 0 {
             return
         }
         
-        file.sketch.paths = paths // SketchPadFile's sketch should never be null
+        guard let file = currentSketch else {
+            return
+        }
+        
+        file.sketch.paths = paths
         fileManagerController.save(sketchPadFile: file)
     }
     
     func restore(_ sketchPadFile: SketchPadFile, savingCurrentSketch save: Bool) {
-        if let current = currentSketch, sketchPadFile.fileURL == current.fileURL {
+        if let current = currentSketch, sketchPadFile.fileURL.standardizedFileURL == current.fileURL.standardizedFileURL {
             return
         }
         
@@ -121,8 +122,15 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         clearCanvas()
         
         currentSketch = sketchPadFile
+        
+        if sketchPadFile.documentState == .normal {
+            (view as! CanvasView).restoreImage(using: sketchPadFile.sketch.paths)
+            return
+        }
+        
         fileManagerController.open(sketchPadFile: sketchPadFile) { [unowned self] (file) in
             guard let sketch = file?.sketch else {
+                file?.sketch = Sketch()
                 return
             }
             

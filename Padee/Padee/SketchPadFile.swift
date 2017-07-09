@@ -15,39 +15,27 @@ final class SketchPadFile: UIDocument {
     private let sketchFilename = "Sketch.path"
     private var thumbnailFilename = "Sketch.png"
     
-    var sketch: Sketch!
+    var sketch = Sketch()
     
     var thumbnail: UIImage {
-        let image: UIImage
+        let thumbnailSize = UIScreen.main.bounds
+        UIGraphicsBeginImageContextWithOptions(thumbnailSize.size, true, 0.0)
+        let context = UIGraphicsGetCurrentContext()
         
-        if let sketch = sketch {
-            let thumbnailSize = UIScreen.main.bounds
-            UIGraphicsBeginImageContextWithOptions(thumbnailSize.size, true, 0.0)
-            let context = UIGraphicsGetCurrentContext()
-            
-            UIColor.white.setFill()
-            context?.fill(thumbnailSize)
-            
-            for path in sketch.paths {
-                path.draw(in: context)
-            }
-            
-            image = UIGraphicsGetImageFromCurrentImageContext()!
-            UIGraphicsEndImageContext()
-        } else if let data = FileManager.default.contents(atPath: fileURL.appendingPathComponent(thumbnailFilename).path), let preview = UIImage(data: data) {
-            image = preview
-        } else {
-            image = #imageLiteral(resourceName: "File")
+        UIColor.white.setFill()
+        context?.fill(thumbnailSize)
+        
+        for path in sketch.paths {
+            path.draw(in: context)
         }
+        
+        let image = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
         
         return image
     }
     
     override func contents(forType typeName: String) throws -> Any {
-        guard let sketch = sketch else {
-            throw NSError(domain: "com.dstrokis.Padee", code: 1, userInfo: nil)
-        }
-        
         let sketchData = NSKeyedArchiver.archivedData(withRootObject: sketch)
         let imageData = UIImagePNGRepresentation(thumbnail)!
         
