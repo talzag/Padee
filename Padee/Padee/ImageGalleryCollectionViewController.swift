@@ -207,7 +207,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         
         guard reason == .committed,
               !newName.isEmpty,
-              newName != selectedSketch?.sketch.name else {
+              newName != selectedSketch?.sketch?.name else {
             return
         }
         
@@ -228,14 +228,9 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         previewingContext.sourceRect = cell.frame
         
         let sketch = files[indexPath.section]
-        let attributes = try? sketch.fileAttributesToWrite(to: sketch.fileURL, for: .forOverwriting)
-        guard let thumbnails = attributes?[URLResourceKey.thumbnailDictionaryKey] as? [AnyHashable: AnyObject?],
-              let image = thumbnails[URLThumbnailDictionaryItem.NSThumbnail1024x1024SizeKey] as? UIImage else {
-            return nil
-        }
         
         let imagePreviewViewController = ImagePreviewViewController()
-        imagePreviewViewController.image = image
+        imagePreviewViewController.image = sketch.thumbnail
         imagePreviewViewController.shareActionCompletionHandler = shareImage(_:)
         imagePreviewViewController.preferredContentSize = CGSize(width: 0.0, height: 0.0)
         
