@@ -29,6 +29,7 @@ final class FileManagerController: NSObject {
     private var iCloudContainerURL: URL?
     
     lazy var sketchesDirectoryURL: URL = {
+        
 //        let documentsDirectory: URL
 //        if self.isUsingiCloud, let url = self.iCloudContainerURL ?? FileManager.default.url(forUbiquityContainerIdentifier: nil) {
 //            documentsDirectory = url
@@ -72,13 +73,11 @@ final class FileManagerController: NSObject {
     override init() {
         super.init()
         
-        let manager = fileManager
-        
-        DispatchQueue.global().async {
-            if let iCloudURL = manager.url(forUbiquityContainerIdentifier: nil) {
-                self.iCloudContainerURL = iCloudURL
-            }
-        }
+//        DispatchQueue.global().async {
+//            if let iCloudURL = manager.url(forUbiquityContainerIdentifier: nil) {
+//                self.iCloudContainerURL = iCloudURL
+//            }
+//        }
 
         performFileSystemUpgrade()
     }

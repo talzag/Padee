@@ -37,9 +37,11 @@ final class ViewController: UIViewController, UITextFieldDelegate {
             }
         } else {
             fileManagerController.newSketchPadFile() { (file) in
-                if let file = file {
-                    self.currentSketch = file
+                guard let file = file else {
+                    fatalError()
                 }
+                
+                self.currentSketch = file
             }
         }
         
@@ -96,11 +98,13 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     func saveCurrentSketch(_ completionHandler: ((Bool) -> Void)? = nil) {
         guard let file = currentSketch else {
+            completionHandler?(true)
             return
         }
         
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
         if paths.count == 0 {
+            completionHandler?(true)
             return
         }
         
@@ -115,27 +119,28 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     func restore(_ sketchPadFile: SketchPadFile, savingCurrentSketch save: Bool) {
-        if let current = currentSketch, sketchPadFile.fileURL.standardized == current.fileURL.standardized {
+        if let current = currentSketch, sketchPadFile.fileURL.lastPathComponent == current.fileURL.lastPathComponent {
             return
         }
         
-        saveCurrentSketch { [unowned self] (saved) in
-            guard saved else { return }
-            
-            self.currentSketch = sketchPadFile
-        }
-        clearCanvas()
-        
-        fileManagerController.open(sketchPadFile: sketchPadFile) { [unowned self] (file) in
-            guard let sketch = file?.sketch else {
+        clearCanvas { [unowned self] (success) in
+            guard success else {
                 return
             }
             
-            (self.view as! CanvasView).restoreImage(using: sketch.paths)
+            self.fileManagerController.open(sketchPadFile: sketchPadFile) { (file) in
+                guard let file = file else {
+                    return
+                }
+                
+                
+                self.currentSketch = file
+                (self.view as! CanvasView).restoreImage(using: file.sketch.paths)
+            }
         }
     }
     
-    func clearCanvas(_ completionHandler: ((Bool) -> Void)? = nil) {
+    func clearCanvas(_ completionHandler: @escaping ((Bool) -> Void)) {
         (view as! CanvasView).clear()
         
         guard let file = currentSketch else {
@@ -143,7 +148,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         }
         
         fileManagerController.close(sketchPadFile: file) { (success) in
-            completionHandler?(success)
+            completionHandler(success)
         }
     }
     
@@ -223,12 +228,19 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         }
         
         if sketchNames.contains(sketch.fileURL.path) {
-            clearCanvas()
-            fileManagerController.newSketchPadFile() { (file) in
-                if let file = file {
+            clearCanvas({ (success) in
+                guard success else {
+                    return
+                }
+                
+                self.fileManagerController.newSketchPadFile() { (file) in
+                    guard let file = file else {
+                        fatalError()
+                    }
+                    
                     self.currentSketch = file
                 }
-            }
+            })
         }
     }
     
@@ -257,11 +269,21 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func createNewSketch(_ sender: UIButton? = nil) {
-        saveCurrentSketch()
-        clearCanvas()
-        fileManagerController.newSketchPadFile() { (file) in
-            if let file = file {
-                self.currentSketch = file
+        saveCurrentSketch { (success) in
+            guard success else {
+                return
+            }
+
+            self.clearCanvas() { (success) in
+                guard success else {
+                    return
+                }
+
+                self.fileManagerController.newSketchPadFile() { (file) in
+                    if let file = file {
+                        self.currentSketch = file
+                    }
+                }
             }
         }
     }
