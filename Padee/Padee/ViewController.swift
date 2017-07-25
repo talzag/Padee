@@ -26,23 +26,28 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let lastSketch = fileManagerController.lastSavedSketchFile {
-            currentSketch = lastSketch
-            lastSketch.open { [unowned self] (success) in
-                guard success, let sketch = lastSketch.sketch else {
-                    return
-                }
-                
-                (self.view as! CanvasView).restoreImage(using: sketch.paths)
-            }
-        } else {
-            fileManagerController.newSketchPadFile() { (file) in
+        let startNewSketch = { [unowned self] in
+            self.fileManagerController.newSketchPadFile() { (file) in
                 guard let file = file else {
                     fatalError()
                 }
                 
                 self.currentSketch = file
             }
+        }
+        
+        if let lastSketch = fileManagerController.lastSavedSketchFile {
+            currentSketch = lastSketch
+            lastSketch.open { [unowned self] (success) in
+                guard success, let sketch = lastSketch.sketch else {
+                    startNewSketch()
+                    return
+                }
+                
+                (self.view as! CanvasView).restoreImage(using: sketch.paths)
+            }
+        } else {
+            startNewSketch()
         }
         
         toolButtons.filter({ $0.restorationIdentifier == Tool.Pen.rawValue }).first?.isSelected = true
@@ -144,6 +149,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         (view as! CanvasView).clear()
         
         guard let file = currentSketch else {
+            completionHandler(true)
             return
         }
         

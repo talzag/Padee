@@ -52,12 +52,12 @@ final class FileManagerController: NSObject {
     
     var lastSavedSketchFile: SketchPadFile? {
         get {
-            guard let url = UserDefaults.standard.url(forKey: currentSketchKey),
-                  self.fileManager.fileExists(atPath: url.path) else {
+            guard let fileName = UserDefaults.standard.string(forKey: currentSketchKey) else {
                 return nil
             }
         
-            let current = SketchPadFile(fileURL: url)
+            let fileURL = sketchesDirectoryURL.appendingPathComponent(fileName, isDirectory: true)
+            let current = SketchPadFile(fileURL: fileURL)
             return current
         }
         set {
@@ -66,7 +66,7 @@ final class FileManagerController: NSObject {
                 return
             }
             
-            UserDefaults.standard.set(file.fileURL, forKey: currentSketchKey)
+            UserDefaults.standard.set(file.fileURL.lastPathComponent, forKey: currentSketchKey)
         }
     }
     
