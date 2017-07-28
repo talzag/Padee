@@ -20,7 +20,9 @@ final class SketchPadFile: UIDocument {
     var thumbnail: UIImage {
         let image: UIImage
         
-        if let sketch = sketch {
+        let data = FileManager.default.contents(atPath: fileURL.appendingPathComponent(sketchFilename).path)
+        
+        if let sketchData = data, let sketch = NSKeyedUnarchiver.unarchiveObject(with: sketchData) as? Sketch {
             let thumbnailSize = UIScreen.main.bounds
             UIGraphicsBeginImageContextWithOptions(thumbnailSize.size, true, 0.0)
             let context = UIGraphicsGetCurrentContext()
@@ -34,10 +36,8 @@ final class SketchPadFile: UIDocument {
             
             image = UIGraphicsGetImageFromCurrentImageContext()!
             UIGraphicsEndImageContext()
-        } else if let data = FileManager.default.contents(atPath: fileURL.appendingPathComponent(thumbnailFilename).path), let preview = UIImage(data: data) {
-            image = preview
         } else {
-            image = #imageLiteral(resourceName: "File")
+            image = UIImage()
         }
         
         return image
@@ -49,17 +49,12 @@ final class SketchPadFile: UIDocument {
         }
         
         let sketchData = NSKeyedArchiver.archivedData(withRootObject: sketch)
-        let imageData = UIImagePNGRepresentation(thumbnail)!
         
         let sketchFileWrapper = FileWrapper(regularFileWithContents: sketchData)
         sketchFileWrapper.preferredFilename = sketchFilename
         
-        let thumbnailFileWrapper = FileWrapper(regularFileWithContents: imageData)
-        thumbnailFileWrapper.preferredFilename = thumbnailFilename
-        
         return FileWrapper(directoryWithFileWrappers: [
-            sketchFilename: sketchFileWrapper,
-            thumbnailFilename: thumbnailFileWrapper
+            sketchFilename: sketchFileWrapper
         ])
     }
     

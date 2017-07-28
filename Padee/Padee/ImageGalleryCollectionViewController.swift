@@ -193,9 +193,9 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
             return
         }
         
-        let sketch = files[indexPath.section]
+        let file = files[indexPath.section]
         
-        destination.restore(sketch, savingCurrentSketch: true)
+        destination.restoreSketch(from: file, savingCurrentSketch: true)
     }
     
     // MARK: - UITextField delegate
@@ -355,7 +355,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     private func removeItems(_ urls: [String]) {
         var indexes = [Int]()
         for x in 0..<self.files.count {
-            let url = self.files[x].fileURL.path
+            let url = self.files[x].fileURL.lastPathComponent
             if urls.contains(url) {
                 indexes.append(x)
             }
@@ -364,7 +364,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         let indexSet = IndexSet(indexes)
         
         self.files = self.files.filter {
-            let url = $0.fileURL.path
+            let url = $0.fileURL.lastPathComponent
             
             let delete = urls.contains(url)
             

@@ -50,8 +50,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         UserDefaults.standard.synchronize()
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
-        (window?.rootViewController as? ViewController)?.saveCurrentSketch()
-        (window?.rootViewController as? ViewController)?.clearCanvas({ success in  })
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {

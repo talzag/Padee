@@ -14,7 +14,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet var toolButtons: [UIButton]!
     
-    var currentSketch: SketchPadFile?
+    var currentSketch: Sketch?
     var feedbackGenerator: UISelectionFeedbackGenerator?
     
     override var shouldAutorotate: Bool {
@@ -25,30 +25,6 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let startNewSketch = { [unowned self] in
-            self.fileManagerController.newSketchPadFile() { (file) in
-                guard let file = file else {
-                    fatalError()
-                }
-                
-                self.currentSketch = file
-            }
-        }
-        
-        if let lastSketch = fileManagerController.lastSavedSketchFile {
-            currentSketch = lastSketch
-            lastSketch.open { [unowned self] (success) in
-                guard success, let sketch = lastSketch.sketch else {
-                    startNewSketch()
-                    return
-                }
-                
-                (self.view as! CanvasView).restoreImage(using: sketch.paths)
-            }
-        } else {
-            startNewSketch()
-        }
         
         toolButtons.filter({ $0.restorationIdentifier == Tool.Pen.rawValue }).first?.isSelected = true
         
@@ -61,10 +37,13 @@ final class ViewController: UIViewController, UITextFieldDelegate {
                                                selector: #selector(ViewController.didDeleteSketchesHandler(_:)),
                                                name: .FileManagerDidDeleteSketches,
                                                object: nil)
+        
+        restoreSketch()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        saveCurrentSketch()
+        // save current sketch data so that thumbnail is updated in image gallery
+        
         super.viewWillDisappear(animated)
     }
     
@@ -101,62 +80,61 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: - Sketch handling
     
-    func saveCurrentSketch(_ completionHandler: ((Bool) -> Void)? = nil) {
-        guard let file = currentSketch else {
-            completionHandler?(true)
-            return
-        }
-        
+    func saveCurrentSketch() {
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
-        if paths.count == 0 {
-            completionHandler?(true)
+        
+        guard let current = currentSketch, paths.count > 0 else {
             return
         }
         
-        if file.sketch == nil {
-            file.sketch = Sketch()
-        }
+        current.paths = paths
         
-        file.sketch.paths = paths
-        fileManagerController.save(sketchPadFile: file) { (success) in
-            completionHandler?(success)
+        fileManagerController.archive(current) { (success) in
+            if !success {
+                fatalError("Could not save Sketch!!")
+            }
         }
     }
     
-    func restore(_ sketchPadFile: SketchPadFile, savingCurrentSketch save: Bool) {
-        if let current = currentSketch, sketchPadFile.fileURL.lastPathComponent == current.fileURL.lastPathComponent {
-            return
-        }
-        
-        clearCanvas { [unowned self] (success) in
-            guard success else {
-                return
-            }
-            
-            self.fileManagerController.open(sketchPadFile: sketchPadFile) { (file) in
-                guard let file = file else {
+    func restoreSketch() {
+        if let lastSketch = fileManagerController.lastSavedSketchFile {
+            lastSketch.open { [unowned self] (success) in
+                guard success, let sketch = lastSketch.sketch else {
+                    self.createNewSketch()
                     return
                 }
                 
-                
-                self.currentSketch = file
-                (self.view as! CanvasView).restoreImage(using: file.sketch.paths)
+                self.currentSketch = sketch
+                (self.view as! CanvasView).restoreImage(using: sketch.paths)
             }
+        } else {
+            createNewSketch()
         }
     }
     
-    func clearCanvas(_ completionHandler: @escaping ((Bool) -> Void)) {
-        (view as! CanvasView).clear()
-        
-        guard let file = currentSketch else {
-            completionHandler(true)
+    func restoreSketch(from sketchPadFile: SketchPadFile, savingCurrentSketch save: Bool) {
+        if let current = currentSketch, sketchPadFile.fileURL.lastPathComponent == current.name {
             return
         }
         
-        fileManagerController.close(sketchPadFile: file) { (success) in
-            completionHandler(success)
+        clearCanvas()
+        sketchPadFile.open { (success) in
+            guard success else {
+                self.createNewSketch()
+                return
+            }
+            
+            self.currentSketch = sketchPadFile.sketch
+            (self.view as! CanvasView).restoreImage(using: self.currentSketch!.paths)
         }
     }
+    
+    func clearCanvas() {
+        (view as! CanvasView).clear()
+        fileManagerController.lastSavedSketchFile = nil
+    }
+    
+    // MARK: - Button handling
     
     func rotateToolButtons() {
         let transform =  transformForCurrentDeviceOrientation()
@@ -227,28 +205,21 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         }, completion: nil)
     }
     
+    // MARK: - Notification handlers
+    
     @objc private func didDeleteSketchesHandler(_ notification: Notification) {
         guard let sketchNames = notification.userInfo?["sketches"] as? [String],
               let sketch = currentSketch else {
             return
         }
         
-        if sketchNames.contains(sketch.fileURL.path) {
-            clearCanvas({ (success) in
-                guard success else {
-                    return
-                }
-                
-                self.fileManagerController.newSketchPadFile() { (file) in
-                    guard let file = file else {
-                        fatalError()
-                    }
-                    
-                    self.currentSketch = file
-                }
-            })
+        if sketchNames.contains(sketch.name) {
+            clearCanvas()
+            currentSketch = Sketch()
         }
     }
+    
+    // MARK: - IBActions
     
     @IBAction func toolSelected(_ sender: UIButton) {
         if feedbackGenerator == nil {
@@ -275,23 +246,9 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func createNewSketch(_ sender: UIButton? = nil) {
-        saveCurrentSketch { (success) in
-            guard success else {
-                return
-            }
-
-            self.clearCanvas() { (success) in
-                guard success else {
-                    return
-                }
-
-                self.fileManagerController.newSketchPadFile() { (file) in
-                    if let file = file {
-                        self.currentSketch = file
-                    }
-                }
-            }
-        }
+        saveCurrentSketch()
+        clearCanvas()
+        currentSketch = Sketch()
     }
     
     @IBAction func exportCurrentImage(_ sender: UIButton) {
