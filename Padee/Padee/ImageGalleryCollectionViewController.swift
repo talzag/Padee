@@ -334,18 +334,38 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     func fileManagerDidSaveHandler(_ notification: Notification) {
         let userInfo = notification.userInfo
         
-        if let file = userInfo?["file"] as? SketchPadFile {
+        guard let file = userInfo?["file"] as? SketchPadFile else {
+            return
+        }
+        
+        let section: IndexSet
+        let updates: () -> ()
+        
+        let exists = files.contains { $0.fileURL.lastPathComponent == file.fileURL.lastPathComponent }
+        
+        if exists {
+            let index = files.index(where: { $0.fileURL.lastPathComponent == file.fileURL.lastPathComponent })!
+            section = IndexSet(integer: index)
+            
+            files[index] = file
+            
+            updates = { [unowned self] in
+                self.collectionView?.reloadSections(section)
+                self.noSketchesMessageLabel?.removeFromSuperview()
+            }
+        } else {
+            let numSections = collectionView!.numberOfSections
+            section = IndexSet(integer: numSections)
+            
             files.append(file)
             
-            collectionView?.performBatchUpdates({ [unowned self] in
-                let numSections = self.collectionView!.numberOfSections
-                let set = IndexSet(integer: numSections)
-                
-                self.collectionView?.insertSections(set)
-                
+            updates = { [unowned self] in
+                self.collectionView?.insertSections(section)
                 self.noSketchesMessageLabel?.removeFromSuperview()
-            }, completion: nil)
+            }
         }
+        
+        collectionView?.performBatchUpdates(updates, completion: nil)
     }
     
     private func addNoSketchesMessageLabel() {
