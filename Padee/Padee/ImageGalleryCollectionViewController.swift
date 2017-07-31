@@ -66,6 +66,8 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: collectionView!)
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(fileManagerDidSaveHandler(_:)), name: .FileManagerDidSaveSketchPadFile, object: nil)
     }
     
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -327,6 +329,23 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         let shareViewController = UIActivityViewController(activityItems: [image], applicationActivities: activities)
         
         present(shareViewController, animated: true, completion: nil)
+    }
+    
+    func fileManagerDidSaveHandler(_ notification: Notification) {
+        let userInfo = notification.userInfo
+        
+        if let file = userInfo?["file"] as? SketchPadFile {
+            files.append(file)
+            
+            collectionView?.performBatchUpdates({ [unowned self] in
+                let numSections = self.collectionView!.numberOfSections
+                let set = IndexSet(integer: numSections)
+                
+                self.collectionView?.insertSections(set)
+                
+                self.noSketchesMessageLabel?.removeFromSuperview()
+            }, completion: nil)
+        }
     }
     
     private func addNoSketchesMessageLabel() {

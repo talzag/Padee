@@ -9,6 +9,7 @@
 import Foundation
 
 extension NSNotification.Name {
+    static let FileManagerDidSaveSketchPadFile = Notification.Name(rawValue: "FileManagerDidSaveSketchPadFile")
     static let FileManagerDidDeleteSketches = NSNotification.Name(rawValue: "FileManagerDidDeleteSketches")
     static let FileManagerDidRenameSketch = NSNotification.Name(rawValue: "FileManagerDidRenameSketch")
 }

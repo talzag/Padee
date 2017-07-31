@@ -107,6 +107,13 @@ final class FileManagerController: NSObject {
         
         file.save(to: fileURL, for: operation) { (success) in
             completionHandler?(success)
+            if success {
+                NotificationCenter.default.post(name: .FileManagerDidSaveSketchPadFile,
+                                                object: self,
+                                                userInfo: [
+                                                    "file": file
+                                                ])
+            }
         }
     }
     
