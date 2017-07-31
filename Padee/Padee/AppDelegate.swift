@@ -59,7 +59,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func startNewSketchForShortcutAction() {
-        (window?.rootViewController as? ViewController)?.createNewSketch()
+        fileManager.lastSavedSketchFile = nil
+        (window?.rootViewController as? ViewController)?.clearCanvas()
+        (window?.rootViewController as? ViewController)?.currentSketch = Sketch()
     }
     
     // MARK: iCloud

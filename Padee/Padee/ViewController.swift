@@ -42,7 +42,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        // save current sketch data so that thumbnail is updated in image gallery
+        saveCurrentSketch()
         
         super.viewWillDisappear(animated)
     }
@@ -89,11 +89,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         
         current.paths = paths
         
-        fileManagerController.archive(current) { (success) in
-            if !success {
-                fatalError("Could not save Sketch!!")
-            }
-        }
+        fileManagerController.archive(current)
     }
     
     func restoreSketch() {
@@ -112,19 +108,22 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
-    func restoreSketch(from sketchPadFile: SketchPadFile, savingCurrentSketch save: Bool) {
-        if let current = currentSketch, sketchPadFile.fileURL.lastPathComponent == current.name {
+    func restoreSketch(from file: SketchPadFile, savingCurrentSketch save: Bool) {
+        if let current = currentSketch, file.fileURL.lastPathComponent == current.name {
             return
         }
         
+        fileManagerController.lastSavedSketchFile = file
+        
         clearCanvas()
-        sketchPadFile.open { (success) in
+        
+        file.open { (success) in
             guard success else {
                 self.createNewSketch()
                 return
             }
             
-            self.currentSketch = sketchPadFile.sketch
+            self.currentSketch = file.sketch
             (self.view as! CanvasView).restoreImage(using: self.currentSketch!.paths)
         }
     }
