@@ -13,7 +13,6 @@ final class SketchPadFile: UIDocument {
     static let pathAttributesKey = "com.dstrokis.Padee.path-count"
     
     private let sketchFilename = "Sketch.path"
-    private var thumbnailFilename = "Sketch.png"
     
     var sketch: Sketch!
     
