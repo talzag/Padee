@@ -48,8 +48,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        (window?.rootViewController as? ViewController)?.saveCurrentSketch()
-        (window?.rootViewController as? ViewController)?.clearCanvas()
+        UserDefaults.standard.synchronize()
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
     }
     
@@ -60,7 +59,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func startNewSketchForShortcutAction() {
-        (window?.rootViewController as? ViewController)?.createNewSketch()
+        fileManager.lastSavedSketchFile = nil
+        (window?.rootViewController as? ViewController)?.clearCanvas()
+        (window?.rootViewController as? ViewController)?.currentSketch = Sketch()
     }
     
     // MARK: iCloud

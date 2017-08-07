@@ -66,6 +66,8 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: collectionView!)
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(fileManagerDidSaveHandler(_:)), name: .FileManagerDidSaveSketchPadFile, object: nil)
     }
     
     override func setEditing(_ editing: Bool, animated: Bool) {
@@ -193,9 +195,9 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
             return
         }
         
-        let sketch = files[indexPath.section]
+        let file = files[indexPath.section]
         
-        destination.restore(sketch, savingCurrentSketch: true)
+        destination.restoreSketch(from: file, savingCurrentSketch: true)
     }
     
     // MARK: - UITextField delegate
@@ -329,6 +331,43 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         present(shareViewController, animated: true, completion: nil)
     }
     
+    func fileManagerDidSaveHandler(_ notification: Notification) {
+        let userInfo = notification.userInfo
+        
+        guard let file = userInfo?["file"] as? SketchPadFile else {
+            return
+        }
+        
+        let section: IndexSet
+        let updates: () -> ()
+        
+        let exists = files.contains { $0.fileURL.lastPathComponent == file.fileURL.lastPathComponent }
+        
+        if exists {
+            let index = files.index(where: { $0.fileURL.lastPathComponent == file.fileURL.lastPathComponent })!
+            section = IndexSet(integer: index)
+            
+            files[index] = file
+            
+            updates = { [unowned self] in
+                self.collectionView?.reloadSections(section)
+                self.noSketchesMessageLabel?.removeFromSuperview()
+            }
+        } else {
+            let numSections = collectionView!.numberOfSections
+            section = IndexSet(integer: numSections)
+            
+            files.append(file)
+            
+            updates = { [unowned self] in
+                self.collectionView?.insertSections(section)
+                self.noSketchesMessageLabel?.removeFromSuperview()
+            }
+        }
+        
+        collectionView?.performBatchUpdates(updates, completion: nil)
+    }
+    
     private func addNoSketchesMessageLabel() {
         noSketchesMessageLabel = UILabel(frame: view.frame)
         noSketchesMessageLabel?.text = "No sketches to display."
@@ -355,7 +394,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
     private func removeItems(_ urls: [String]) {
         var indexes = [Int]()
         for x in 0..<self.files.count {
-            let url = self.files[x].fileURL.path
+            let url = self.files[x].fileURL.lastPathComponent
             if urls.contains(url) {
                 indexes.append(x)
             }
@@ -364,7 +403,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         let indexSet = IndexSet(indexes)
         
         self.files = self.files.filter {
-            let url = $0.fileURL.path
+            let url = $0.fileURL.lastPathComponent
             
             let delete = urls.contains(url)
             
