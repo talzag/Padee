@@ -10,7 +10,6 @@
 		E32660181EBD6E8A0013C3D0 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E32660171EBD6E8A0013C3D0 /* CloudKit.framework */; };
 		E336A5DE1E232FB7002F1C5B /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = E336A5DD1E232FB7002F1C5B /* Notifications.swift */; };
 		E3402EFA1D24BAF7009F0312 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3402EF91D24BAF7009F0312 /* CanvasView.swift */; };
-		E35E04671E2862DA007B786C /* ExportActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35E04661E2862DA007B786C /* ExportActivity.swift */; };
 		E362D26E1DCE96C400B6C3A1 /* FileManagerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */; };
 		E37AB8BC1D4D1A060068A637 /* PaletteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */; };
 		E37AB8BE1D4D201F0068A637 /* PaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37AB8BD1D4D201F0068A637 /* PaletteView.swift */; };
@@ -26,6 +25,7 @@
 		E39EDB121D10677000D2CA69 /* PadeeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39EDB111D10677000D2CA69 /* PadeeUITests.swift */; };
 		E3B672B11D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */; };
 		E3D0847B1ECB5D090005D1C3 /* SketchPadFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D0847A1ECB5D090005D1C3 /* SketchPadFile.swift */; };
+		E3F02FB01F38F94000149BB5 /* ExportActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F02FAF1F38F94000149BB5 /* ExportActivity.swift */; };
 		E3F20D831DD79C6B005911A5 /* Sketch.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D821DD79C6B005911A5 /* Sketch.swift */; };
 		E3F20D851DD79C92005911A5 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D841DD79C92005911A5 /* Point.swift */; };
 		E3F20D871DD79CF8005911A5 /* UIViewController+FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */; };
@@ -54,7 +54,6 @@
 		E32660171EBD6E8A0013C3D0 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		E336A5DD1E232FB7002F1C5B /* Notifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		E3402EF91D24BAF7009F0312 /* CanvasView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
-		E35E04661E2862DA007B786C /* ExportActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExportActivity.swift; path = ../../ExportActivity.swift; sourceTree = "<group>"; };
 		E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileManagerController.swift; sourceTree = "<group>"; };
 		E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaletteViewController.swift; sourceTree = "<group>"; };
 		E37AB8BD1D4D201F0068A637 /* PaletteView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaletteView.swift; sourceTree = "<group>"; };
@@ -76,6 +75,7 @@
 		E39EDB131D10677000D2CA69 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageGalleryCollectionViewController.swift; sourceTree = "<group>"; };
 		E3D0847A1ECB5D090005D1C3 /* SketchPadFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SketchPadFile.swift; sourceTree = "<group>"; };
+		E3F02FAF1F38F94000149BB5 /* ExportActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExportActivity.swift; sourceTree = "<group>"; };
 		E3F20D821DD79C6B005911A5 /* Sketch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sketch.swift; sourceTree = "<group>"; };
 		E3F20D841DD79C92005911A5 /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
 		E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+FileManager.swift"; sourceTree = "<group>"; };
@@ -147,7 +147,7 @@
 				E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */,
 				E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */,
 				E3D0847A1ECB5D090005D1C3 /* SketchPadFile.swift */,
-				E35E04661E2862DA007B786C /* ExportActivity.swift */,
+				E3F02FAF1F38F94000149BB5 /* ExportActivity.swift */,
 				E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */,
 				E336A5DD1E232FB7002F1C5B /* Notifications.swift */,
 				E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */,
@@ -329,6 +329,7 @@
 			files = (
 				E336A5DE1E232FB7002F1C5B /* Notifications.swift in Sources */,
 				E37AB8C01D4D20470068A637 /* ColorWellView.swift in Sources */,
+				E3F02FB01F38F94000149BB5 /* ExportActivity.swift in Sources */,
 				E39EDAF11D10676F00D2CA69 /* ViewController.swift in Sources */,
 				E3FDB3E91D7FAA6D0083B0AB /* NSCoder+CGColor.swift in Sources */,
 				E37AB8BC1D4D1A060068A637 /* PaletteViewController.swift in Sources */,
@@ -342,7 +343,6 @@
 				E3F20D831DD79C6B005911A5 /* Sketch.swift in Sources */,
 				E37AB8BE1D4D201F0068A637 /* PaletteView.swift in Sources */,
 				E3F20D871DD79CF8005911A5 /* UIViewController+FileManager.swift in Sources */,
-				E35E04671E2862DA007B786C /* ExportActivity.swift in Sources */,
 				E3923D5E1D18CD7E00DA946C /* Tools.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
