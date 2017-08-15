@@ -246,8 +246,8 @@ final class FileManagerController: NSObject {
         // manually creating sketches dir URL so we don't lazily create it by accessing the property
         // if this directory doesn't exist, then this is a new install and we don't need to perform
         // a backup.
-        let sketchesURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
-        if !fileManager.fileExists(atPath: sketchesURL.path) {
+        let sketchesDirURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
+        if !fileManager.fileExists(atPath: sketchesDirURL.path) {
             UserDefaults.standard.set(true, forKey: filesUpgradedKey)
             return
         }
@@ -259,7 +259,6 @@ final class FileManagerController: NSObject {
             currentSketchName = sketch.name
         }
         
-        let sketchesDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
         let backupDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.upgrade-backup", isDirectory: true)
         
         do {
