@@ -232,7 +232,7 @@ final class FileManagerController: NSObject {
         return sketches
     }
     
-    /// Upgrades the "file system" of Padee. User sketches used to be stored as archives. Now they are wrapped in a FileWrapper and stored by `SketchPadFile`.
+    /// Upgrades the "file system" of Padee. User sketches used to be stored as archives, but now they're wrapped in a `FileWrapper` and stored by `SketchPadFile`.
     private func performFileSystemUpgrade() {
         // if we've already performed upgrade
         if UserDefaults.standard.bool(forKey: filesUpgradedKey) {
