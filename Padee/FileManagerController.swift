@@ -19,6 +19,7 @@ import UIKit
 /// iCloud or not.
 final class FileManagerController: NSObject {
     private let filesUpgradedKey = "com.dstrokis.Padee.files-upgraded"
+    private let backupDirectoryPathComponent = "com.dstrokis.Padee.upgrade-backup"
     
     private let currentSketchKey = "com.dstrokis.Padee.current"
     private let sketchDirectoryPathComponent = "com.dstrokis.Padee.sketches"
@@ -153,25 +154,34 @@ final class FileManagerController: NSObject {
                                         userInfo: ["sketches" : sketchURLs])
     }
     
-    func rename(sketchPadFile: SketchPadFile, to newName: String) {
-        let oldName = sketchPadFile.fileURL.lastPathComponent
-        let originalURL = sketchPadFile.fileURL
-        
-        let newURL = sketchesDirectoryURL.appendingPathComponent(newName)
-        
-        do {
-            if fileManager.fileExists(atPath: originalURL.path) {
-                try fileManager.moveItem(at: originalURL, to: newURL)
-            }
-            
-            NotificationCenter.default.post(name: .FileManagerDidRenameSketch,
-                                            object: self,
-                                            userInfo: ["oldName": oldName, "newName": newName])
-        
-        } catch {
-            print(error.localizedDescription)
-        }
-    }
+    // MARK: NOTE - Renaming disabled
+    // The ability to rename a sketch is being disabled for now.
+    // I'm not sure how many people care to name their sketches,
+    // and the implementation of renaming a file and moving the contents
+    // to a new URL is not as quick and easy as I originally thought. If
+    // there's pushback I'll re-enable sketch naming.
+
+//    func rename(sketchPadFile: SketchPadFile, to newName: String) {
+//        let oldName = sketchPadFile.fileURL.lastPathComponent
+//        let originalURL = sketchPadFile.fileURL
+//        
+//        let newURL = sketchesDirectoryURL.appendingPathComponent(newName)
+//        
+//        do {
+//            if fileManager.fileExists(atPath: originalURL.path) {
+//                try fileManager.moveItem(at: originalURL, to: newURL)
+//                NotificationCenter.default.post(name: .FileManagerDidRenameSketchPadFile,
+//                                                object: self,
+//                                                userInfo: [
+//                                                    "oldName": oldName,
+//                                                    "file": sketchPadFile
+//                                                ])
+//            }
+//        
+//        } catch {
+//            print(error.localizedDescription)
+//        }
+//    }
     
     func moveSketchesToUbiquityContainer() throws {
         let sketchesDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
@@ -206,7 +216,7 @@ final class FileManagerController: NSObject {
         var sketches = [Sketch?]()
         
         do {
-            let sketchesDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.upgrade-backup", isDirectory: true)
+            let sketchesDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(backupDirectoryPathComponent, isDirectory: true)
             let pathURLs = try fileManager.contentsOfDirectory(atPath: sketchesDirURL.path).filter({ $0.hasSuffix("sketch") }).sorted(by: >)
 
             let mapped = pathURLs.map { (path: String) -> Sketch? in
@@ -231,49 +241,90 @@ final class FileManagerController: NSObject {
         return sketches
     }
     
-    /// Upgrades the "file system" of Padee. User sketches used to be stored as archives. Now they are wrapped in a FileWrapper and stored by `SketchPadFile`.
+    /// Upgrades the "file system" of Padee. User sketches used to be stored as archives, but now they're wrapped in a `FileWrapper` and stored by `SketchPadFile`.
     private func performFileSystemUpgrade() {
-        if UserDefaults.standard.bool(forKey: filesUpgradedKey) { // already performed upgrade
-            if let failedSketches = UserDefaults.standard.array(forKey: "com.dstrokis.Padee.failed-upgrades") as? [String] { // check for any failed upgrades
-                if failedSketches.count == 0 {
-                    return  // no failed upgrades anymore
+        // if we've already performed upgrade
+        if UserDefaults.standard.bool(forKey: filesUpgradedKey) {
+            // check for any failed upgrades
+            if let failedSketches = UserDefaults.standard.array(forKey: "com.dstrokis.Padee.failed-upgrades") as? [String] {
+                if failedSketches.count > 0 {
+                    recoverSketchesFromFailedUpgrade(failedSketches)
+                } else {
+                    cleanupBackupDirectory()
                 }
-            } else {
-                return // no failed upgrades to begin with
             }
-        }
-        
-        // manually creating sketches dir URL so we don't lazily create it by accessing the property
-        // if this directory doesn't exist, then this is a new install and we don't need to perform
-        // a backup.
-        let sketchesURL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
-        if !fileManager.fileExists(atPath: sketchesURL.path) {
-            UserDefaults.standard.set(true, forKey: filesUpgradedKey)
+            
             return
         }
         
-        var currentSketchName: String?
-        
-        let currentSketchURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(currentSketchKey)
-        if let sketch = NSKeyedUnarchiver.unarchiveObject(withFile: currentSketchURL.path) as? Sketch {
-            currentSketchName = sketch.name
+        let movedSuccessfully = moveSketches()
+        if movedSuccessfully {
+            upgradeSketches()
         }
         
-        let sketchesDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
-        let backupDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("com.dstrokis.Padee.upgrade-backup", isDirectory: true)
+        UserDefaults.standard.set(true, forKey: filesUpgradedKey)
+    }
+    
+    private func moveSketches() -> Bool {
+        // manually creating sketches dir URL so we don't lazily create it by accessing the property
+        // if this directory doesn't exist, then this is a new install and we don't need to perform
+        // a backup.
+        let docDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let sketchesDirURL = docDirURL.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
+       
+        if !fileManager.fileExists(atPath: sketchesDirURL.path) {
+            return false
+        }
+        
+        let backupDirectory = docDirURL.appendingPathComponent(backupDirectoryPathComponent, isDirectory: true)
         
         do {
             try fileManager.moveItem(at: sketchesDirURL, to: backupDirectory)
-            try fileManager.createDirectory(at: sketchesDirURL, withIntermediateDirectories: false, attributes: nil)
         } catch let error as NSError {
             UserDefaults.standard.set(false, forKey: filesUpgradedKey)
             print("Could not move sketches to backup directory.")
             print("Code: \(error.code)")
             print("Domain: \(error.domain)")
             print("Description: \(error.localizedDescription)")
-            return // will try again on next launch
+            return false // will try again on next launch
         }
         
+        do {
+            try fileManager.createDirectory(at: sketchesDirURL, withIntermediateDirectories: false, attributes: nil)
+        } catch let error as NSError {
+            UserDefaults.standard.set(false, forKey: filesUpgradedKey)
+            print("Could not create sketches directory.")
+            print("Code: \(error.code)")
+            print("Domain: \(error.domain)")
+            print("Description: \(error.localizedDescription)")
+            return false // will try again on next launch
+        }
+        
+        return true
+    }
+    
+    private func upgradeSketch(_ sketch: Sketch) {
+        let docURL = sketchesDirectoryURL.appendingPathComponent(sketch.name)
+        
+        let document = SketchPadFile(fileURL: docURL)
+        document.sketch = sketch
+        
+        document.save(to: docURL, for: .forCreating) { (success) in
+            var failedSketches = UserDefaults.standard.array(forKey: "com.dstrokis.Padee.failed-upgrades") as? [String] ?? [String]()
+            
+            if success {
+                if failedSketches.contains(sketch.name) {
+                    failedSketches.remove(at: failedSketches.index(of: sketch.name)!)
+                }
+            } else {
+                failedSketches.append(sketch.name)
+            }
+            
+            UserDefaults.standard.set(failedSketches, forKey: "com.dstrokis.Padee.failed-upgrades")
+        }
+    }
+    
+    private func upgradeSketches() {
         let sketches = _oldArchivedSketches()
         
         for sketch in sketches {
@@ -281,27 +332,49 @@ final class FileManagerController: NSObject {
                 continue
             }
             
-            let docURL = sketchesDirectoryURL.appendingPathComponent(sketch.name)
+            upgradeSketch(sketch)
+        }
+    }
+    
+    private func recoverSketchesFromFailedUpgrade(_ sketchNames: [String]) {
+        let docDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let backupDirectory = docDirURL.appendingPathComponent(backupDirectoryPathComponent, isDirectory: true)
+        
+        do {
+            let options = FileManager.DirectoryEnumerationOptions.skipsHiddenFiles
+            let urls = try fileManager.contentsOfDirectory(at: backupDirectory, includingPropertiesForKeys: nil, options: options)
             
-            let document = SketchPadFile(fileURL: docURL)
-            document.sketch = sketch
-            
-            if let current = currentSketchName, sketch.name == current {
-                lastSavedSketchFile = document
-            }
-            
-            document.save(to: docURL, for: .forCreating) { (success) in
-                if success {
-                    return
+            let sketches = sketchNames.map { $0.appending(".sketch") }
+            for url in urls {
+                if sketches.contains(url.lastPathComponent) {
+                    if let archiveData = try? Data(contentsOf: url),
+                       let archive = NSKeyedUnarchiver.unarchiveObject(with: archiveData) as? Sketch {
+                        upgradeSketch(archive)
+                    }
                 }
-                
-                var failedSketches = UserDefaults.standard.array(forKey: "com.dstrokis.Padee.failed-upgrades") as? [String] ?? [String]()
-                failedSketches.append(sketch.name)
-                
-                UserDefaults.standard.set(failedSketches, forKey: "com.dstrokis.Padee.failed-upgrades")
             }
+        } catch let error {
+            print(error.localizedDescription)
+        }
+    }
+    
+    private func cleanupBackupDirectory() {
+        let docDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let backupDirectory = docDirURL.appendingPathComponent(backupDirectoryPathComponent, isDirectory: true)
+        
+        if !fileManager.fileExists(atPath: backupDirectory.path) {
+            return
         }
         
-        UserDefaults.standard.set(true, forKey: filesUpgradedKey)
+        do {
+            try fileManager.removeItem(at: backupDirectory)
+            UserDefaults.standard.set(nil, forKey: "com.dstrokis.Padee.failed-upgrades")
+        } catch let error as NSError {
+            UserDefaults.standard.set(false, forKey: filesUpgradedKey)
+            print("Could not remove backup directory.")
+            print("Code: \(error.code)")
+            print("Domain: \(error.domain)")
+            print("Description: \(error.localizedDescription)")
+        }
     }
 }
