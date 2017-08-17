@@ -154,25 +154,34 @@ final class FileManagerController: NSObject {
                                         userInfo: ["sketches" : sketchURLs])
     }
     
-    func rename(sketchPadFile: SketchPadFile, to newName: String) {
-        let oldName = sketchPadFile.fileURL.lastPathComponent
-        let originalURL = sketchPadFile.fileURL
-        
-        let newURL = sketchesDirectoryURL.appendingPathComponent(newName)
-        
-        do {
-            if fileManager.fileExists(atPath: originalURL.path) {
-                try fileManager.moveItem(at: originalURL, to: newURL)
-            }
-            
-            NotificationCenter.default.post(name: .FileManagerDidRenameSketch,
-                                            object: self,
-                                            userInfo: ["oldName": oldName, "newName": newName])
-        
-        } catch {
-            print(error.localizedDescription)
-        }
-    }
+    // MARK: NOTE - Renaming disabled
+    // The ability to rename a sketch is being disabled for now.
+    // I'm not sure how many people care to name their sketches,
+    // and the implementation of renaming a file and moving the contents
+    // to a new URL is not as quick and easy as I originally thought. If
+    // there's pushback I'll re-enable sketch naming.
+
+//    func rename(sketchPadFile: SketchPadFile, to newName: String) {
+//        let oldName = sketchPadFile.fileURL.lastPathComponent
+//        let originalURL = sketchPadFile.fileURL
+//        
+//        let newURL = sketchesDirectoryURL.appendingPathComponent(newName)
+//        
+//        do {
+//            if fileManager.fileExists(atPath: originalURL.path) {
+//                try fileManager.moveItem(at: originalURL, to: newURL)
+//                NotificationCenter.default.post(name: .FileManagerDidRenameSketchPadFile,
+//                                                object: self,
+//                                                userInfo: [
+//                                                    "oldName": oldName,
+//                                                    "file": sketchPadFile
+//                                                ])
+//            }
+//        
+//        } catch {
+//            print(error.localizedDescription)
+//        }
+//    }
     
     func moveSketchesToUbiquityContainer() throws {
         let sketchesDirURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(sketchDirectoryPathComponent, isDirectory: true)
