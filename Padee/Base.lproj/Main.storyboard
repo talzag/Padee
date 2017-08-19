@@ -14,7 +14,7 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="Padee" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CanvasViewController" id="BYZ-38-t0r" customClass="ViewController" customModule="Padee" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -141,7 +141,7 @@
         <!--Image Gallery-->
         <scene sceneID="coO-GO-yqf">
             <objects>
-                <collectionViewController id="NyN-od-CYr" customClass="ImageGalleryCollectionViewController" customModule="Padee" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController storyboardIdentifier="ImageGalleryViewController" id="NyN-od-CYr" customClass="ImageGalleryCollectionViewController" customModule="Padee" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" dataMode="prototypes" id="nFk-CV-d2e">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -154,7 +154,7 @@
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ImageThumbnailCell" id="0gL-Ri-Yd5" customClass="ThumbnailImageCollectionViewCell" customModule="Padee" customModuleProvider="target">
-                                <rect key="frame" x="88" y="20" width="200" height="200"/>
+                                <rect key="frame" x="87.5" y="20" width="200" height="200"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="200" height="200"/>
@@ -225,7 +225,7 @@
         <!--Palette View Controller-->
         <scene sceneID="bhD-fy-3CV">
             <objects>
-                <viewController id="33d-EI-xSw" customClass="PaletteViewController" customModule="Padee" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PaletteViewController" id="33d-EI-xSw" customClass="PaletteViewController" customModule="Padee" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="QGD-Gm-rDO"/>
                         <viewControllerLayoutGuide type="bottom" id="ix0-ar-nto"/>

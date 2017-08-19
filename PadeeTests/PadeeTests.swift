@@ -11,26 +11,42 @@ import XCTest
 
 class PadeeTests: XCTestCase {
     
+    var viewController: ViewController!
+    
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: Bundle(identifier: "com.dstrokis.Padee"))
+        guard let vc = storyboard.instantiateInitialViewController() as? ViewController else {
+            fatalError()
+        }
+        
+        viewController = vc
+        viewController.loadViewIfNeeded()
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        viewController = nil
+        
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testFileManagerViewControllerExtension() {
+        XCTAssertNotNil(viewController.fileManagerController)
     }
     
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    func testShouldAutorotate() {
+        XCTAssertFalse(viewController.shouldAutorotate)
+    }
+    
+    func testDefaultToolSelected() {
+        let toolButtons = viewController.toolButtons
+        
+        guard let pen = toolButtons?.filter({ $0.restorationIdentifier == Tool.Pen.rawValue }).first else {
+            XCTFail()
+            return
         }
+        
+        XCTAssertTrue(pen.isSelected)
     }
-    
 }
