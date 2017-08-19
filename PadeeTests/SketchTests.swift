@@ -11,21 +11,30 @@ import XCTest
 
 class SketchTests: XCTestCase {
     
-    var sketch: Sketch!
-    
-    override func setUp() {
-        super.setUp()
-        
-        sketch = Sketch()
+    func testSketchInit() {
+        let sketch = Sketch()
+        XCTAssertNotNil(sketch.name)
     }
     
-    override func tearDown() {
-        sketch = nil
-        
-        super.tearDown()
+    func testSketchInitWithName() {
+        let name = "Test Sketch"
+        let sketch = Sketch(withName: name)
+        XCTAssertEqual(sketch.name, name)
     }
     
-    func testSketchName() {
-        XCTAssertNotNil(sketch.name, "Sketch instances should always have a default name.")
+    func testSketchNSCoding() {
+        let sketch = Sketch()
+        
+        let name = sketch.name
+        
+        let archiver = NSKeyedArchiver()
+        sketch.encode(with: archiver)
+        
+        let data = archiver.encodedData
+        let unarchiver = NSKeyedUnarchiver(forReadingWith: data)
+        let decoded = Sketch(coder: unarchiver)
+        
+        XCTAssertNotNil(decoded)
+        XCTAssertEqual(decoded?.name, name)
     }
 }
