@@ -49,4 +49,33 @@ class PadeeTests: XCTestCase {
         
         XCTAssertTrue(pen.isSelected)
     }
+    
+    func testInitialSketch() {
+        XCTAssertNotNil(viewController.currentSketch)
+    }
+    
+    func testCreateNewSketch() {
+        let sketch = viewController.currentSketch
+        viewController.createNewSketch()
+        XCTAssertNotEqual(sketch, viewController.currentSketch)
+    }
+    
+    func testToolSelected() {
+        guard let pencil = viewController.toolButtons?.filter({ $0.restorationIdentifier == Tool.Pencil.rawValue }).first else {
+            XCTFail()
+            return
+        }
+        viewController.toolSelected(pencil)
+        XCTAssertTrue(pencil.isSelected)
+        
+        let view = (viewController.view as! CanvasView)
+        XCTAssertEqual(view.currentTool, .Pencil)
+    }
+    
+    func testSaveCurrentSketch() {
+        let path = Path(color: .black, width: 3.0)
+        viewController.currentSketch?.paths = [path]
+        
+        viewController.saveCurrentSketch()
+    }
 }
