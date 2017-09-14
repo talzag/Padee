@@ -80,7 +80,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: - Sketch handling
     
-    func saveCurrentSketch() {
+    func saveCurrentSketch(completionHandler: ((Bool) -> Void)? = nil) {
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
         
         guard let current = currentSketch, paths.count > 0 else {
@@ -89,7 +89,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         
         current.paths = paths
         
-        fileManagerController.archive(current)
+        fileManagerController.archive(current, completionHandler: completionHandler)
     }
     
     func restoreSketch() {

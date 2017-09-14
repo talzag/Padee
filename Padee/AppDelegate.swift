@@ -48,8 +48,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        UserDefaults.standard.synchronize()
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
+        UserDefaults.standard.synchronize()
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
@@ -58,7 +58,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    private func startNewSketchForShortcutAction() {
+    func startNewSketchForShortcutAction() {
         fileManager.lastSavedSketchFile = nil
         (window?.rootViewController as? ViewController)?.clearCanvas()
         (window?.rootViewController as? ViewController)?.currentSketch = Sketch()

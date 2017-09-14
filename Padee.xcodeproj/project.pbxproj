@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E315234E1F6AE76E00576228 /* NSCoderExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E315234D1F6AE76E00576228 /* NSCoderExtensionTests.swift */; };
+		E31523501F6AF00400576228 /* ViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E315234F1F6AF00400576228 /* ViewControllerTests.swift */; };
+		E31523521F6AF86D00576228 /* ExportActivityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31523511F6AF86D00576228 /* ExportActivityTests.swift */; };
 		E32660181EBD6E8A0013C3D0 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E32660171EBD6E8A0013C3D0 /* CloudKit.framework */; };
 		E336A5DE1E232FB7002F1C5B /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = E336A5DD1E232FB7002F1C5B /* Notifications.swift */; };
 		E3402EFA1D24BAF7009F0312 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3402EF91D24BAF7009F0312 /* CanvasView.swift */; };
@@ -52,6 +55,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E315234D1F6AE76E00576228 /* NSCoderExtensionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSCoderExtensionTests.swift; sourceTree = "<group>"; };
+		E315234F1F6AF00400576228 /* ViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewControllerTests.swift; sourceTree = "<group>"; };
+		E31523511F6AF86D00576228 /* ExportActivityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExportActivityTests.swift; sourceTree = "<group>"; };
 		E32660151EBD6E820013C3D0 /* Padee.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Padee.entitlements; sourceTree = "<group>"; };
 		E32660171EBD6E8A0013C3D0 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		E336A5DD1E232FB7002F1C5B /* Notifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
@@ -177,6 +183,9 @@
 				E3EEAB261F48789B00FA3D7F /* SketchTests.swift */,
 				E3EEAB281F487A3A00FA3D7F /* ToolTests.swift */,
 				E39EDB081D10677000D2CA69 /* Info.plist */,
+				E315234D1F6AE76E00576228 /* NSCoderExtensionTests.swift */,
+				E315234F1F6AF00400576228 /* ViewControllerTests.swift */,
+				E31523511F6AF86D00576228 /* ExportActivityTests.swift */,
 			);
 			path = PadeeTests;
 			sourceTree = "<group>";
@@ -357,8 +366,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E31523501F6AF00400576228 /* ViewControllerTests.swift in Sources */,
+				E315234E1F6AE76E00576228 /* NSCoderExtensionTests.swift in Sources */,
 				E39EDB071D10677000D2CA69 /* PadeeTests.swift in Sources */,
 				E3EEAB291F487A3A00FA3D7F /* ToolTests.swift in Sources */,
+				E31523521F6AF86D00576228 /* ExportActivityTests.swift in Sources */,
 				E3EEAB271F48789B00FA3D7F /* SketchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

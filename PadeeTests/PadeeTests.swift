@@ -11,71 +11,47 @@ import XCTest
 
 class PadeeTests: XCTestCase {
     
-    var viewController: ViewController!
+    var delegate: AppDelegate!
     
     override func setUp() {
         super.setUp()
         
-        let storyboard = UIStoryboard(name: "Main", bundle: Bundle(identifier: "com.dstrokis.Padee"))
-        guard let vc = storyboard.instantiateInitialViewController() as? ViewController else {
-            fatalError()
-        }
-        
-        viewController = vc
-        viewController.loadViewIfNeeded()
+        delegate = UIApplication.shared.delegate as! AppDelegate
     }
     
     override func tearDown() {
-        viewController = nil
+        delegate = nil
         
         super.tearDown()
     }
     
-    func testFileManagerViewControllerExtension() {
-        XCTAssertNotNil(viewController.fileManagerController)
+    func testIsGeneratingDeviceNotifications() {
+        _ = delegate.application(UIApplication.shared, didFinishLaunchingWithOptions: nil)
+        XCTAssertTrue(UIDevice.current.isGeneratingDeviceOrientationNotifications)
     }
     
-    func testShouldAutorotate() {
-        XCTAssertFalse(viewController.shouldAutorotate)
+    func X_testEndDeviceNotificationsOnBackground() {
+        XCTAssertTrue(UIDevice.current.isGeneratingDeviceOrientationNotifications)
+        delegate.applicationDidEnterBackground(UIApplication.shared)
+        XCTAssertFalse(UIDevice.current.isGeneratingDeviceOrientationNotifications)
     }
     
-    func testDefaultToolSelected() {
-        let toolButtons = viewController.toolButtons
+    func X_testEndDeviceNotificationOnTerminate() {
+        XCTAssertTrue(UIDevice.current.isGeneratingDeviceOrientationNotifications)
+        delegate.applicationWillTerminate(UIApplication.shared)
+        XCTAssertFalse(UIDevice.current.isGeneratingDeviceOrientationNotifications)
+    }
+    
+    func testSaveSketchOnBackground() {
+        let vc = UIApplication.shared.keyWindow?.rootViewController as! ViewController
         
-        guard let pen = toolButtons?.filter({ $0.restorationIdentifier == Tool.Pen.rawValue }).first else {
-            XCTFail()
-            return
-        }
+        let paths = Path(color: .black, width: 3.0)
+        (vc.view as! CanvasView).restoreImage(using: [paths])
         
-        XCTAssertTrue(pen.isSelected)
-    }
-    
-    func testInitialSketch() {
-        XCTAssertNotNil(viewController.currentSketch)
-    }
-    
-    func testCreateNewSketch() {
-        let sketch = viewController.currentSketch
-        viewController.createNewSketch()
-        XCTAssertNotEqual(sketch, viewController.currentSketch)
-    }
-    
-    func testToolSelected() {
-        guard let pencil = viewController.toolButtons?.filter({ $0.restorationIdentifier == Tool.Pencil.rawValue }).first else {
-            XCTFail()
-            return
-        }
-        viewController.toolSelected(pencil)
-        XCTAssertTrue(pencil.isSelected)
+        XCTAssertEqual(vc.currentSketch!.paths.count, 0)
         
-        let view = (viewController.view as! CanvasView)
-        XCTAssertEqual(view.currentTool, .Pencil)
-    }
-    
-    func testSaveCurrentSketch() {
-        let path = Path(color: .black, width: 3.0)
-        viewController.currentSketch?.paths = [path]
+        delegate.applicationDidEnterBackground(UIApplication.shared)
         
-        viewController.saveCurrentSketch()
+        XCTAssertEqual(vc.currentSketch!.paths, [paths])
     }
 }
