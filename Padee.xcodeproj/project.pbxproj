@@ -182,10 +182,10 @@
 				E39EDB061D10677000D2CA69 /* PadeeTests.swift */,
 				E3EEAB261F48789B00FA3D7F /* SketchTests.swift */,
 				E3EEAB281F487A3A00FA3D7F /* ToolTests.swift */,
-				E39EDB081D10677000D2CA69 /* Info.plist */,
 				E315234D1F6AE76E00576228 /* NSCoderExtensionTests.swift */,
 				E315234F1F6AF00400576228 /* ViewControllerTests.swift */,
 				E31523511F6AF86D00576228 /* ExportActivityTests.swift */,
+				E39EDB081D10677000D2CA69 /* Info.plist */,
 			);
 			path = PadeeTests;
 			sourceTree = "<group>";
