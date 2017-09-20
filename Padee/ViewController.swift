@@ -135,7 +135,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: - Button handling
     
-    func rotateToolButtons() {
+    @objc func rotateToolButtons() {
         let transform =  transformForCurrentDeviceOrientation()
         
         UIView.animate(withDuration: 0.35, delay: 0.0, options: .curveEaseOut, animations: { [unowned self] in

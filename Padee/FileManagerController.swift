@@ -221,7 +221,7 @@ final class FileManagerController: NSObject {
 
             let mapped = pathURLs.map { (path: String) -> Sketch? in
                 let ext = path.range(of: ".sketch")!
-                let name = path.substring(to: ext.lowerBound)
+                let name = String(path[path.startIndex..<ext.lowerBound])
                 var sketch: Sketch?
 
                 if let archiveData = try? Data(contentsOf: sketchesDirURL.appendingPathComponent(path)),

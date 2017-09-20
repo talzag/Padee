@@ -90,7 +90,7 @@ class ViewControllerTests: XCTestCase {
         let path = Path(color: .black, width: 3.0)
         (viewController.view as! CanvasView).restoreImage(using: [path])
         
-        _ = self.expectation(forNotification: "FileManagerDidSaveSketchPadFile", object: viewController.fileManagerController)
+        _ = self.expectation(forNotification: NSNotification.Name(rawValue: "FileManagerDidSaveSketchPadFile"), object: viewController.fileManagerController)
         
         viewController.saveCurrentSketch()
         
