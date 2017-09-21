@@ -272,5 +272,5 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     /// Empty segue to allow unwinding from ImageGalleryViewController
     ///
     /// - Parameter sender: Storyboard segue from ImageGalleryViewController
-    @IBAction func unwindSegue(sender: UIStoryboardSegue) { }
+    @IBAction func unwindSegue(sender: UIStoryboardSegue? = nil) { }
 }

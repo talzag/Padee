@@ -13,11 +13,7 @@ extension NSCoder {
     private static let cgColorComponentKeys = ["r", "g", "b", "a"]
     
     func encodeColor(_ color: CGColor) {
-        guard let components = color.components else {
-            fatalError()
-        }
-        
-        let colorData = zip(NSCoder.cgColorComponentKeys, components)
+        let colorData = zip(NSCoder.cgColorComponentKeys, color.components!)
         
         for (key, value) in colorData {
             self.encode(Double(value), forKey: key)

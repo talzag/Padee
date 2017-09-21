@@ -83,7 +83,7 @@ class ViewControllerTests: XCTestCase {
             expectation.fulfill()
         }
         
-        waitForExpectations(timeout: 1)
+        waitForExpectations(timeout: 2)
     }
     
     func testSaveCurrentSketchNotification() {
@@ -95,5 +95,20 @@ class ViewControllerTests: XCTestCase {
         viewController.saveCurrentSketch()
         
         waitForExpectations(timeout: 1)
+    }
+    
+    func testViewWillDissappear() {
+        let path = Path(color: .black, width: 3.0)
+        (viewController.view as! CanvasView).restoreImage(using: [path])
+        
+        _ = self.expectation(forNotification: NSNotification.Name(rawValue: "FileManagerDidSaveSketchPadFile"), object: viewController.fileManagerController)
+        
+        viewController.viewWillDisappear(true)
+        
+        waitForExpectations(timeout: 1)
+    }
+    
+    func testUnwindSegue() {
+        viewController.unwindSegue()
     }
 }
