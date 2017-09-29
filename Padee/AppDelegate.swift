@@ -49,13 +49,16 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillTerminate(_ application: UIApplication) {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
-        UserDefaults.standard.synchronize()
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         if shortcutItem.type.components(separatedBy: ".").last == newSketchShortcutType {
             startNewSketchForShortcutAction()
+            completionHandler(true)
+            return
         }
+        
+        completionHandler(false)
     }
     
     func startNewSketchForShortcutAction() {
@@ -66,11 +69,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: iCloud
     
-    @objc private func iCloudAvailabilityDidChange(_ notification: Notification) {
+    @objc func iCloudAvailabilityDidChange(_ notification: Notification? = nil) {
         configureApplicationForiCloudUsage()
     }
     
-    private func configureApplicationForiCloudUsage() {
+    func configureApplicationForiCloudUsage() {
 //        let userDefaults = UserDefaults.standard
 //        let iCloudToken = FileManager.default.ubiquityIdentityToken
 //        

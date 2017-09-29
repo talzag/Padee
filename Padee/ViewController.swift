@@ -226,9 +226,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
             feedbackGenerator?.prepare()
         }
         
-        guard let id = sender.restorationIdentifier else {
-            fatalError("Tool button missing restoration identifier: \(sender)")
-        }
+        let id = sender.restorationIdentifier!
         
         if let tool = Tool(rawValue: id) {
             (view as! CanvasView).currentTool = tool
