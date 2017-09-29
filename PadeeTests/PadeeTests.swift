@@ -39,6 +39,7 @@ class PadeeTests: XCTestCase {
     func testEndDeviceNotificationOnTerminate() {
         XCTAssertTrue(UIDevice.current.isGeneratingDeviceOrientationNotifications)
         delegate.applicationWillTerminate(UIApplication.shared)
+        // Testing device orientation here fails
     }
     
     func testSaveSketchOnBackground() {
@@ -114,6 +115,7 @@ class PadeeTests: XCTestCase {
     }
     
     func testiCloudAvailabilityChangeHandler() {
+        // TODO: Add XCTAssert methods
         delegate.iCloudAvailabilityDidChange()
     }
 }
