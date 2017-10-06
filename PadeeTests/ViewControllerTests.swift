@@ -17,9 +17,7 @@ class ViewControllerTests: XCTestCase {
         super.setUp()
         
         let storyboard = UIStoryboard(name: "Main", bundle: Bundle(identifier: "com.dstrokis.Padee"))
-        guard let vc = storyboard.instantiateInitialViewController() as? ViewController else {
-            fatalError()
-        }
+        let vc = storyboard.instantiateInitialViewController() as! ViewController
         
         viewController = vc
         viewController.loadViewIfNeeded()
@@ -42,12 +40,9 @@ class ViewControllerTests: XCTestCase {
     func testDefaultToolSelected() {
         let toolButtons = viewController.toolButtons
         
-        guard let pen = toolButtons?.filter({ $0.restorationIdentifier == Tool.Pen.rawValue }).first else {
-            XCTFail()
-            return
-        }
+        let pen = toolButtons?.filter({ $0.restorationIdentifier == Tool.Pen.rawValue }).first
         
-        XCTAssertTrue(pen.isSelected)
+        XCTAssertTrue(pen!.isSelected)
     }
     
     func testInitialSketch() {
