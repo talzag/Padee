@@ -80,7 +80,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: - Sketch handling
     
-    func saveCurrentSketch() {
+    func saveCurrentSketch(completionHandler: ((Bool) -> Void)? = nil) {
         let paths = (view as! CanvasView).pathsForRestoringCurrentImage
         
         guard let current = currentSketch, paths.count > 0 else {
@@ -89,7 +89,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
         
         current.paths = paths
         
-        fileManagerController.archive(current)
+        fileManagerController.archive(current, completionHandler: completionHandler)
     }
     
     func restoreSketch() {
@@ -135,7 +135,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: - Button handling
     
-    func rotateToolButtons() {
+    @objc func rotateToolButtons() {
         let transform =  transformForCurrentDeviceOrientation()
         
         UIView.animate(withDuration: 0.35, delay: 0.0, options: .curveEaseOut, animations: { [unowned self] in
@@ -226,9 +226,7 @@ final class ViewController: UIViewController, UITextFieldDelegate {
             feedbackGenerator?.prepare()
         }
         
-        guard let id = sender.restorationIdentifier else {
-            fatalError("Tool button missing restoration identifier: \(sender)")
-        }
+        let id = sender.restorationIdentifier!
         
         if let tool = Tool(rawValue: id) {
             (view as! CanvasView).currentTool = tool
@@ -272,5 +270,5 @@ final class ViewController: UIViewController, UITextFieldDelegate {
     /// Empty segue to allow unwinding from ImageGalleryViewController
     ///
     /// - Parameter sender: Storyboard segue from ImageGalleryViewController
-    @IBAction func unwindSegue(sender: UIStoryboardSegue) { }
+    @IBAction func unwindSegue(sender: UIStoryboardSegue? = nil) { }
 }

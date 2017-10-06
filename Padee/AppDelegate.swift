@@ -48,17 +48,20 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        UserDefaults.standard.synchronize()
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         if shortcutItem.type.components(separatedBy: ".").last == newSketchShortcutType {
             startNewSketchForShortcutAction()
+            completionHandler(true)
+            return
         }
+        
+        completionHandler(false)
     }
     
-    private func startNewSketchForShortcutAction() {
+    func startNewSketchForShortcutAction() {
         fileManager.lastSavedSketchFile = nil
         (window?.rootViewController as? ViewController)?.clearCanvas()
         (window?.rootViewController as? ViewController)?.currentSketch = Sketch()
@@ -66,11 +69,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: iCloud
     
-    @objc private func iCloudAvailabilityDidChange(_ notification: Notification) {
+    @objc func iCloudAvailabilityDidChange(_ notification: Notification? = nil) {
         configureApplicationForiCloudUsage()
     }
     
-    private func configureApplicationForiCloudUsage() {
+    func configureApplicationForiCloudUsage() {
 //        let userDefaults = UserDefaults.standard
 //        let iCloudToken = FileManager.default.ubiquityIdentityToken
 //        

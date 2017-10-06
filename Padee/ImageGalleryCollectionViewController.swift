@@ -298,7 +298,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
 //        present(alertController, animated: true, completion: nil)
 //    }
 
-    func deleteSketches(_ sender: AnyObject) {
+    @objc func deleteSketches(_ sender: AnyObject) {
         guard let indexPaths = collectionView?.indexPathsForSelectedItems else {
             return
         }
@@ -334,7 +334,7 @@ final class ImageGalleryCollectionViewController: UICollectionViewController, UI
         present(shareViewController, animated: true, completion: nil)
     }
     
-    func fileManagerDidSaveHandler(_ notification: Notification) {
+    @objc func fileManagerDidSaveHandler(_ notification: Notification) {
         let userInfo = notification.userInfo
         
         guard let file = userInfo?["file"] as? SketchPadFile else {

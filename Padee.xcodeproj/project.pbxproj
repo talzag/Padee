@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E315234E1F6AE76E00576228 /* NSCoderExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E315234D1F6AE76E00576228 /* NSCoderExtensionTests.swift */; };
+		E31523501F6AF00400576228 /* ViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E315234F1F6AF00400576228 /* ViewControllerTests.swift */; };
+		E31523521F6AF86D00576228 /* ExportActivityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31523511F6AF86D00576228 /* ExportActivityTests.swift */; };
 		E32660181EBD6E8A0013C3D0 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E32660171EBD6E8A0013C3D0 /* CloudKit.framework */; };
 		E336A5DE1E232FB7002F1C5B /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = E336A5DD1E232FB7002F1C5B /* Notifications.swift */; };
 		E3402EFA1D24BAF7009F0312 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3402EF91D24BAF7009F0312 /* CanvasView.swift */; };
@@ -25,6 +28,8 @@
 		E39EDB121D10677000D2CA69 /* PadeeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39EDB111D10677000D2CA69 /* PadeeUITests.swift */; };
 		E3B672B11D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */; };
 		E3D0847B1ECB5D090005D1C3 /* SketchPadFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D0847A1ECB5D090005D1C3 /* SketchPadFile.swift */; };
+		E3EEAB271F48789B00FA3D7F /* SketchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EEAB261F48789B00FA3D7F /* SketchTests.swift */; };
+		E3EEAB291F487A3A00FA3D7F /* ToolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3EEAB281F487A3A00FA3D7F /* ToolTests.swift */; };
 		E3F02FB01F38F94000149BB5 /* ExportActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F02FAF1F38F94000149BB5 /* ExportActivity.swift */; };
 		E3F20D831DD79C6B005911A5 /* Sketch.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D821DD79C6B005911A5 /* Sketch.swift */; };
 		E3F20D851DD79C92005911A5 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D841DD79C92005911A5 /* Point.swift */; };
@@ -50,6 +55,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E315234D1F6AE76E00576228 /* NSCoderExtensionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSCoderExtensionTests.swift; sourceTree = "<group>"; };
+		E315234F1F6AF00400576228 /* ViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewControllerTests.swift; sourceTree = "<group>"; };
+		E31523511F6AF86D00576228 /* ExportActivityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExportActivityTests.swift; sourceTree = "<group>"; };
 		E32660151EBD6E820013C3D0 /* Padee.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Padee.entitlements; sourceTree = "<group>"; };
 		E32660171EBD6E8A0013C3D0 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		E336A5DD1E232FB7002F1C5B /* Notifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
@@ -75,6 +83,8 @@
 		E39EDB131D10677000D2CA69 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageGalleryCollectionViewController.swift; sourceTree = "<group>"; };
 		E3D0847A1ECB5D090005D1C3 /* SketchPadFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SketchPadFile.swift; sourceTree = "<group>"; };
+		E3EEAB261F48789B00FA3D7F /* SketchTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SketchTests.swift; sourceTree = "<group>"; };
+		E3EEAB281F487A3A00FA3D7F /* ToolTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolTests.swift; sourceTree = "<group>"; };
 		E3F02FAF1F38F94000149BB5 /* ExportActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExportActivity.swift; sourceTree = "<group>"; };
 		E3F20D821DD79C6B005911A5 /* Sketch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sketch.swift; sourceTree = "<group>"; };
 		E3F20D841DD79C92005911A5 /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
@@ -144,6 +154,7 @@
 				E39EDAEE1D10676F00D2CA69 /* AppDelegate.swift */,
 				E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */,
 				E39EDAF01D10676F00D2CA69 /* ViewController.swift */,
+				E3402EF91D24BAF7009F0312 /* CanvasView.swift */,
 				E3B672B01D66896D00E3DC1E /* ImageGalleryCollectionViewController.swift */,
 				E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */,
 				E3D0847A1ECB5D090005D1C3 /* SketchPadFile.swift */,
@@ -151,7 +162,6 @@
 				E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */,
 				E336A5DD1E232FB7002F1C5B /* Notifications.swift */,
 				E37AB8BB1D4D1A060068A637 /* PaletteViewController.swift */,
-				E3402EF91D24BAF7009F0312 /* CanvasView.swift */,
 				E37AB8BF1D4D20470068A637 /* ColorWellView.swift */,
 				E37AB8BD1D4D201F0068A637 /* PaletteView.swift */,
 				E3923D5D1D18CD7E00DA946C /* Tools.swift */,
@@ -170,6 +180,11 @@
 			isa = PBXGroup;
 			children = (
 				E39EDB061D10677000D2CA69 /* PadeeTests.swift */,
+				E3EEAB261F48789B00FA3D7F /* SketchTests.swift */,
+				E3EEAB281F487A3A00FA3D7F /* ToolTests.swift */,
+				E315234D1F6AE76E00576228 /* NSCoderExtensionTests.swift */,
+				E315234F1F6AF00400576228 /* ViewControllerTests.swift */,
+				E31523511F6AF86D00576228 /* ExportActivityTests.swift */,
 				E39EDB081D10677000D2CA69 /* Info.plist */,
 			);
 			path = PadeeTests;
@@ -247,13 +262,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = "Daniel Strokis";
 				TargetAttributes = {
 					E39EDAEA1D10676F00D2CA69 = {
 						CreatedOnToolsVersion = 7.3.1;
 						DevelopmentTeam = SWP5WTP5JJ;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0900;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -265,12 +280,12 @@
 					};
 					E39EDB011D10676F00D2CA69 = {
 						CreatedOnToolsVersion = 7.3.1;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0900;
 						TestTargetID = E39EDAEA1D10676F00D2CA69;
 					};
 					E39EDB0C1D10677000D2CA69 = {
 						CreatedOnToolsVersion = 7.3.1;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0900;
 						TestTargetID = E39EDAEA1D10676F00D2CA69;
 					};
 				};
@@ -351,7 +366,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E31523501F6AF00400576228 /* ViewControllerTests.swift in Sources */,
+				E315234E1F6AE76E00576228 /* NSCoderExtensionTests.swift in Sources */,
 				E39EDB071D10677000D2CA69 /* PadeeTests.swift in Sources */,
+				E3EEAB291F487A3A00FA3D7F /* ToolTests.swift in Sources */,
+				E31523521F6AF86D00576228 /* ExportActivityTests.swift in Sources */,
+				E3EEAB271F48789B00FA3D7F /* SketchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,14 +427,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -437,7 +463,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -457,14 +483,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -481,7 +513,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
@@ -500,11 +532,12 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1.0.0;
 				INFOPLIST_FILE = Padee/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dstrokis.Padee;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -520,12 +553,13 @@
 				CURRENT_PROJECT_VERSION = 1.0.0;
 				GCC_OPTIMIZATION_LEVEL = s;
 				INFOPLIST_FILE = Padee/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dstrokis.Padee;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -539,7 +573,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dstrokis.PadeeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Padee.app/Padee";
 			};
 			name = Debug;
@@ -553,7 +588,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.dstrokis.PadeeTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Padee.app/Padee";
 			};
 			name = Release;
@@ -565,7 +601,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dstrokis.PadeeUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = Padee;
 			};
 			name = Debug;
@@ -578,7 +615,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.dstrokis.PadeeUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = Padee;
 			};
 			name = Release;
