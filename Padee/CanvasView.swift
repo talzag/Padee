@@ -17,7 +17,7 @@ import UIKit
 // context won't have to be rotated.
 // 
 // However, when rendering the sketch as a UIImage, the sketch
-// will need to rotated so that it still appears right-side up.
+// will need to be rotated so that it still appears right-side up.
 
 final class CanvasView: UIView {
     

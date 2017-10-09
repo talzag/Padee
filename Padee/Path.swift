@@ -37,6 +37,8 @@ final class Path: NSObject, NSCoding {
     func addPointsForTouch(_ touch: UITouch, withEvent event: UIEvent?) -> CGRect {
         var updateRect = CGRect.null
         
+        updateRect = removePointsOfType(.predicted)
+        
         let coalescedTouches = event?.coalescedTouches(for: touch) ?? []
         for (index, touch) in coalescedTouches.enumerated() {
             let type: PointType
@@ -60,6 +62,16 @@ final class Path: NSObject, NSCoding {
                 let rect = updateRectForPoint(point: last)
                 updateRect = updateRect.union(rect)
             }
+            
+            points.append(point)
+        }
+        
+        let predictedTouches = event?.predictedTouches(for: touch) ?? []
+        for touch in predictedTouches {
+            let point = Point(withTouch: touch, andType: .predicted)
+            
+            let pointRect = updateRectForPoint(point: point)
+            updateRect = updateRect.union(pointRect)
             
             points.append(point)
         }
