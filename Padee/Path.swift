@@ -98,7 +98,7 @@ final class Path: NSObject, NSCoding {
     func updateRectForPoint(point: Point) -> CGRect {
         var rect = CGRect(origin: point.location, size: CGSize.zero)
         
-        let magnitude: CGFloat = -10.0
+        let magnitude: CGFloat = -100.0
         rect = rect.insetBy(dx: magnitude, dy: magnitude)
         
         return rect
@@ -130,11 +130,78 @@ final class Path: NSObject, NSCoding {
         return updateRect
     }
     
-    func draw(in context: CGContext?) {
-        guard let context = context else {
-            return
+    /// Cached `CGPath` to prevent creating new `CGPath`'s on each `draw(in:)` call
+    private var _cachedCGPath: CGPath?
+    
+    /// The last point in `self._cachedCGPath`. Used as a starting point in `self.points` iteration, instead of having to iterate from the beginning of the collection
+    private var _lastPointForCachedPath: Point?
+    
+    var cgPath: CGPath {
+        var i = 0
+        var curvePoints = Array<CGPoint?>(repeating: nil, count: 5)
+        
+        let mutablePath = CGMutablePath()
+        
+        var iteratePoints = points
+        
+        if let cachedPath = _cachedCGPath {
+            mutablePath.addPath(cachedPath)
+
+            if let lastPoint = _lastPointForCachedPath {
+                mutablePath.move(to: lastPoint.location)
+
+                if let index = points.index(of: lastPoint) {
+                    iteratePoints = Array(points.suffix(from: index - 1))
+                }
+            }
         }
         
+        for point in iteratePoints {
+            guard let start = curvePoints[0] else {
+                curvePoints[0] = point.location
+                mutablePath.move(to: point.location)
+                i += 1
+                continue
+            }
+            
+            if point.location.distance(from: start) < 1.0 {
+                continue
+            }
+            
+            _lastPointForCachedPath = point
+            curvePoints[i] = point.location
+            i += 1
+            
+            if i < 5 {
+                continue
+            }
+            
+            guard let c1 = curvePoints[1],
+                let c2 = curvePoints[2],
+                let next = curvePoints[4] else {
+                    fatalError()
+            }
+            
+            let x = (c2.x + next.x) / 2.0
+            let y = (c2.y + next.y) / 2.0
+            let end = CGPoint(x: x, y: y)
+            mutablePath.addCurve(to: end, control1: c1, control2: c2)
+            
+            curvePoints[0] = end
+            curvePoints[1] = next
+            
+            mutablePath.move(to: end)
+            
+            i = 1
+        }
+        
+        _cachedCGPath = mutablePath
+        
+        return mutablePath
+    }
+
+    
+    func draw(in context: CGContext) {
         context.saveGState()
         
         context.setLineCap(lineCap)
@@ -142,22 +209,8 @@ final class Path: NSObject, NSCoding {
         context.setLineWidth(lineWidth)
         context.setStrokeColor(lineColor)
         
-        var previousPoint: Point?
-        
         context.beginPath()
-        
-        for point in points {
-            guard let previous = previousPoint else {
-                previousPoint = point
-                continue
-            }
-            
-            context.move(to: CGPoint(x: previous.location.x, y: previous.location.y))
-            context.addLine(to: CGPoint(x: point.location.x, y: point.location.y))
-            
-            previousPoint = point
-        }
-        
+        context.addPath(cgPath)
         context.strokePath()
         
         context.restoreGState()
@@ -183,5 +236,18 @@ final class Path: NSObject, NSCoding {
         }
         
         aCoder.encodeColor(lineColor)
+    }
+}
+
+extension CGPoint {
+    /// Caclulates the quadrance of two points
+    ///
+    /// - Parameter point: Other point
+    /// - Returns: Quadrance of `self` and another point.
+    func distance(from point: CGPoint) -> CGFloat {
+        let dx = self.x - point.x
+        let dy = self.y - point.y
+        
+        return pow(dx, 2) + pow(dy, 2)
     }
 }

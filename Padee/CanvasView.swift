@@ -59,6 +59,8 @@ final class CanvasView: UIView {
     private var activePaths: NSMapTable<UITouch, Path> = NSMapTable.strongToStrongObjects()
     private var updatingPaths: NSMapTable<UITouch, Path> = NSMapTable.strongToStrongObjects()
     
+    private var renderedCGPaths = [CGPath]()
+    
     private var canvasBackingImage: CGImage?
     private lazy var canvasBackingContext: CGContext? = {
         let scale = UIScreen.main.scale
@@ -85,7 +87,10 @@ final class CanvasView: UIView {
     private var needsFullRedraw = true
     
     override func draw(_ rect: CGRect) {
-        let context = UIGraphicsGetCurrentContext()!
+        guard let context = UIGraphicsGetCurrentContext() else {
+            return
+        }
+        
         context.interpolationQuality = .high
         context.setShouldAntialias(true)
         context.setAllowsAntialiasing(true)
@@ -94,8 +99,13 @@ final class CanvasView: UIView {
             canvasBackingImage = canvasBackingImageNeedsClear ? nil : canvasBackingImage
             canvasBackingContext?.clear(bounds)
             
-            for path in completedPaths {
-                path.draw(in: canvasBackingContext)
+//            for path in completedPaths {
+//                path.draw(in: canvasBackingContext!)
+//            }
+            
+            for path in renderedCGPaths {
+                canvasBackingContext?.addPath(path)
+                canvasBackingContext?.strokePath()
             }
             
             needsFullRedraw = false
@@ -196,7 +206,17 @@ final class CanvasView: UIView {
         paths.remove(at: paths.index(of: path)!)
         completedPaths.append(path)
         
-        path.draw(in: canvasBackingContext)
+        guard let context = canvasBackingContext else {
+            return
+        }
+        
+        path.draw(in: context)
+        
+        let renderedPath = path.cgPath
+        renderedCGPaths.append(renderedPath)
+        
         canvasBackingImage = nil
+        
+        setNeedsDisplay()
     }
 }

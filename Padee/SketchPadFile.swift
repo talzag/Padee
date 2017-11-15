@@ -24,10 +24,13 @@ final class SketchPadFile: UIDocument {
         if let sketchData = data, let sketch = NSKeyedUnarchiver.unarchiveObject(with: sketchData) as? Sketch {
             let thumbnailSize = UIScreen.main.bounds
             UIGraphicsBeginImageContextWithOptions(thumbnailSize.size, true, 0.0)
-            let context = UIGraphicsGetCurrentContext()
+            
+            guard let context = UIGraphicsGetCurrentContext() else {
+                return UIImage()
+            }
             
             UIColor.white.setFill()
-            context?.fill(thumbnailSize)
+            context.fill(thumbnailSize)
             
             for path in sketch.paths {
                 path.draw(in: context)
