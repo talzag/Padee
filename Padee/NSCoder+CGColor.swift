@@ -32,16 +32,6 @@ extension NSCoder {
             colors.append(color)
         }
         
-        // TODO: Did this commit make it out in a build? Want to check before releasing a solution to a problem that might not exist
-        // Fixing an encoding error I made in a previous commit
-        if  colors[0] > 0.0 || colors[1] > 0.0 {
-            let grayColorSpace = CGColorSpaceCreateDeviceGray()
-            let grayColor = CGColor(colorSpace: grayColorSpace, components: [colors[0], colors[1]])!
-            let correctColor = grayColor.converted(to: CGColorSpaceCreateDeviceRGB(), intent: .perceptual, options: nil)!
-            
-            return correctColor
-        }
-        
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let color = CGColor(colorSpace: colorSpace, components: colors)!
         
