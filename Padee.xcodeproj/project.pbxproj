@@ -10,7 +10,6 @@
 		E315234E1F6AE76E00576228 /* NSCoderExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E315234D1F6AE76E00576228 /* NSCoderExtensionTests.swift */; };
 		E31523501F6AF00400576228 /* ViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E315234F1F6AF00400576228 /* ViewControllerTests.swift */; };
 		E31523521F6AF86D00576228 /* ExportActivityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31523511F6AF86D00576228 /* ExportActivityTests.swift */; };
-		E32660181EBD6E8A0013C3D0 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E32660171EBD6E8A0013C3D0 /* CloudKit.framework */; };
 		E336A5DE1E232FB7002F1C5B /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = E336A5DD1E232FB7002F1C5B /* Notifications.swift */; };
 		E3402EFA1D24BAF7009F0312 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3402EF91D24BAF7009F0312 /* CanvasView.swift */; };
 		E362D26E1DCE96C400B6C3A1 /* FileManagerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */; };
@@ -32,6 +31,7 @@
 		E3F20D851DD79C92005911A5 /* Point.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D841DD79C92005911A5 /* Point.swift */; };
 		E3F20D871DD79CF8005911A5 /* UIViewController+FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */; };
 		E3FDB3E91D7FAA6D0083B0AB /* NSCoder+CGColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */; };
+		E3FE8F551FBD061800C0C2B6 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3FE8F541FBD061800C0C2B6 /* CloudKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,7 +56,6 @@
 		E315234F1F6AF00400576228 /* ViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewControllerTests.swift; sourceTree = "<group>"; };
 		E31523511F6AF86D00576228 /* ExportActivityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExportActivityTests.swift; sourceTree = "<group>"; };
 		E32660151EBD6E820013C3D0 /* Padee.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Padee.entitlements; sourceTree = "<group>"; };
-		E32660171EBD6E8A0013C3D0 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		E336A5DD1E232FB7002F1C5B /* Notifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		E3402EF91D24BAF7009F0312 /* CanvasView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		E362D26D1DCE96C400B6C3A1 /* FileManagerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileManagerController.swift; sourceTree = "<group>"; };
@@ -87,6 +86,7 @@
 		E3F20D841DD79C92005911A5 /* Point.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Point.swift; sourceTree = "<group>"; };
 		E3F20D861DD79CF8005911A5 /* UIViewController+FileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+FileManager.swift"; sourceTree = "<group>"; };
 		E3FDB3E81D7FAA6D0083B0AB /* NSCoder+CGColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSCoder+CGColor.swift"; sourceTree = "<group>"; };
+		E3FE8F541FBD061800C0C2B6 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,7 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E32660181EBD6E8A0013C3D0 /* CloudKit.framework in Frameworks */,
+				E3FE8F551FBD061800C0C2B6 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,7 +118,7 @@
 		E32660161EBD6E8A0013C3D0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E32660171EBD6E8A0013C3D0 /* CloudKit.framework */,
+				E3FE8F541FBD061800C0C2B6 /* CloudKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -525,6 +525,7 @@
 				CODE_SIGN_ENTITLEMENTS = Padee/Padee.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1.0.0;
+				DEVELOPMENT_TEAM = SWP5WTP5JJ;
 				INFOPLIST_FILE = Padee/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -545,6 +546,7 @@
 				CODE_SIGN_ENTITLEMENTS = Padee/Padee.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1.0.0;
+				DEVELOPMENT_TEAM = SWP5WTP5JJ;
 				GCC_OPTIMIZATION_LEVEL = s;
 				INFOPLIST_FILE = Padee/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;

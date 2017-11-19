@@ -13,7 +13,12 @@ extension NSCoder {
     private static let cgColorComponentKeys = ["r", "g", "b", "a"]
     
     func encodeColor(_ color: CGColor) {
-        let colorData = zip(NSCoder.cgColorComponentKeys, color.components!)
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        guard let convertedColor = color.converted(to: colorSpace, intent: .perceptual, options: nil) else {
+            fatalError()
+        }
+        
+        let colorData = zip(NSCoder.cgColorComponentKeys, convertedColor.components!)
         
         for (key, value) in colorData {
             self.encode(Double(value), forKey: key)
