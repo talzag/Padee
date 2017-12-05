@@ -151,7 +151,8 @@ final class Path: NSObject, NSCoding {
                 mutablePath.move(to: lastPoint.location)
 
                 if let index = points.index(of: lastPoint) {
-                    iteratePoints = Array(points.suffix(from: index - 1))
+                    iteratePoints = Array(points.suffix(from: index))
+                    // TODO: - draw connecting line from currentPoint of cached cgPath to lastPoint
                 }
             }
         }
@@ -190,7 +191,7 @@ final class Path: NSObject, NSCoding {
             curvePoints[0] = end
             curvePoints[1] = next
             
-            mutablePath.move(to: end)
+//            mutablePath.move(to: end)
             
             i = 1
         }
